@@ -14,7 +14,7 @@ import type {
   TopItem,
 } from '../types/index.js';
 
-/** Filters shared by `daily()` and `estimatedValues()` — all narrow which product(s) the stats
+/** Filters shared by `daily()` and `estimatedValues()`: all narrow which product(s) the stats
  * cover; combine as many as you like. */
 export interface ProductFilterParams {
   productName?: string;
@@ -32,9 +32,9 @@ export interface DailyPriceStatsParams extends ProductFilterParams {
   startDate?: string;
   /** `YYYY-MM-DD` */
   endDate?: string;
-  /** Expansion id (ObjectId) — an alternative to `expansion` (technicalName). */
+  /** Expansion id (ObjectId), an alternative to `expansion` (technicalName). */
   expansionId?: string;
-  /** Category id (ObjectId) — an alternative to `category` (technicalName). */
+  /** Category id (ObjectId), an alternative to `category` (technicalName). */
   categoryId?: string;
 }
 
@@ -75,36 +75,36 @@ export interface ProductDailyByVariantParams {
 export class PriceStatsResource {
   constructor(private readonly http: HttpClient) {}
 
-  /** `GET /price-stats/daily` — daily average price history, filtered to matching product(s). */
+  /** `GET /price-stats/daily`: daily average price history, filtered to matching product(s). */
   daily(params: DailyPriceStatsParams = {}): Promise<ListResponse<ItemDailyStats>> {
     return this.http.get(`/price-stats/daily${toQueryString(params)}`);
   }
 
-  /** `GET /price-stats/estimated-values` — current estimated market value, filtered to matching
+  /** `GET /price-stats/estimated-values`: current estimated market value, filtered to matching
    * product(s). */
   estimatedValues(params: EstimatedValuesParams = {}): Promise<ListResponse<ItemEstimatedValue>> {
     return this.http.get(`/price-stats/estimated-values${toQueryString(params)}`);
   }
 
-  /** `GET /price-stats/top-products` — items ranked by shop availability (how many shops carry
+  /** `GET /price-stats/top-products`: items ranked by shop availability (how many shops carry
    * them), not by price. */
   topProducts(params: TopProductsParams = {}): Promise<ListResponse<TopItem>> {
     return this.http.get(`/price-stats/top-products${toQueryString(params)}`);
   }
 
-  /** `GET /price-stats/product/{id}` — daily price history, current estimate, and a variant-count
+  /** `GET /price-stats/product/{id}`: daily price history, current estimate, and a variant-count
    * summary for one product. Premium. */
   product(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<ItemStats> {
     return this.http.get(`/price-stats/product/${encodeURIComponent(idOrTechnicalName)}`, options);
   }
 
-  /** `GET /price-stats/product/{id}/full` — everything `product()` has, plus the item's current
+  /** `GET /price-stats/product/{id}/full`: everything `product()` has, plus the item's current
    * shop matches. Premium. */
   productFull(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<ItemFullStats> {
     return this.http.get(`/price-stats/product/${encodeURIComponent(idOrTechnicalName)}/full`, options);
   }
 
-  /** `GET /price-stats/product/{id}/daily` — daily price history for one product, with a
+  /** `GET /price-stats/product/{id}/daily`: daily price history for one product, with a
    * caller-chosen window. Premium. */
   productDaily(
     idOrTechnicalName: string,
@@ -117,7 +117,7 @@ export class PriceStatsResource {
     );
   }
 
-  /** `GET /price-stats/product/{id}/daily-last-30` — daily price history for the last 30 days
+  /** `GET /price-stats/product/{id}/daily-last-30`: daily price history for the last 30 days
    * exactly (no window param, for callers that want a stable cache key). Premium. */
   productDailyLast30(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<ItemDailyStats> {
     return this.http.get(
@@ -126,7 +126,7 @@ export class PriceStatsResource {
     );
   }
 
-  /** `GET /price-stats/product/{id}/estimated-value` — current estimated value only. Premium. */
+  /** `GET /price-stats/product/{id}/estimated-value`: current estimated value only. Premium. */
   productEstimatedValue(
     idOrTechnicalName: string,
     options: PremiumOptions = {},
@@ -137,7 +137,7 @@ export class PriceStatsResource {
     );
   }
 
-  /** `GET /price-stats/product/{id}/by-variant` — price stats broken out per card condition/grade.
+  /** `GET /price-stats/product/{id}/by-variant`: price stats broken out per card condition/grade.
    * Premium. */
   productByVariant(
     idOrTechnicalName: string,
@@ -150,7 +150,7 @@ export class PriceStatsResource {
     );
   }
 
-  /** `GET /price-stats/product/{id}/daily-by-variant` — daily price history for one specific
+  /** `GET /price-stats/product/{id}/daily-by-variant`: daily price history for one specific
    * condition/grade. `condition` is required for `cardType: 'loose'`; `gradingCompany` and `grade`
    * are required for `cardType: 'graded'`. Premium. */
   productDailyByVariant(

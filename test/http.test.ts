@@ -148,9 +148,8 @@ describe('TcgPriser client', () => {
 
   describe('constructor shorthand', () => {
     it('treats a bare string as { authToken: string }', async () => {
-      // The shorthand form has no room for `advanced.fetch`, so this exercises the real global
-      // `fetch` — stubbed for the duration of the test — rather than the fakeFetch() helper used
-      // everywhere else.
+      // Shorthand form has no room for advanced.fetch, so stub the real global fetch instead of
+      // using the fakeFetch() helper the other tests use.
       let capturedHeaders: Headers | undefined;
       const originalFetch = globalThis.fetch;
       globalThis.fetch = fakeFetch((_url, init) => {

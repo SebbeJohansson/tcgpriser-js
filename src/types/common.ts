@@ -1,22 +1,21 @@
 /**
- * Shared primitives reused across every resource — derived from `src/generated/openapi.d.ts` via
- * indexed access rather than retyped by hand, so a field rename/removal in the API surfaces as a
- * compile error here instead of silently drifting. See README.md "Design notes".
+ * Shared primitives reused across every resource. Pulled from `src/generated/openapi.d.ts` via
+ * indexed access instead of retyped by hand, so a field rename in the API is a compile error here,
+ * not silent drift.
  *
  * `CardWithPricing` is the extraction source for the nested ref shapes (`brand`, `category`,
- * `expansion`, the shop/bargain shape on `lowestShopOffer`) because every one of them is byte-identical
- * to its counterpart on `ProductWithPricing`, `PackRate`, and the shop-match schemas — the API inlines
- * these nested objects rather than `$ref`-ing a shared component, so `openapi-typescript` gives us no
- * single canonical name for them. Picking one schema as the source of truth for each shape is the
- * least-repetitive way to name them.
+ * `expansion`, the shop/bargain shape on `lowestShopOffer`). The API inlines these instead of
+ * `$ref`-ing a shared component, so there's no single canonical name to pull from. They're
+ * byte-identical across `ProductWithPricing`, `PackRate` and the shop-match schemas too, so picking
+ * one as the source of truth works fine.
  */
 import type { components } from '../generated/openapi.js';
 
 type CardSchema = components['schemas']['CardWithPricing'];
 type LowestShopOfferSchema = NonNullable<CardSchema['lowestShopOffer']>;
 
-/** A Mongo ObjectId, always a 24-char lowercase hex string. Kept as `string` rather than a branded
- * type — nothing in this SDK needs to distinguish it from any other id at compile time. */
+/** A Mongo ObjectId, always a 24-char lowercase hex string. Just `string`, not a branded type;
+ * nothing here needs to tell it apart from any other id at compile time. */
 export type ResourceId = string;
 
 /** ISO-4217 currency code, e.g. `"SEK"` or `"EUR"`. */
@@ -29,10 +28,9 @@ export type PrintingLanguage = NonNullable<CardSchema['language']>;
 
 export type PageMeta = components['schemas']['PageMeta'];
 
-/** The standard paginated list envelope every `list`/`search` method returns. Not itself a
- * generated type — the API's envelope is a fresh anonymous `{ data, pagination }` object per
- * endpoint rather than a named, reusable schema, so this is the one place a shared shape is worth
- * declaring by hand. */
+/** The standard paginated list envelope every `list`/`search` method returns. Hand-declared, not
+ * generated: the API repeats a fresh anonymous `{ data, pagination }` object per endpoint rather
+ * than naming it once. */
 export interface ListResponse<T> {
   data: T[];
   pagination: PageMeta;
@@ -48,7 +46,7 @@ export type AlternativeName = CardSchema['alternativeNames'][number];
 export type BrandRef = CardSchema['brand'];
 export type CategoryRef = NonNullable<CardSchema['category']>;
 
-/** The expansion shape embedded on cards, products and pack rates — not the full `Expansion`
+/** The expansion shape embedded on cards, products and pack rates. Not the full `Expansion`
  * returned by `client.expansions.list()`, which additionally carries counts and a `brand`. */
 export type ExpansionRef = NonNullable<CardSchema['expansion']>;
 
@@ -68,7 +66,7 @@ export type ReferencePriceProvider =
 
 export type ReferencePriceSnapshot = CardSchema['referencePriceSnapshotsByProvider'][string];
 
-/** Keyed by provider — at most one snapshot per provider. */
+/** Keyed by provider, at most one snapshot per provider. */
 export type ReferencePriceSnapshotsByProvider = Partial<
   Record<ReferencePriceProvider, ReferencePriceSnapshot>
 >;

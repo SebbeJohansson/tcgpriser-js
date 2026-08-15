@@ -37,3 +37,7 @@ export type { ListBargainsParams, SearchBargainsParams } from './resources/barga
 export type { ListShopsParams } from './resources/shops.js';
 
 export * from './types/index.js';
+
+// Raw generated schema, for anyone who wants the wire types directly instead of going through
+// the hand-picked exports in types/index.ts.
+export type { components } from './generated/openapi.js';

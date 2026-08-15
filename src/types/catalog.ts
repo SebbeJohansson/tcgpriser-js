@@ -15,8 +15,7 @@ export type CatalogItem = Card | SealedProduct;
 export type CardVariants = NonNullable<Card['variants']>;
 
 /** The compact item reference used inside flat shop-match rows (`client.shopMatches.list()` /
- * `.forShop()`) — enough to render a result list without a second round-trip, not the full
- * `CatalogItem`. */
+ * `.forShop()`), enough to render a result list, not the full `CatalogItem`. */
 export type MatchedItemRef = NonNullable<components['schemas']['ShopMatchWithItem']['item']>;
 
 /** One shop listing currently discounted relative to a reference price (retail, Tradera, or

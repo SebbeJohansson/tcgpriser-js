@@ -2,12 +2,14 @@ import { TcgPriserError, type TcgPriserErrorCode } from './errors.js';
 
 export type QueryValue = string | number | boolean | undefined | null;
 
-/** Builds a query string, silently dropping `undefined`/`null` entries so callers can pass a params
- * object straight through without filtering it themselves first.
+/**
+ * Builds a query string from a params object, dropping `undefined`/`null` entries so callers can
+ * pass params straight through without filtering first.
  *
- * Typed as a generic `object` rather than `Record<string, QueryValue>` deliberately: the resource
- * params interfaces (e.g. `ListCardsParams`) have no index signature, since an index signature would
- * let any string key through unchecked — the opposite of what a hand-written params type is for. */
+ * Takes a generic `object` instead of `Record<string, QueryValue>` on purpose. The params
+ * interfaces (`ListCardsParams` etc.) intentionally have no index signature, otherwise any string
+ * key would type-check.
+ */
 export function toQueryString<T extends object>(params: T): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params) as [string, QueryValue][]) {
@@ -18,9 +20,9 @@ export function toQueryString<T extends object>(params: T): string {
   return query ? `?${query}` : '';
 }
 
-/** Splits `authToken` off a premium-endpoint params object so it can go on the `Authorization`
- * header instead of into `toQueryString` — a bearer token belongs in a header, never in a URL
- * (query strings end up in server logs, browser history, and `Referer` headers). */
+/** Splits `authToken` off a params object so it goes on the `Authorization` header, not through
+ * `toQueryString`. A bearer token has no business in a URL: query strings end up in server logs,
+ * browser history, `Referer` headers. */
 export function splitAuthToken<T extends { authToken?: string }>(
   params: T,
 ): [Omit<T, 'authToken'>, string | undefined] {
@@ -54,8 +56,8 @@ async function toApiError(res: Response, url: string): Promise<TcgPriserError> {
     if (parsed.error?.message) message = parsed.error.message;
     details = parsed.error?.details;
   } catch {
-    // Body wasn't the standard error envelope (e.g. a proxy's HTML error page) — fall back to the
-    // raw status text and leave `body` for whoever wants to inspect it.
+    // Not the standard error envelope, maybe a proxy's HTML error page. Fall back to the status
+    // text and leave `body` for anyone who wants to dig in.
   }
 
   return new TcgPriserError({ statusCode: res.status, statusText: res.statusText, url, code, message, details, body });
@@ -69,18 +71,18 @@ export interface HttpClientOptions {
   authToken?: string;
 }
 
-/** Per-request auth override for a premium endpoint, layered on top of the client's default
- * `authToken`. Every premium resource method takes one of these, either standalone (methods with no
- * other params) or merged into that method's params object (see `splitAuthToken`). */
+/** Per-call auth override for a premium endpoint, on top of the client's default `authToken`.
+ * Every premium method takes one of these, either standalone or merged into its params object via
+ * `splitAuthToken`. */
 export interface PremiumOptions {
-  /** Overrides the client's default `authToken` for this one call. Pass an explicit `undefined` to
+  /** Overrides the client's default `authToken` for this call. Pass `undefined` explicitly to
    * force an anonymous request even when the client has a default token. */
   authToken?: string;
 }
 
-/** Thin wrapper around `fetch`: joins the base URL, attaches default headers, and turns non-2xx
- * responses into a `TcgPriserError` instead of a plain `Error`. Every resource method funnels
- * through this rather than calling `fetch` itself. */
+/** Thin wrapper around `fetch`: joins the base URL, adds default headers, turns non-2xx responses
+ * into a `TcgPriserError`. Every resource method goes through this instead of calling `fetch`
+ * directly. */
 export class HttpClient {
   private readonly baseUrl: string;
   private readonly fetchImpl: typeof fetch;

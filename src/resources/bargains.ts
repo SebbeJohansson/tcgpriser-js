@@ -36,14 +36,14 @@ export interface SearchBargainsParams extends PaginationParams {
 export class BargainsResource {
   constructor(private readonly http: HttpClient) {}
 
-  /** `GET /bargains` — current shop listings priced notably below their reference price. Result
+  /** `GET /bargains`: current shop listings priced notably below their reference price. Result
    * count is fixed by the API (no `limit`/`skip` on the public tier); `pagination.hasMore` tells
    * you if more exist. */
   list(params: ListBargainsParams = {}): Promise<ListResponse<Bargain>> {
     return this.http.get(`/bargains${toQueryString(params)}`);
   }
 
-  /** `GET /bargains/search` — like `list()`, but with real pagination and filters (shop, discount
+  /** `GET /bargains/search`: like `list()`, but with real pagination and filters (shop, discount
    * threshold, card condition/grade, free-text search). Premium. */
   search(params: SearchBargainsParams = {}): Promise<ListResponse<Bargain>> {
     const [query, authToken] = splitAuthToken(params);

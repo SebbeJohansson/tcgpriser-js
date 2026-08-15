@@ -17,13 +17,13 @@ export interface AssignShopUrlProductParams extends PremiumOptions {
 export class ShopUrlsResource {
   constructor(private readonly http: HttpClient) {}
 
-  /** `POST /shop-urls/submit` — submit a shop URL for scraping. */
+  /** `POST /shop-urls/submit`: submit a shop URL for scraping. */
   submit(params: SubmitShopUrlParams): Promise<ShopUrlMutationResult> {
     const { authToken, url, shop } = params;
     return this.http.post('/shop-urls/submit', { url, shop }, { authToken });
   }
 
-  /** `PATCH /shop-urls/{id}/product` — manually assign (or clear) the product a shop URL resolves to. */
+  /** `PATCH /shop-urls/{id}/product`: manually assign (or clear) the product a shop URL resolves to. */
   assignProduct(
     shopUrlId: string,
     params: AssignShopUrlProductParams,

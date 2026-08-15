@@ -1,19 +1,18 @@
 #!/usr/bin/env node
 /**
- * Regenerates `src/generated/openapi.d.ts` from a live API instance — the real source of truth for
- * every wire type in `src/types/*.ts`, which derive from `components['schemas'][...]` via indexed
- * access rather than retyping fields by hand (see README.md "Design notes").
+ * Regenerates `src/generated/openapi.d.ts` from a live API instance. Every wire type in
+ * `src/types/*.ts` derives from `components['schemas'][...]` in that file instead of being retyped
+ * by hand. See README.md.
  *
- * The output is committed, not gitignored: this package has no API access at `npm install` time (no
- * network dependency, no breakage if the spec is briefly down), so regenerating is a deliberate,
- * reviewable step you run and commit yourself when the API changes — same workflow pris-tabell-ui
+ * Committed, not gitignored: this package has no API access at install time, so regenerating is a
+ * deliberate step you run and commit yourself when the API changes. Same workflow pris-tabell-ui
  * uses for its own `generate:openapi-types` script.
  *
  * Usage:
  *   yarn generate:types [specUrl]
  *
- * Defaults to the local dev server's premium spec (the broadest — every schema the public tier needs
- * is a subset of it). Pass a URL to check against production instead:
+ * Defaults to the local dev server's premium spec (the broadest one; every schema the public tier
+ * needs is a subset of it). Pass a URL to check against production instead:
  *   yarn generate:types https://api.tcgpriser.se/premium-openapi.json
  */
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -31,7 +30,7 @@ const contents = astToString(ast);
 await mkdir(outDir, { recursive: true });
 await writeFile(
   outFile,
-  `// GENERATED FILE — do not edit by hand.\n// Run \`yarn generate:types\` to regenerate from a live API instance.\n// Source: ${specUrl}\n\n${contents}`,
+  `// GENERATED FILE - do not edit by hand.\n// Run \`yarn generate:types\` to regenerate from a live API instance.\n// Source: ${specUrl}\n\n${contents}`,
 );
 
 console.log(`Wrote ${outFile} from ${specUrl}`);

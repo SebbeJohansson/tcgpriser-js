@@ -1,6 +1,6 @@
 import type { components } from '../generated/openapi.js';
 
-/** A named `{ id, name }` reference to a card or product — the compact identity used by every
+/** A named `{ id, name }` reference to a card or product: the compact identity used by every
  * `price-stats` response, which is keyed by item rather than embedding the full catalog record. */
 export type ItemRef = components['schemas']['ItemDailyStats']['item'];
 
@@ -15,5 +15,5 @@ export type EstimatedValue = components['schemas']['ItemEstimatedValue']['estima
 /** Response row of `client.priceStats.estimatedValues()`. */
 export type ItemEstimatedValue = components['schemas']['ItemEstimatedValue'];
 
-/** Response row of `client.priceStats.topProducts()` — items ranked by shop availability, not price. */
+/** Response row of `client.priceStats.topProducts()`: items ranked by shop availability, not price. */
 export type TopItem = components['schemas']['TopItem'];

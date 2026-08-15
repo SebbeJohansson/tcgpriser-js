@@ -25,7 +25,7 @@ async function main() {
   const { data: cards } = await tcgpriser.cards.list({ search: 'pikachu', limit: 3 });
   console.log(`\nFound ${cards.length} cards matching "pikachu":`);
   for (const card of cards) {
-    console.log(`  - ${card.name} (${card.expansion?.name ?? 'no set'}) — ${card.retailPrice ?? '?'} SEK`);
+    console.log(`  - ${card.name} (${card.expansion?.name ?? 'no set'}): ${card.retailPrice ?? '?'} SEK`);
   }
 
   const firstCard = cards[0];
@@ -52,9 +52,8 @@ async function main() {
     console.log('\nExpected 404 for a bad id:', error instanceof Error ? error.message : error);
   }
 
-  // Premium endpoints need a signed-in subscriber's JWT (this client has no login flow of its own —
-  // sign in via the website and pass the token here, either as the client's default — set above —
-  // or per call, e.g. tcgpriser.cards.livePricing(id, { authToken: someOtherUsersToken }).
+  // Premium needs a subscriber's JWT. Sign in via the website and pass the token here, either as
+  // the client's default (set above) or per call: cards.livePricing(id, { authToken: ... }).
   if (firstCard) {
     try {
       const live = await tcgpriser.cards.livePricing(firstCard.technicalName);

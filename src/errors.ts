@@ -9,15 +9,12 @@ export type TcgPriserErrorCode =
   | 'rateLimited'
   | 'premiumRequired'
   | 'internalError'
-  /** The response body wasn't the `{ error: { code, message } }` shape — a proxy or gateway error
-   * in front of the API, most likely. */
+  /** Response body wasn't the `{ error: { code, message } }` shape. Probably a proxy or gateway
+   * error in front of the API. */
   | 'unknown';
 
-/**
- * Thrown for any non-2xx response. Carries the parsed `{ code, message }` from the API's error
- * envelope when the body matched it, and the raw status/body regardless so nothing is lost if it
- * didn't.
- */
+/** Thrown for any non-2xx response. Carries the parsed `{ code, message }` when the body matched
+ * the API's error envelope, plus the raw status/body regardless so nothing gets lost. */
 export class TcgPriserError extends Error {
   readonly statusCode: number;
   readonly statusText: string;
@@ -36,7 +33,7 @@ export class TcgPriserError extends Error {
     details?: unknown;
     body: string;
   }) {
-    super(`tcgpriser: ${params.statusCode} ${params.code} — ${params.message} (${params.url})`);
+    super(`tcgpriser: ${params.statusCode} ${params.code} - ${params.message} (${params.url})`);
     this.name = 'TcgPriserError';
     this.statusCode = params.statusCode;
     this.statusText = params.statusText;

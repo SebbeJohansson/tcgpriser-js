@@ -26,7 +26,7 @@ export interface CompareShopPricesParams {
   authToken?: string;
   /** Product/card id or technicalName. */
   productId: string;
-  /** `YYYY-MM-DD` — defaults to the latest date with data. */
+  /** `YYYY-MM-DD`: defaults to the latest date with data. */
   date?: string;
 }
 
@@ -35,7 +35,7 @@ export interface CompareShopPricesParams {
 export class ShopMatchStatsResource {
   constructor(private readonly http: HttpClient) {}
 
-  /** `GET /shop-match-stats/product/{productId}` — one product's price history, broken out per shop. */
+  /** `GET /shop-match-stats/product/{productId}`: one product's price history, broken out per shop. */
   forProduct(
     productId: string,
     params: ShopMatchStatsForProductParams = {},
@@ -47,7 +47,7 @@ export class ShopMatchStatsResource {
     );
   }
 
-  /** `GET /shop-match-stats/shop/{shop}` — one shop's price history, broken out per product. */
+  /** `GET /shop-match-stats/shop/{shop}`: one shop's price history, broken out per product. */
   forShop(shop: string, params: ShopMatchStatsForShopParams = {}): Promise<ShopPriceHistoryList> {
     const [query, authToken] = splitAuthToken(params);
     return this.http.get(`/shop-match-stats/shop/${encodeURIComponent(shop)}${toQueryString(query)}`, {
@@ -55,7 +55,7 @@ export class ShopMatchStatsResource {
     });
   }
 
-  /** `GET /shop-match-stats/compare` — one product's price at every shop that carries it, as of
+  /** `GET /shop-match-stats/compare`: one product's price at every shop that carries it, as of
    * one date (defaults to the latest). */
   compare(params: CompareShopPricesParams): Promise<ItemPriceComparison> {
     const [query, authToken] = splitAuthToken(params);

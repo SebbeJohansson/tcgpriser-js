@@ -1,5 +1,5 @@
 /**
- * Optional smoke test against a real API instance — not a mock. Points at
+ * Optional smoke test against a real API instance, not a mock. Points at
  * `TCGPRISER_TEST_BASE_URL` (defaults to the local dev server) and skips itself entirely if that
  * server isn't reachable, so `yarn test` stays green in CI / offline. Run the API locally
  * (`yarn dev` in pris-tabell-api) and then `yarn test` here to exercise it for real.
@@ -23,7 +23,7 @@ beforeAll(async () => {
 describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
   it(`hits a real server at ${baseUrl}`, async () => {
     if (!serverReachable) {
-      console.warn(`[live.test] skipping — no server reachable at ${baseUrl}`);
+      console.warn(`[live.test] skipping, no server reachable at ${baseUrl}`);
       return;
     }
 
@@ -59,9 +59,8 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
       statusCode: 404,
     });
 
-    // Premium endpoints, hit with no authToken — there's no test subscriber account to log in as
-    // here, so this only proves the request reaches the right route and the 401 comes back typed,
-    // not that a real premium response parses correctly.
+    // Premium, hit with no authToken. No test subscriber account here, so this only proves the
+    // request hits the right route and the 401 comes back typed, not that a real response parses.
     await expect(client.cards.livePricing(cards.data[0]!.technicalName)).rejects.toMatchObject({
       statusCode: 401,
       code: 'unauthorized',

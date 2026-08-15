@@ -8,7 +8,7 @@ type ItemShopMatchSchema = components['schemas']['ItemShopMatches']['data'][numb
  * would mean "matched, currently empty"). */
 export type Shop = components['schemas']['Shop'];
 
-/** The lighter shop shape embedded in shop-match responses — a subset of `Shop`, no id or delivery
+/** The lighter shop shape embedded in shop-match responses: a subset of `Shop`, no id or delivery
  * cost breakdown. */
 export type ShopSummary = components['schemas']['ShopMatchStats']['shop'];
 
@@ -22,17 +22,16 @@ export type ShopMatch = ShopMatchWithItemSchema;
 
 export type ShopMatchDelivery = ItemShopMatchSchema['shop']['delivery'];
 
-/** A shop-match row scoped to one already-known item — `client.cards.matches()` and
- * `client.products.matches()` omit `item`/`expansion`/`category` for that reason (the caller already
- * knows the item), but add delivery terms since the caller is looking at one specific listing's
- * total cost. */
+/** A shop-match row scoped to one already-known item. `client.cards.matches()` and
+ * `client.products.matches()` drop `item`/`expansion`/`category` since the caller already has
+ * them, but add delivery terms since you're looking at one listing's total cost here. */
 export type ItemShopMatch = ItemShopMatchSchema;
 
 /** Response of `client.cards.matches()` / `client.products.matches()`. */
 export type ItemShopMatches = components['schemas']['ItemShopMatches'];
 
-/** Response of `client.shopMatches.forShop()` — every match, of any item, currently live at one shop. */
+/** Response of `client.shopMatches.forShop()`: every match, of any item, currently live at one shop. */
 export type ShopMatchesForShop = components['schemas']['ShopMatchesForShop'];
 
-/** One row of `client.shopMatches.shopStats()` — match counts per shop, not the matches themselves. */
+/** One row of `client.shopMatches.shopStats()`: match counts per shop, not the matches themselves. */
 export type ShopMatchStats = components['schemas']['ShopMatchStats'];

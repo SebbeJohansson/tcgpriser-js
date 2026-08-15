@@ -1,7 +1,7 @@
 {
   "name": "tcgpriser",
   "version": "0.1.0",
-  "description": "Typed Node.js/browser client for the tcgpriser.se API — Pokémon TCG price data, catalog, shop matches and bargains.",
+  "description": "Typed Node.js/browser client for the tcgpriser.se API: Pokémon TCG price data, catalog, shop matches and bargains.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -42,7 +42,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pristabell/tcgpriser-js.git"
+    "url": "https://github.com/SebbeJohansson/tcgpriser-js"
   },
   "homepage": "https://tcgpriser.se",
   "devDependencies": {

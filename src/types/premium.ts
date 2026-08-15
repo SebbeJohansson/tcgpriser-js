@@ -1,10 +1,10 @@
 /**
- * Types for the premium tier — endpoints that require a signed-in subscriber's JWT (see
- * `TcgPriserOptions.authToken` / the `authToken` field on each premium method's params). Kept apart
- * from `types/index.ts`'s public-tier types because every one of these is meaningless without a
- * token: the API answers `403 premiumRequired` rather than a partial/free version of the shape.
+ * Types for the premium tier: endpoints that need a signed-in subscriber's JWT (see
+ * `TcgPriserOptions.authToken`, or the `authToken` field on each premium method's params). Split
+ * out from the public-tier types because none of these mean anything without a token: without one,
+ * the API just answers `403 premiumRequired`.
  *
- * Derived from `src/generated/openapi.d.ts` like every other file in this directory.
+ * Derived from `src/generated/openapi.d.ts`, same as everything else in this directory.
  */
 import type { components } from '../generated/openapi.js';
 import type { GradingCompany, ItemCondition } from './shop.js';
@@ -20,10 +20,10 @@ export type ReferencePriceCurrencyMode = components['schemas']['ItemReferencePri
 
 /** Response of `client.cards.referencePrices()` / `client.products.referencePrices()`.
  *
- * Non-graded card prices come from TCGdex and are variant-aware (normal / holo / reverse); graded
- * prices and eBay medians come from cmapi; Tradera is tcgpriser's own data — realised Swedish
- * auction sales rather than asking prices, always SEK, and variant-less. In native mode each series
- * keeps its own `currency`; in `sek` mode every series is `SEK`, converted at the rate stored on
+ * Non-graded card prices come from TCGdex and are variant-aware (normal / holo / reverse). Graded
+ * prices and eBay medians come from cmapi. Tradera is tcgpriser's own data: realised Swedish
+ * auction sales rather than asking prices, always SEK, no variant. In native mode each series
+ * keeps its own `currency`; in `sek` mode everything is `SEK`, converted at the rate stored on
  * each point. */
 export type ItemReferencePrices = components['schemas']['ItemReferencePrices'];
 
@@ -32,8 +32,8 @@ export type ItemReferencePrices = components['schemas']['ItemReferencePrices'];
 export type SoldPrice = components['schemas']['ItemSoldPrices']['data'][number];
 
 /** Response of `client.cards.prices()` / `client.products.prices()`. `premiumRequired` is always
- * `true` here — the field exists on the wire type because the same envelope shape is reused for a
- * free preview elsewhere in the API, not because this response can ever be a preview. */
+ * `true` here. That field only exists because this envelope shape is shared with a free preview
+ * elsewhere in the API; this response is never the preview. */
 export type ItemSoldPrices = components['schemas']['ItemSoldPrices'];
 
 // ---- Live pricing (freshly computed, not read from the last stats job) ----
@@ -43,14 +43,14 @@ export type LivePricingDetail = components['schemas']['LivePricingForItem']['pri
 /** Response of `client.cards.livePricing()` / `client.products.livePricing()`. */
 export type LivePricingForItem = components['schemas']['LivePricingForItem'];
 
-/** Response of `client.expansions.livePricing()` — live pricing for every item in one expansion. */
+/** Response of `client.expansions.livePricing()`: live pricing for every item in one expansion. */
 export type ExpansionLivePricing = components['schemas']['ExpansionLivePricing'];
 
 // ---- Per-product stats bundle ----
 
-/** The catalog item as embedded in stats responses — a `Card`/`SealedProduct` without the two
- * fields (`lowestShopOffer`, `referencePriceSnapshotsByProvider`) that these endpoints already
- * answer more precisely themselves. */
+/** The catalog item as embedded in stats responses: a `Card`/`SealedProduct` minus
+ * `lowestShopOffer` and `referencePriceSnapshotsByProvider`, which these endpoints already answer
+ * more precisely on their own. */
 export type StatsItemRef = components['schemas']['ItemStats']['item'];
 
 export type VariantStatsSummary = components['schemas']['ItemStats']['variantStats'];
@@ -58,7 +58,7 @@ export type VariantStatsSummary = components['schemas']['ItemStats']['variantSta
 /** Response of `client.priceStats.product()`. */
 export type ItemStats = components['schemas']['ItemStats'];
 
-/** Response of `client.priceStats.productFull()` — everything `product()` has, plus the item's
+/** Response of `client.priceStats.productFull()`: everything `product()` has, plus the item's
  * current shop matches. */
 export type ItemFullStats = components['schemas']['ItemFullStats'];
 
@@ -67,10 +67,9 @@ export type ItemFullStats = components['schemas']['ItemFullStats'];
 export type VariantPriceStat = components['schemas']['ItemVariantStats']['variants']['loose'][string];
 
 /** Response of `client.priceStats.productByVariant()`. The generated shape keys `loose`/`graded`
- * by a bare `string` (JSON Schema `additionalProperties` carries no enum); re-keyed here by the
- * actual `ItemCondition`/`GradingCompany` enums for better autocomplete — the one place in this
- * file a hand-written wrapper earns its keep over a plain alias. `graded` nests grade as a second
- * string-keyed level, since a grade (`10`, `9.5`) came from a JSON object key. */
+ * by a bare `string` (JSON Schema `additionalProperties` doesn't carry an enum), re-keyed here by
+ * `ItemCondition`/`GradingCompany` for real autocomplete. Only hand-written wrapper in this file.
+ * `graded` has a second string-keyed level for grade (`10`, `9.5` etc, straight from a JSON key). */
 export interface ItemVariantStats {
   item: components['schemas']['ItemVariantStats']['item'];
   variants: {
@@ -88,11 +87,11 @@ export type ItemVariantDailyStats = components['schemas']['ItemVariantDailyStats
 
 export type ShopPricePoint = components['schemas']['ItemShopPriceHistory']['shops'][number]['history'][number];
 
-/** Response of `client.shopMatchStats.forProduct()` — one product's price history, broken out per
+/** Response of `client.shopMatchStats.forProduct()`: one product's price history, broken out per
  * shop. */
 export type ItemShopPriceHistory = components['schemas']['ItemShopPriceHistory'];
 
-/** Response of `client.shopMatchStats.forShop()` — one shop's price history, broken out per
+/** Response of `client.shopMatchStats.forShop()`: one shop's price history, broken out per
  * product. */
 export type ShopPriceHistoryList = components['schemas']['ShopPriceHistoryList'];
 
@@ -101,7 +100,7 @@ export type ShopPriceHistoryList = components['schemas']['ShopPriceHistoryList']
 export type ShopPriceComparisonRow = components['schemas']['ItemPriceComparison']['items'][number];
 export type ShopPriceComparisonStats = NonNullable<components['schemas']['ItemPriceComparison']['stats']>;
 
-/** Response of `client.shopMatchStats.compare()` — one product's price at every shop that carries
+/** Response of `client.shopMatchStats.compare()`: one product's price at every shop that carries
  * it, as of one date. `stats` is `null` when no shop had a price on that date. */
 export type ItemPriceComparison = components['schemas']['ItemPriceComparison'];
 

@@ -9,14 +9,13 @@ export interface ListShopsParams {
 export class ShopsResource {
   constructor(private readonly http: HttpClient) {}
 
-  /** `GET /shops` — every tracked shop. Unwrapped to a plain array: the set is small and returned
-   * in full, there's nothing to paginate. */
+  /** `GET /shops`: every tracked shop. Unwrapped to a plain array, nothing to paginate here. */
   async list(params: ListShopsParams = {}): Promise<Shop[]> {
     const res = await this.http.get<{ data: Shop[] }>(`/shops${toQueryString(params)}`);
     return res.data;
   }
 
-  /** `GET /shops/{id}` — fetch one shop by its id or technicalName. */
+  /** `GET /shops/{id}`: fetch one shop by its id or technicalName. */
   get(idOrTechnicalName: string): Promise<Shop> {
     return this.http.get(`/shops/${encodeURIComponent(idOrTechnicalName)}`);
   }

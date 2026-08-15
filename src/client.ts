@@ -13,32 +13,24 @@ import { StatsResource } from './resources/stats.js';
 
 export const DEFAULT_BASE_URL = 'https://api.tcgpriser.se';
 
-/**
- * Escape hatches for local dev, testing and self-hosting — not something a normal integration
- * needs. Nested under `advanced` rather than sitting next to `authToken` so the constructor reads
- * as "here's your token" first and "here's how to point this somewhere else" a clear second.
- */
+/** Local dev, self-hosting and testing overrides. Most integrations never touch these. */
 export interface TcgPriserAdvancedOptions {
-  /** Override the API host — for a local dev server (`http://localhost:5000`) or a self-hosted
-   * instance. Defaults to the production API; you don't need this to talk to tcgpriser.se. */
+  /** Point at a local dev server or a self-hosted instance. Defaults to production. */
   baseUrl?: string;
   /** Extra headers sent on every request, e.g. a custom `User-Agent`. */
   headers?: Record<string, string>;
-  /** Override the `fetch` implementation (older Node, testing, a proxying agent). Defaults to the
-   * global `fetch`. */
+  /** Swap in a different `fetch` (older Node, testing, a proxying agent). Defaults to global `fetch`. */
   fetch?: typeof fetch;
 }
 
 export interface TcgPriserOptions {
   /**
    * A signed-in subscriber's JWT. Only needed for premium methods (`cards.prices()`,
-   * `priceStats.product()`, `bargains.search()`, etc. — see each resource's docs for which ones);
-   * every public method works without it. Obtained however your own app authenticates against
-   * tcgpriser.se — this client has no login flow of its own.
+   * `priceStats.product()`, `bargains.search()` etc.); public methods work fine without it.
+   * This client has no login flow of its own, so bring your own token.
    *
-   * Every premium method also accepts its own `authToken` to override this per call, which is the
-   * better fit when one server-side client instance is shared across multiple signed-in users'
-   * requests rather than acting as a single user.
+   * Every premium method also accepts its own `authToken` to override this per call. Useful when
+   * one server-side client is shared across requests for several different signed-in users.
    */
   authToken?: string;
   /** Local dev / self-hosting / testing overrides. Leave unset unless you know you need it. */
@@ -46,8 +38,8 @@ export interface TcgPriserOptions {
 }
 
 /**
- * Client for the tcgpriser.se API — Pokémon TCG price data, catalog, shop matches and bargains for
- * Sweden's tracked shops.
+ * Client for the tcgpriser.se API: Pokémon TCG price data, catalog, shop matches and bargains for
+ * shops tracked in Sweden.
  *
  * ```ts
  * import { TcgPriser } from 'tcgpriser';
@@ -57,11 +49,9 @@ export interface TcgPriserOptions {
  * console.log(card.retailPrice, card.lowestShopOffer?.shop.name);
  * ```
  *
- * Most methods cover the API's public, unauthenticated surface (see https://api.tcgpriser.se/docs)
- * — the example above needs no token. A smaller set of premium methods (live pricing refresh,
- * per-condition price history, cross-shop comparison, bargain search, shop-URL submission) require a
- * subscriber's JWT — see https://api.tcgpriser.se/premium-docs and each resource's method docs for
- * which ones:
+ * That example needs no token. Most of the API is public (https://api.tcgpriser.se/docs). A
+ * smaller set of premium methods (live pricing, per-condition history, shop comparison, bargain
+ * search, shop-URL submission) need a subscriber's JWT (https://api.tcgpriser.se/premium-docs):
  *
  * ```ts
  * const tcgpriser = new TcgPriser(myJwt); // shorthand for { authToken: myJwt }
@@ -82,9 +72,8 @@ export class TcgPriser {
   readonly stats: StatsResource;
 
   /**
-   * @param optionsOrAuthToken Either a subscriber JWT directly (`new TcgPriser(myJwt)`) — the
-   * common case, no different from passing `{ authToken: myJwt }` — or a full `TcgPriserOptions`
-   * object. Omit entirely for an anonymous client that only calls public methods.
+   * @param optionsOrAuthToken A subscriber JWT (`new TcgPriser(myJwt)`), a full
+   * `TcgPriserOptions` object, or omit it entirely for an anonymous, public-only client.
    */
   constructor(optionsOrAuthToken?: string | TcgPriserOptions) {
     const options: TcgPriserOptions =
