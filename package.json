@@ -1,0 +1,56 @@
+{
+  "name": "tcgpriser",
+  "version": "0.1.0",
+  "description": "Typed Node.js/browser client for the tcgpriser.se API — Pokémon TCG price data, catalog, shop matches and bargains.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit",
+    "example": "tsx examples/basic.ts",
+    "generate:types": "node scripts/generate-types.mjs"
+  },
+  "keywords": [
+    "tcgpriser",
+    "pokemon",
+    "tcg",
+    "trading-card-game",
+    "price-api",
+    "pokemon-tcg"
+  ],
+  "author": "Sebastian Johansson",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pristabell/tcgpriser-js.git"
+  },
+  "homepage": "https://tcgpriser.se",
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "openapi-typescript": "^7.8.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  }
+}
