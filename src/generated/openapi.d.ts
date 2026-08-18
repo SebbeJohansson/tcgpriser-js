@@ -1,4 +1,4 @@
-// GENERATED FILE — do not edit by hand.
+// GENERATED FILE - do not edit by hand.
 // Run `yarn generate:types` to regenerate from a live API instance.
 // Source: http://localhost:5000/premium-openapi.json
 
@@ -5040,6 +5040,10 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AlternativeName: {
+            name: string;
+            shortName: string | undefined;
+        };
         ApiError: {
             error: {
                 /** @enum {string} */
@@ -5049,102 +5053,69 @@ export interface components {
             };
         };
         BargainListResponse: {
-            data: {
-                url: string;
-                /** @example 149.5 */
-                price: number | undefined;
+            data: components["schemas"]["BargainListing"][];
+            pagination: components["schemas"]["PageMeta"];
+        };
+        BargainListing: {
+            url: string;
+            /** @example 149.5 */
+            price: number | undefined;
+            /**
+             * @description ISO-4217 currency code
+             * @example SEK
+             */
+            currency: string | undefined;
+            shop: components["schemas"]["ShopRef"];
+            inStock: boolean;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            matchedAt: string;
+            product: {
                 /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
+                 * @description Resource identifier
+                 * @example 6a577711abc1ce71383d3e10
                  */
-                currency: string | undefined;
-                shop: {
-                    /** @example cardlevels */
-                    technicalName: string;
-                    /** @example Cardlevels */
-                    name: string;
-                };
-                inStock: boolean;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                matchedAt: string;
-                product: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @enum {string} */
-                    kind: "sealed" | "card";
-                    name: string;
-                    technicalName: string;
-                    imageUrl: string | undefined;
-                };
-                bargain: {
-                    discountPercent: number;
-                    /** @enum {string} */
-                    referenceSource: "retail" | "tradera" | "cardmarket";
-                };
-            }[];
-            pagination: {
-                /** @description Total matching records, ignoring pagination */
-                total: number;
-                limit: number;
-                skip: number;
-                hasMore: boolean;
+                id: string;
+                /** @enum {string} */
+                kind: "sealed" | "card";
+                name: string;
+                technicalName: string;
+                imageUrl: string | undefined;
+            };
+            bargain: {
+                discountPercent: number;
+                /** @enum {string} */
+                referenceSource: "retail" | "tradera" | "cardmarket";
             };
         };
         BargainSearchResponse: {
-            data: {
-                url: string;
-                /** @example 149.5 */
-                price: number | undefined;
-                /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
-                 */
-                currency: string | undefined;
-                shop: {
-                    /** @example cardlevels */
-                    technicalName: string;
-                    /** @example Cardlevels */
-                    name: string;
-                };
-                inStock: boolean;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                matchedAt: string;
-                product: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @enum {string} */
-                    kind: "sealed" | "card";
-                    name: string;
-                    technicalName: string;
-                    imageUrl: string | undefined;
-                };
-                bargain: {
-                    discountPercent: number;
-                    /** @enum {string} */
-                    referenceSource: "retail" | "tradera" | "cardmarket";
-                };
-            }[];
-            pagination: {
-                /** @description Total matching records, ignoring pagination */
-                total: number;
-                limit: number;
-                skip: number;
-                hasMore: boolean;
-            };
+            data: components["schemas"]["BargainListing"][];
+            pagination: components["schemas"]["PageMeta"];
         };
-        CardWithPricing: {
+        Brand: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            /** @example Pokémon */
+            name: string;
+            /** @example pokemon */
+            technicalName: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+        };
+        Card: {
             /**
              * @description Resource identifier
              * @example 6a577711abc1ce71383d3e10
@@ -5153,95 +5124,18 @@ export interface components {
             name: string;
             shortName: string | undefined;
             technicalName: string;
-            brand: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Pokémon */
-                name: string;
-                /** @example pokemon */
-                technicalName: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-            };
+            brand: components["schemas"]["Brand"];
             manufacturer: string;
             modelNumber: string | undefined;
-            category: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Booster Box */
-                name: string;
-                /** @example booster-box */
-                technicalName: string;
-            } | undefined;
-            expansion: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Mega Evolution 30th Celebration */
-                name: string;
-                /** @example 30th Celebration */
-                shortName: string;
-                /** @example jpn-mega-evolution-30th-celebration */
-                technicalName: string;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string}
-                 */
-                language: "ENG" | "JPN" | "CHI";
-                /** @example m6a */
-                code: string | undefined;
-                /** @example m6a */
-                cardCode: string | undefined;
-                /** @example Mega Evolution */
-                seriesName: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                releaseDate: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                logoUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                symbolUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-            } | undefined;
+            category: components["schemas"]["CategoryRef"] | undefined;
+            expansion: components["schemas"]["ExpansionRef"] | undefined;
             /**
              * @description Printing language of the item
              * @example JPN
              * @enum {string|null}
              */
             language: "ENG" | "JPN" | "CHI" | undefined;
-            alternativeNames: {
-                name: string;
-                shortName: string | undefined;
-            }[];
+            alternativeNames: components["schemas"]["AlternativeName"][];
             supportsMultipackPricing: boolean;
             /**
              * @description Absolute asset URL, or null when absent
@@ -5286,72 +5180,126 @@ export interface components {
             artist: string | undefined;
             cardmarketId: string | undefined;
             tcgplayerId: string | undefined;
-            variants: {
-                normal: boolean;
-                holo: boolean;
-                reverse: boolean;
-                firstEdition: boolean;
-                wPromo: boolean;
-            } | undefined;
+            variants: components["schemas"]["CardVariants"] | undefined;
             prisjaktId: string | undefined;
-            lowestShopOffer: {
-                shop: {
-                    /** @example cardlevels */
-                    technicalName: string;
-                    /** @example Cardlevels */
-                    name: string;
-                };
-                url: string;
-                /** @example 149.5 */
-                price: number;
-                /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
-                 */
-                currency: string;
-                inStock: boolean;
-                inPreorder: boolean;
-                inMonitor: boolean;
-                isFullyBooked: boolean;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                matchedAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                bargain: {
-                    discountPercent: number;
-                    /** @enum {string} */
-                    referenceSource: "retail" | "tradera" | "cardmarket";
-                } | undefined;
-            } | undefined;
+        };
+        CardVariants: {
+            normal: boolean;
+            holo: boolean;
+            reverse: boolean;
+            firstEdition: boolean;
+            wPromo: boolean;
+        };
+        CardWithPricing: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            name: string;
+            shortName: string | undefined;
+            technicalName: string;
+            brand: components["schemas"]["Brand"];
+            manufacturer: string;
+            modelNumber: string | undefined;
+            category: components["schemas"]["CategoryRef"] | undefined;
+            expansion: components["schemas"]["ExpansionRef"] | undefined;
+            /**
+             * @description Printing language of the item
+             * @example JPN
+             * @enum {string|null}
+             */
+            language: "ENG" | "JPN" | "CHI" | undefined;
+            alternativeNames: components["schemas"]["AlternativeName"][];
+            supportsMultipackPricing: boolean;
+            /**
+             * @description Absolute asset URL, or null when absent
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
+            imageUrl: string | undefined;
+            /**
+             * @description Cheapest current shop price, in SEK
+             * @example 149.5
+             */
+            retailPrice: number | undefined;
+            /**
+             * @description Estimated market value, in SEK
+             * @example 149.5
+             */
+            estimatedValue: number | undefined;
+            /** @description Active shops currently tracking this item */
+            shopCount: number;
+            /** @description Observations the estimate rests on */
+            pricingDataPoints: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            pricingUpdatedAt: string | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+            /** @enum {string} */
+            kind: "card";
+            /** @example 4/102 */
+            cardNumber: string;
+            /** @example Rare Holo */
+            rarity: string | undefined;
+            artist: string | undefined;
+            cardmarketId: string | undefined;
+            tcgplayerId: string | undefined;
+            variants: components["schemas"]["CardVariants"] | undefined;
+            prisjaktId: string | undefined;
+            lowestShopOffer: components["schemas"]["LowestShopOffer"] | undefined;
             referencePriceSnapshotsByProvider: {
-                [key: string]: {
-                    /** @enum {string} */
-                    provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
-                    /** @example 149.5 */
-                    price: number;
-                    /**
-                     * @description ISO-4217 currency code
-                     * @example SEK
-                     */
-                    currency: string;
-                    /**
-                     * @description price converted to SEK at the rate stored on the row
-                     * @example 149.5
-                     */
-                    priceSek: number;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    snapshotDate: string;
-                };
+                [key: string]: components["schemas"]["ReferencePriceSummary"];
             };
+        };
+        CatalogItem: components["schemas"]["Card"] | components["schemas"]["Product"];
+        CatalogItemRef: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            name: string;
+        };
+        CategoryRef: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            /** @example Booster Box */
+            name: string;
+            /** @example booster-box */
+            technicalName: string;
+        };
+        DailyPricePoint: {
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            statDate: string;
+            /** @example 149.5 */
+            averagePrice: number;
+        };
+        EstimatedValue: {
+            /** @example 149.5 */
+            estimatedValue: number | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            estimateUpdatedAt: string | undefined;
+            dataPointCount: number;
         };
         Expansion: {
             /**
@@ -5398,31 +5346,8 @@ export interface components {
              */
             imageUrl: string | undefined;
             year: number | undefined;
-            brand: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Pokémon */
-                name: string;
-                /** @example pokemon */
-                technicalName: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-            };
-            alternativeNames: {
-                name: string;
-                shortName: string | undefined;
-            }[];
+            brand: components["schemas"]["Brand"];
+            alternativeNames: components["schemas"]["AlternativeName"][];
             /** @description Sealed products in this expansion */
             sealedCount: number;
             /** @description Cards in this expansion */
@@ -5441,973 +5366,94 @@ export interface components {
             updatedAt: string;
         };
         ExpansionContents: {
-            expansion: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Mega Evolution 30th Celebration */
-                name: string;
-                /** @example 30th Celebration */
-                shortName: string;
-                /** @example jpn-mega-evolution-30th-celebration */
-                technicalName: string;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string}
-                 */
-                language: "ENG" | "JPN" | "CHI";
-                /** @example m6a */
-                code: string | undefined;
-                /** @example m6a */
-                cardCode: string | undefined;
-                /** @example Mega Evolution */
-                seriesName: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                releaseDate: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                logoUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                symbolUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-            };
+            expansion: components["schemas"]["ExpansionRef"];
             cards: {
                 count: number;
-                items: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    name: string;
-                    shortName: string | undefined;
-                    technicalName: string;
-                    brand: {
-                        /**
-                         * @description Resource identifier
-                         * @example 6a577711abc1ce71383d3e10
-                         */
-                        id: string;
-                        /** @example Pokémon */
-                        name: string;
-                        /** @example pokemon */
-                        technicalName: string;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        updatedAt: string;
-                    };
-                    manufacturer: string;
-                    modelNumber: string | undefined;
-                    category: {
-                        /**
-                         * @description Resource identifier
-                         * @example 6a577711abc1ce71383d3e10
-                         */
-                        id: string;
-                        /** @example Booster Box */
-                        name: string;
-                        /** @example booster-box */
-                        technicalName: string;
-                    } | undefined;
-                    expansion: {
-                        /**
-                         * @description Resource identifier
-                         * @example 6a577711abc1ce71383d3e10
-                         */
-                        id: string;
-                        /** @example Mega Evolution 30th Celebration */
-                        name: string;
-                        /** @example 30th Celebration */
-                        shortName: string;
-                        /** @example jpn-mega-evolution-30th-celebration */
-                        technicalName: string;
-                        /**
-                         * @description Printing language of the item
-                         * @example JPN
-                         * @enum {string}
-                         */
-                        language: "ENG" | "JPN" | "CHI";
-                        /** @example m6a */
-                        code: string | undefined;
-                        /** @example m6a */
-                        cardCode: string | undefined;
-                        /** @example Mega Evolution */
-                        seriesName: string | undefined;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        releaseDate: string | undefined;
-                        /**
-                         * @description Absolute asset URL, or null when absent
-                         * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                         */
-                        logoUrl: string | undefined;
-                        /**
-                         * @description Absolute asset URL, or null when absent
-                         * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                         */
-                        symbolUrl: string | undefined;
-                        /**
-                         * @description Absolute asset URL, or null when absent
-                         * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                         */
-                        imageUrl: string | undefined;
-                    } | undefined;
-                    /**
-                     * @description Printing language of the item
-                     * @example JPN
-                     * @enum {string|null}
-                     */
-                    language: "ENG" | "JPN" | "CHI" | undefined;
-                    alternativeNames: {
-                        name: string;
-                        shortName: string | undefined;
-                    }[];
-                    supportsMultipackPricing: boolean;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    imageUrl: string | undefined;
-                    /**
-                     * @description Cheapest current shop price, in SEK
-                     * @example 149.5
-                     */
-                    retailPrice: number | undefined;
-                    /**
-                     * @description Estimated market value, in SEK
-                     * @example 149.5
-                     */
-                    estimatedValue: number | undefined;
-                    /** @description Active shops currently tracking this item */
-                    shopCount: number;
-                    /** @description Observations the estimate rests on */
-                    pricingDataPoints: number;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    pricingUpdatedAt: string | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    updatedAt: string;
-                    /** @enum {string} */
-                    kind: "card";
-                    /** @example 4/102 */
-                    cardNumber: string;
-                    /** @example Rare Holo */
-                    rarity: string | undefined;
-                    artist: string | undefined;
-                    cardmarketId: string | undefined;
-                    tcgplayerId: string | undefined;
-                    variants: {
-                        normal: boolean;
-                        holo: boolean;
-                        reverse: boolean;
-                        firstEdition: boolean;
-                        wPromo: boolean;
-                    } | undefined;
-                    prisjaktId: string | undefined;
-                    lowestShopOffer: {
-                        shop: {
-                            /** @example cardlevels */
-                            technicalName: string;
-                            /** @example Cardlevels */
-                            name: string;
-                        };
-                        url: string;
-                        /** @example 149.5 */
-                        price: number;
-                        /**
-                         * @description ISO-4217 currency code
-                         * @example SEK
-                         */
-                        currency: string;
-                        inStock: boolean;
-                        inPreorder: boolean;
-                        inMonitor: boolean;
-                        isFullyBooked: boolean;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        matchedAt: string;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        updatedAt: string;
-                        bargain: {
-                            discountPercent: number;
-                            /** @enum {string} */
-                            referenceSource: "retail" | "tradera" | "cardmarket";
-                        } | undefined;
-                    } | undefined;
-                    referencePriceSnapshotsByProvider: {
-                        [key: string]: {
-                            /** @enum {string} */
-                            provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
-                            /** @example 149.5 */
-                            price: number;
-                            /**
-                             * @description ISO-4217 currency code
-                             * @example SEK
-                             */
-                            currency: string;
-                            /**
-                             * @description price converted to SEK at the rate stored on the row
-                             * @example 149.5
-                             */
-                            priceSek: number;
-                            /**
-                             * Format: date-time
-                             * @example 2026-07-15T12:03:29.322Z
-                             */
-                            snapshotDate: string;
-                        };
-                    };
-                }[];
+                items: components["schemas"]["CardWithPricing"][];
             };
             sealed: {
                 count: number;
-                items: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    name: string;
-                    shortName: string | undefined;
-                    technicalName: string;
-                    brand: {
-                        /**
-                         * @description Resource identifier
-                         * @example 6a577711abc1ce71383d3e10
-                         */
-                        id: string;
-                        /** @example Pokémon */
-                        name: string;
-                        /** @example pokemon */
-                        technicalName: string;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        createdAt: string;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        updatedAt: string;
-                    };
-                    manufacturer: string;
-                    modelNumber: string | undefined;
-                    category: {
-                        /**
-                         * @description Resource identifier
-                         * @example 6a577711abc1ce71383d3e10
-                         */
-                        id: string;
-                        /** @example Booster Box */
-                        name: string;
-                        /** @example booster-box */
-                        technicalName: string;
-                    } | undefined;
-                    expansion: {
-                        /**
-                         * @description Resource identifier
-                         * @example 6a577711abc1ce71383d3e10
-                         */
-                        id: string;
-                        /** @example Mega Evolution 30th Celebration */
-                        name: string;
-                        /** @example 30th Celebration */
-                        shortName: string;
-                        /** @example jpn-mega-evolution-30th-celebration */
-                        technicalName: string;
-                        /**
-                         * @description Printing language of the item
-                         * @example JPN
-                         * @enum {string}
-                         */
-                        language: "ENG" | "JPN" | "CHI";
-                        /** @example m6a */
-                        code: string | undefined;
-                        /** @example m6a */
-                        cardCode: string | undefined;
-                        /** @example Mega Evolution */
-                        seriesName: string | undefined;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        releaseDate: string | undefined;
-                        /**
-                         * @description Absolute asset URL, or null when absent
-                         * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                         */
-                        logoUrl: string | undefined;
-                        /**
-                         * @description Absolute asset URL, or null when absent
-                         * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                         */
-                        symbolUrl: string | undefined;
-                        /**
-                         * @description Absolute asset URL, or null when absent
-                         * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                         */
-                        imageUrl: string | undefined;
-                    } | undefined;
-                    /**
-                     * @description Printing language of the item
-                     * @example JPN
-                     * @enum {string|null}
-                     */
-                    language: "ENG" | "JPN" | "CHI" | undefined;
-                    alternativeNames: {
-                        name: string;
-                        shortName: string | undefined;
-                    }[];
-                    supportsMultipackPricing: boolean;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    imageUrl: string | undefined;
-                    /**
-                     * @description Cheapest current shop price, in SEK
-                     * @example 149.5
-                     */
-                    retailPrice: number | undefined;
-                    /**
-                     * @description Estimated market value, in SEK
-                     * @example 149.5
-                     */
-                    estimatedValue: number | undefined;
-                    /** @description Active shops currently tracking this item */
-                    shopCount: number;
-                    /** @description Observations the estimate rests on */
-                    pricingDataPoints: number;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    pricingUpdatedAt: string | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    updatedAt: string;
-                    /** @enum {string} */
-                    kind: "sealed";
-                    upc: string | undefined;
-                    asin: string | undefined;
-                    epid: string | undefined;
-                    priceChartingId: string | undefined;
-                    prisjaktId: string | undefined;
-                    lowestShopOffer: {
-                        shop: {
-                            /** @example cardlevels */
-                            technicalName: string;
-                            /** @example Cardlevels */
-                            name: string;
-                        };
-                        url: string;
-                        /** @example 149.5 */
-                        price: number;
-                        /**
-                         * @description ISO-4217 currency code
-                         * @example SEK
-                         */
-                        currency: string;
-                        inStock: boolean;
-                        inPreorder: boolean;
-                        inMonitor: boolean;
-                        isFullyBooked: boolean;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        matchedAt: string;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        updatedAt: string;
-                        bargain: {
-                            discountPercent: number;
-                            /** @enum {string} */
-                            referenceSource: "retail" | "tradera" | "cardmarket";
-                        } | undefined;
-                    } | undefined;
-                    referencePriceSnapshotsByProvider: {
-                        [key: string]: {
-                            /** @enum {string} */
-                            provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
-                            /** @example 149.5 */
-                            price: number;
-                            /**
-                             * @description ISO-4217 currency code
-                             * @example SEK
-                             */
-                            currency: string;
-                            /**
-                             * @description price converted to SEK at the rate stored on the row
-                             * @example 149.5
-                             */
-                            priceSek: number;
-                            /**
-                             * Format: date-time
-                             * @example 2026-07-15T12:03:29.322Z
-                             */
-                            snapshotDate: string;
-                        };
-                    };
-                }[];
+                items: components["schemas"]["ProductWithPricing"][];
             };
         };
         ExpansionLivePricing: {
             expansion: {
                 technicalName: string;
             };
-            items: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-                technicalName: string;
-                pricing: {
-                    /** @example 149.5 */
-                    retailPrice: number | undefined;
-                    /** @example 149.5 */
-                    estimatedValue: number | undefined;
-                    shopCount: number;
-                    pricingDataPoints: number;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    calculatedAt: string;
-                };
-            }[];
+            items: components["schemas"]["LivePricingForItem"][];
+        };
+        ExpansionRef: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            /** @example Mega Evolution 30th Celebration */
+            name: string;
+            /** @example 30th Celebration */
+            shortName: string;
+            /** @example jpn-mega-evolution-30th-celebration */
+            technicalName: string;
+            /**
+             * @description Printing language of the item
+             * @example JPN
+             * @enum {string}
+             */
+            language: "ENG" | "JPN" | "CHI";
+            /** @example m6a */
+            code: string | undefined;
+            /** @example m6a */
+            cardCode: string | undefined;
+            /** @example Mega Evolution */
+            seriesName: string | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            releaseDate: string | undefined;
+            /**
+             * @description Absolute asset URL, or null when absent
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
+            logoUrl: string | undefined;
+            /**
+             * @description Absolute asset URL, or null when absent
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
+            symbolUrl: string | undefined;
+            /**
+             * @description Absolute asset URL, or null when absent
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
+            imageUrl: string | undefined;
         };
         ItemDailyStats: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            dailyStats: {
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                statDate: string;
-                /** @example 149.5 */
-                averagePrice: number;
-            }[];
+            item: components["schemas"]["CatalogItemRef"];
+            dailyStats: components["schemas"]["DailyPricePoint"][];
         };
         ItemEstimatedValue: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            estimate: {
-                /** @example 149.5 */
-                estimatedValue: number | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                estimateUpdatedAt: string | undefined;
-                dataPointCount: number;
-            };
+            item: components["schemas"]["CatalogItemRef"];
+            estimate: components["schemas"]["EstimatedValue"];
         };
         ItemFullStats: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-                shortName: string | undefined;
-                technicalName: string;
-                brand: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Pokémon */
-                    name: string;
-                    /** @example pokemon */
-                    technicalName: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    updatedAt: string;
-                };
-                manufacturer: string;
-                modelNumber: string | undefined;
-                category: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Booster Box */
-                    name: string;
-                    /** @example booster-box */
-                    technicalName: string;
-                } | undefined;
-                expansion: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Mega Evolution 30th Celebration */
-                    name: string;
-                    /** @example 30th Celebration */
-                    shortName: string;
-                    /** @example jpn-mega-evolution-30th-celebration */
-                    technicalName: string;
-                    /**
-                     * @description Printing language of the item
-                     * @example JPN
-                     * @enum {string}
-                     */
-                    language: "ENG" | "JPN" | "CHI";
-                    /** @example m6a */
-                    code: string | undefined;
-                    /** @example m6a */
-                    cardCode: string | undefined;
-                    /** @example Mega Evolution */
-                    seriesName: string | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    releaseDate: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    logoUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    symbolUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    imageUrl: string | undefined;
-                } | undefined;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string|null}
-                 */
-                language: "ENG" | "JPN" | "CHI" | undefined;
-                alternativeNames: {
-                    name: string;
-                    shortName: string | undefined;
-                }[];
-                supportsMultipackPricing: boolean;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-                /**
-                 * @description Cheapest current shop price, in SEK
-                 * @example 149.5
-                 */
-                retailPrice: number | undefined;
-                /**
-                 * @description Estimated market value, in SEK
-                 * @example 149.5
-                 */
-                estimatedValue: number | undefined;
-                /** @description Active shops currently tracking this item */
-                shopCount: number;
-                /** @description Observations the estimate rests on */
-                pricingDataPoints: number;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                pricingUpdatedAt: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                /** @enum {string} */
-                kind: "card";
-                /** @example 4/102 */
-                cardNumber: string;
-                /** @example Rare Holo */
-                rarity: string | undefined;
-                artist: string | undefined;
-                cardmarketId: string | undefined;
-                tcgplayerId: string | undefined;
-                variants: {
-                    normal: boolean;
-                    holo: boolean;
-                    reverse: boolean;
-                    firstEdition: boolean;
-                    wPromo: boolean;
-                } | undefined;
-                prisjaktId: string | undefined;
-            } | {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-                shortName: string | undefined;
-                technicalName: string;
-                brand: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Pokémon */
-                    name: string;
-                    /** @example pokemon */
-                    technicalName: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    updatedAt: string;
-                };
-                manufacturer: string;
-                modelNumber: string | undefined;
-                category: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Booster Box */
-                    name: string;
-                    /** @example booster-box */
-                    technicalName: string;
-                } | undefined;
-                expansion: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Mega Evolution 30th Celebration */
-                    name: string;
-                    /** @example 30th Celebration */
-                    shortName: string;
-                    /** @example jpn-mega-evolution-30th-celebration */
-                    technicalName: string;
-                    /**
-                     * @description Printing language of the item
-                     * @example JPN
-                     * @enum {string}
-                     */
-                    language: "ENG" | "JPN" | "CHI";
-                    /** @example m6a */
-                    code: string | undefined;
-                    /** @example m6a */
-                    cardCode: string | undefined;
-                    /** @example Mega Evolution */
-                    seriesName: string | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    releaseDate: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    logoUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    symbolUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    imageUrl: string | undefined;
-                } | undefined;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string|null}
-                 */
-                language: "ENG" | "JPN" | "CHI" | undefined;
-                alternativeNames: {
-                    name: string;
-                    shortName: string | undefined;
-                }[];
-                supportsMultipackPricing: boolean;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-                /**
-                 * @description Cheapest current shop price, in SEK
-                 * @example 149.5
-                 */
-                retailPrice: number | undefined;
-                /**
-                 * @description Estimated market value, in SEK
-                 * @example 149.5
-                 */
-                estimatedValue: number | undefined;
-                /** @description Active shops currently tracking this item */
-                shopCount: number;
-                /** @description Observations the estimate rests on */
-                pricingDataPoints: number;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                pricingUpdatedAt: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                /** @enum {string} */
-                kind: "sealed";
-                upc: string | undefined;
-                asin: string | undefined;
-                epid: string | undefined;
-                priceChartingId: string | undefined;
-                prisjaktId: string | undefined;
-            };
+            item: components["schemas"]["CatalogItem"];
             stats: {
-                dailyStats: {
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    statDate: string;
-                    /** @example 149.5 */
-                    averagePrice: number;
-                }[];
-                variantStats: {
-                    /** @description Distinct cardType/condition/company/grade combinations */
-                    variantCount: number;
-                    looseCount: number;
-                    gradedCount: number;
-                };
+                dailyStats: components["schemas"]["DailyPricePoint"][];
+                variantStats: components["schemas"]["VariantStatsSummary"];
             };
-            estimate: {
-                /** @example 149.5 */
-                estimatedValue: number | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                estimateUpdatedAt: string | undefined;
-                dataPointCount: number;
-            };
+            estimate: components["schemas"]["EstimatedValue"];
             shopMatches: {
-                data: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    shop: {
-                        /** @example cardlevels */
-                        technicalName: string;
-                        /** @example Cardlevels */
-                        name: string;
-                        delivery: {
-                            /** @example 149.5 */
-                            cost: number | undefined;
-                            currency: string | undefined;
-                            daysMin: number | undefined;
-                            daysMax: number | undefined;
-                            /** @example 149.5 */
-                            freeShippingThreshold: number | undefined;
-                            supportsLocalPickup: boolean | undefined;
-                            note: string | undefined;
-                        };
-                    };
-                    url: string;
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    shopUrlId: string | undefined;
-                    /** @example 149.5 */
-                    price: number | undefined;
-                    /**
-                     * @description ISO-4217 currency code
-                     * @example SEK
-                     */
-                    currency: string | undefined;
-                    inStock: boolean;
-                    inPreorder: boolean;
-                    inMonitor: boolean;
-                    isFullyBooked: boolean;
-                    scrapedName: string | undefined;
-                    scrapedType: string | undefined;
-                    matchScore: number | undefined;
-                    hasCategoryMismatch: boolean;
-                    /** @enum {string|null} */
-                    cardType: "loose" | "graded" | undefined;
-                    /** @enum {string|null} */
-                    itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
-                    /** @enum {string|null} */
-                    gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
-                    grade: number | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    matchedAt: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    updatedAt: string;
-                    bargain: {
-                        discountPercent: number;
-                        /** @enum {string} */
-                        referenceSource: "retail" | "tradera" | "cardmarket";
-                    } | undefined;
-                }[];
-                pagination: {
-                    /** @description Total matching records, ignoring pagination */
-                    total: number;
-                    limit: number;
-                    skip: number;
-                    hasMore: boolean;
-                };
+                data: components["schemas"]["ShopProductMatch"][];
+                pagination: components["schemas"]["PageMeta"];
             };
         };
         ItemPriceComparison: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            items: {
-                shop: string;
-                /** @example 149.5 */
-                price: number;
-                /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
-                 */
-                currency: string;
-                inStock: boolean;
-                url: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                snapshotDate: string;
-            }[];
-            stats: {
-                /** @example 149.5 */
-                lowestPrice: number;
-                /** @example 149.5 */
-                highestPrice: number;
-                /** @example 149.5 */
-                averagePrice: number;
-                inStockCount: number;
-            } | undefined;
+            item: components["schemas"]["CatalogItemRef"];
+            items: components["schemas"]["ShopPriceComparisonRow"][];
+            stats: components["schemas"]["ShopPriceComparisonStats"] | undefined;
         };
         ItemReferencePrices: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
+            item: components["schemas"]["CatalogItemRef"];
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -6422,570 +5468,52 @@ export interface components {
             metric: "price" | "low" | "mid" | "high" | "avg" | "avg1" | "avg7" | "avg30" | "directLow";
             /** @enum {string} */
             currencyMode: "native" | "sek";
-            series: {
-                /** @enum {string} */
-                source: "tcgdex" | "cmapi" | "tradera";
-                /** @enum {string} */
-                provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
-                /** @enum {string|null} */
-                variant: "normal" | "holo" | "reverse" | undefined;
-                /** @enum {string|null} */
-                cardType: "loose" | "graded" | undefined;
-                /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
-                grade: number | undefined;
-                currency: string;
-                sampleSize: number | undefined;
-                points: {
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    snapshotDate: string;
-                    price: number;
-                }[];
-            }[];
+            series: components["schemas"]["ReferencePriceSeries"][];
         };
         ItemShopMatches: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            data: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                shop: {
-                    /** @example cardlevels */
-                    technicalName: string;
-                    /** @example Cardlevels */
-                    name: string;
-                    delivery: {
-                        /** @example 149.5 */
-                        cost: number | undefined;
-                        currency: string | undefined;
-                        daysMin: number | undefined;
-                        daysMax: number | undefined;
-                        /** @example 149.5 */
-                        freeShippingThreshold: number | undefined;
-                        supportsLocalPickup: boolean | undefined;
-                        note: string | undefined;
-                    };
-                };
-                url: string;
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                shopUrlId: string | undefined;
-                /** @example 149.5 */
-                price: number | undefined;
-                /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
-                 */
-                currency: string | undefined;
-                inStock: boolean;
-                inPreorder: boolean;
-                inMonitor: boolean;
-                isFullyBooked: boolean;
-                scrapedName: string | undefined;
-                scrapedType: string | undefined;
-                matchScore: number | undefined;
-                hasCategoryMismatch: boolean;
-                /** @enum {string|null} */
-                cardType: "loose" | "graded" | undefined;
-                /** @enum {string|null} */
-                itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
-                /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
-                grade: number | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                matchedAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                bargain: {
-                    discountPercent: number;
-                    /** @enum {string} */
-                    referenceSource: "retail" | "tradera" | "cardmarket";
-                } | undefined;
-            }[];
-            pagination: {
-                /** @description Total matching records, ignoring pagination */
-                total: number;
-                limit: number;
-                skip: number;
-                hasMore: boolean;
-            };
+            item: components["schemas"]["CatalogItemRef"];
+            data: components["schemas"]["ShopProductMatch"][];
+            pagination: components["schemas"]["PageMeta"];
         };
         ItemShopPriceHistory: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            shops: {
-                /** @description The shop's technicalName */
-                shop: string;
-                history: {
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    snapshotDate: string;
-                    /** @example 149.5 */
-                    price: number;
-                    /**
-                     * @description ISO-4217 currency code
-                     * @example SEK
-                     */
-                    currency: string;
-                    inStock: boolean;
-                    url: string;
-                }[];
-            }[];
+            item: components["schemas"]["CatalogItemRef"];
+            shops: components["schemas"]["ShopPriceHistory"][];
             recordCount: number;
         };
         ItemSoldPrices: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            data: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                url: string;
-                /** @example 149.5 */
-                price: number;
-                /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
-                 */
-                currency: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                soldAt: string | undefined;
-                itemId: string | undefined;
-                /** @example tradera */
-                source: string | undefined;
-            }[];
-            pagination: {
-                /** @description Total matching records, ignoring pagination */
-                total: number;
-                limit: number;
-                skip: number;
-                hasMore: boolean;
-            };
+            item: components["schemas"]["CatalogItemRef"];
+            data: components["schemas"]["SoldPrice"][];
+            pagination: components["schemas"]["PageMeta"];
             /** @enum {boolean} */
             premiumRequired: true;
         };
         ItemStats: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-                shortName: string | undefined;
-                technicalName: string;
-                brand: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Pokémon */
-                    name: string;
-                    /** @example pokemon */
-                    technicalName: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    updatedAt: string;
-                };
-                manufacturer: string;
-                modelNumber: string | undefined;
-                category: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Booster Box */
-                    name: string;
-                    /** @example booster-box */
-                    technicalName: string;
-                } | undefined;
-                expansion: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Mega Evolution 30th Celebration */
-                    name: string;
-                    /** @example 30th Celebration */
-                    shortName: string;
-                    /** @example jpn-mega-evolution-30th-celebration */
-                    technicalName: string;
-                    /**
-                     * @description Printing language of the item
-                     * @example JPN
-                     * @enum {string}
-                     */
-                    language: "ENG" | "JPN" | "CHI";
-                    /** @example m6a */
-                    code: string | undefined;
-                    /** @example m6a */
-                    cardCode: string | undefined;
-                    /** @example Mega Evolution */
-                    seriesName: string | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    releaseDate: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    logoUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    symbolUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    imageUrl: string | undefined;
-                } | undefined;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string|null}
-                 */
-                language: "ENG" | "JPN" | "CHI" | undefined;
-                alternativeNames: {
-                    name: string;
-                    shortName: string | undefined;
-                }[];
-                supportsMultipackPricing: boolean;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-                /**
-                 * @description Cheapest current shop price, in SEK
-                 * @example 149.5
-                 */
-                retailPrice: number | undefined;
-                /**
-                 * @description Estimated market value, in SEK
-                 * @example 149.5
-                 */
-                estimatedValue: number | undefined;
-                /** @description Active shops currently tracking this item */
-                shopCount: number;
-                /** @description Observations the estimate rests on */
-                pricingDataPoints: number;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                pricingUpdatedAt: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                /** @enum {string} */
-                kind: "card";
-                /** @example 4/102 */
-                cardNumber: string;
-                /** @example Rare Holo */
-                rarity: string | undefined;
-                artist: string | undefined;
-                cardmarketId: string | undefined;
-                tcgplayerId: string | undefined;
-                variants: {
-                    normal: boolean;
-                    holo: boolean;
-                    reverse: boolean;
-                    firstEdition: boolean;
-                    wPromo: boolean;
-                } | undefined;
-                prisjaktId: string | undefined;
-            } | {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-                shortName: string | undefined;
-                technicalName: string;
-                brand: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Pokémon */
-                    name: string;
-                    /** @example pokemon */
-                    technicalName: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    createdAt: string;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    updatedAt: string;
-                };
-                manufacturer: string;
-                modelNumber: string | undefined;
-                category: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Booster Box */
-                    name: string;
-                    /** @example booster-box */
-                    technicalName: string;
-                } | undefined;
-                expansion: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Mega Evolution 30th Celebration */
-                    name: string;
-                    /** @example 30th Celebration */
-                    shortName: string;
-                    /** @example jpn-mega-evolution-30th-celebration */
-                    technicalName: string;
-                    /**
-                     * @description Printing language of the item
-                     * @example JPN
-                     * @enum {string}
-                     */
-                    language: "ENG" | "JPN" | "CHI";
-                    /** @example m6a */
-                    code: string | undefined;
-                    /** @example m6a */
-                    cardCode: string | undefined;
-                    /** @example Mega Evolution */
-                    seriesName: string | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    releaseDate: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    logoUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    symbolUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    imageUrl: string | undefined;
-                } | undefined;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string|null}
-                 */
-                language: "ENG" | "JPN" | "CHI" | undefined;
-                alternativeNames: {
-                    name: string;
-                    shortName: string | undefined;
-                }[];
-                supportsMultipackPricing: boolean;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-                /**
-                 * @description Cheapest current shop price, in SEK
-                 * @example 149.5
-                 */
-                retailPrice: number | undefined;
-                /**
-                 * @description Estimated market value, in SEK
-                 * @example 149.5
-                 */
-                estimatedValue: number | undefined;
-                /** @description Active shops currently tracking this item */
-                shopCount: number;
-                /** @description Observations the estimate rests on */
-                pricingDataPoints: number;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                pricingUpdatedAt: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                /** @enum {string} */
-                kind: "sealed";
-                upc: string | undefined;
-                asin: string | undefined;
-                epid: string | undefined;
-                priceChartingId: string | undefined;
-                prisjaktId: string | undefined;
-            };
-            dailyStats: {
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                statDate: string;
-                /** @example 149.5 */
-                averagePrice: number;
-            }[];
-            estimate: {
-                /** @example 149.5 */
-                estimatedValue: number | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                estimateUpdatedAt: string | undefined;
-                dataPointCount: number;
-            };
-            variantStats: {
-                /** @description Distinct cardType/condition/company/grade combinations */
-                variantCount: number;
-                looseCount: number;
-                gradedCount: number;
-            };
+            item: components["schemas"]["CatalogItem"];
+            dailyStats: components["schemas"]["DailyPricePoint"][];
+            estimate: components["schemas"]["EstimatedValue"];
+            variantStats: components["schemas"]["VariantStatsSummary"];
         };
         ItemVariantDailyStats: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            variant: {
-                /** @enum {string|null} */
-                cardType: "loose" | "graded" | undefined;
-                /** @enum {string|null} */
-                condition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
-                /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
-                grade: number | undefined;
-            };
-            dailyStats: {
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                statDate: string;
-                /** @example 149.5 */
-                averagePrice: number;
-            }[];
+            item: components["schemas"]["CatalogItemRef"];
+            variant: components["schemas"]["VariantSelector"];
+            dailyStats: components["schemas"]["DailyPricePoint"][];
         };
         ItemVariantStats: {
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                name: string;
-            };
-            variants: {
-                loose: {
-                    [key: string]: {
-                        /** @example 149.5 */
-                        averagePrice: number;
-                        dataPointCount: number;
-                        /**
-                         * Format: date-time
-                         * @example 2026-07-15T12:03:29.322Z
-                         */
-                        lastSaleDate: string;
-                    };
-                };
-                graded: {
-                    [key: string]: {
-                        [key: string]: {
-                            /** @example 149.5 */
-                            averagePrice: number;
-                            dataPointCount: number;
-                            /**
-                             * Format: date-time
-                             * @example 2026-07-15T12:03:29.322Z
-                             */
-                            lastSaleDate: string;
-                        };
-                    };
-                };
-            };
+            item: components["schemas"]["CatalogItemRef"];
+            variants: components["schemas"]["VariantBreakdown"];
+        };
+        LivePricing: {
+            /** @example 149.5 */
+            retailPrice: number | undefined;
+            /** @example 149.5 */
+            estimatedValue: number | undefined;
+            shopCount: number;
+            pricingDataPoints: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            calculatedAt: string;
         };
         LivePricingForItem: {
             /**
@@ -6995,19 +5523,60 @@ export interface components {
             id: string;
             name: string;
             technicalName: string;
-            pricing: {
-                /** @example 149.5 */
-                retailPrice: number | undefined;
-                /** @example 149.5 */
-                estimatedValue: number | undefined;
-                shopCount: number;
-                pricingDataPoints: number;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                calculatedAt: string;
-            };
+            pricing: components["schemas"]["LivePricing"];
+        };
+        LowestShopOffer: {
+            shop: components["schemas"]["ShopRef"];
+            url: string;
+            /** @example 149.5 */
+            price: number;
+            /**
+             * @description ISO-4217 currency code
+             * @example SEK
+             */
+            currency: string;
+            inStock: boolean;
+            inPreorder: boolean;
+            inMonitor: boolean;
+            isFullyBooked: boolean;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            matchedAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+            bargain: {
+                discountPercent: number;
+                /** @enum {string} */
+                referenceSource: "retail" | "tradera" | "cardmarket";
+            } | undefined;
+        };
+        MatchShop: {
+            /** @example cardlevels */
+            technicalName: string;
+            /** @example Cardlevels */
+            name: string;
+            delivery: components["schemas"]["ShopDeliveryTerms"];
+        };
+        MatchedItemRef: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            /** @enum {string} */
+            kind: "card" | "sealed";
+            name: string;
+            shortName: string | undefined;
+            technicalName: string;
+            cardNumber: string | undefined;
+            imageUrl: string | undefined;
+            language: string | undefined;
+            priceChartingId: string | undefined;
         };
         PackRate: {
             /**
@@ -7015,60 +5584,8 @@ export interface components {
              * @example 6a577711abc1ce71383d3e10
              */
             id: string;
-            expansion: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Mega Evolution 30th Celebration */
-                name: string;
-                /** @example 30th Celebration */
-                shortName: string;
-                /** @example jpn-mega-evolution-30th-celebration */
-                technicalName: string;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string}
-                 */
-                language: "ENG" | "JPN" | "CHI";
-                /** @example m6a */
-                code: string | undefined;
-                /** @example m6a */
-                cardCode: string | undefined;
-                /** @example Mega Evolution */
-                seriesName: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                releaseDate: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                logoUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                symbolUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-            };
-            buckets: {
-                /** @example Double rare */
-                rarity: string;
-                /**
-                 * @description Relative draw weight (normalised across buckets)
-                 * @example 24
-                 */
-                weight: number;
-            }[];
+            expansion: components["schemas"]["ExpansionRef"];
+            buckets: components["schemas"]["PackRateBucket"][];
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -7079,6 +5596,15 @@ export interface components {
              * @example 2026-07-15T12:03:29.322Z
              */
             updatedAt: string;
+        };
+        PackRateBucket: {
+            /** @example Double rare */
+            rarity: string;
+            /**
+             * @description Relative draw weight (normalised across buckets)
+             * @example 24
+             */
+            weight: number;
         };
         PageMeta: {
             /** @description Total matching records, ignoring pagination */
@@ -7094,7 +5620,7 @@ export interface components {
             productCount: number;
             priceCount: number;
         };
-        ProductWithPricing: {
+        Product: {
             /**
              * @description Resource identifier
              * @example 6a577711abc1ce71383d3e10
@@ -7103,95 +5629,18 @@ export interface components {
             name: string;
             shortName: string | undefined;
             technicalName: string;
-            brand: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Pokémon */
-                name: string;
-                /** @example pokemon */
-                technicalName: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-            };
+            brand: components["schemas"]["Brand"];
             manufacturer: string;
             modelNumber: string | undefined;
-            category: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Booster Box */
-                name: string;
-                /** @example booster-box */
-                technicalName: string;
-            } | undefined;
-            expansion: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Mega Evolution 30th Celebration */
-                name: string;
-                /** @example 30th Celebration */
-                shortName: string;
-                /** @example jpn-mega-evolution-30th-celebration */
-                technicalName: string;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string}
-                 */
-                language: "ENG" | "JPN" | "CHI";
-                /** @example m6a */
-                code: string | undefined;
-                /** @example m6a */
-                cardCode: string | undefined;
-                /** @example Mega Evolution */
-                seriesName: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                releaseDate: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                logoUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                symbolUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-            } | undefined;
+            category: components["schemas"]["CategoryRef"] | undefined;
+            expansion: components["schemas"]["ExpansionRef"] | undefined;
             /**
              * @description Printing language of the item
              * @example JPN
              * @enum {string|null}
              */
             language: "ENG" | "JPN" | "CHI" | undefined;
-            alternativeNames: {
-                name: string;
-                shortName: string | undefined;
-            }[];
+            alternativeNames: components["schemas"]["AlternativeName"][];
             supportsMultipackPricing: boolean;
             /**
              * @description Absolute asset URL, or null when absent
@@ -7234,64 +5683,119 @@ export interface components {
             epid: string | undefined;
             priceChartingId: string | undefined;
             prisjaktId: string | undefined;
-            lowestShopOffer: {
-                shop: {
-                    /** @example cardlevels */
-                    technicalName: string;
-                    /** @example Cardlevels */
-                    name: string;
-                };
-                url: string;
-                /** @example 149.5 */
-                price: number;
-                /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
-                 */
-                currency: string;
-                inStock: boolean;
-                inPreorder: boolean;
-                inMonitor: boolean;
-                isFullyBooked: boolean;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                matchedAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                bargain: {
-                    discountPercent: number;
-                    /** @enum {string} */
-                    referenceSource: "retail" | "tradera" | "cardmarket";
-                } | undefined;
-            } | undefined;
+        };
+        ProductWithPricing: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            name: string;
+            shortName: string | undefined;
+            technicalName: string;
+            brand: components["schemas"]["Brand"];
+            manufacturer: string;
+            modelNumber: string | undefined;
+            category: components["schemas"]["CategoryRef"] | undefined;
+            expansion: components["schemas"]["ExpansionRef"] | undefined;
+            /**
+             * @description Printing language of the item
+             * @example JPN
+             * @enum {string|null}
+             */
+            language: "ENG" | "JPN" | "CHI" | undefined;
+            alternativeNames: components["schemas"]["AlternativeName"][];
+            supportsMultipackPricing: boolean;
+            /**
+             * @description Absolute asset URL, or null when absent
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
+            imageUrl: string | undefined;
+            /**
+             * @description Cheapest current shop price, in SEK
+             * @example 149.5
+             */
+            retailPrice: number | undefined;
+            /**
+             * @description Estimated market value, in SEK
+             * @example 149.5
+             */
+            estimatedValue: number | undefined;
+            /** @description Active shops currently tracking this item */
+            shopCount: number;
+            /** @description Observations the estimate rests on */
+            pricingDataPoints: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            pricingUpdatedAt: string | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+            /** @enum {string} */
+            kind: "sealed";
+            upc: string | undefined;
+            asin: string | undefined;
+            epid: string | undefined;
+            priceChartingId: string | undefined;
+            prisjaktId: string | undefined;
+            lowestShopOffer: components["schemas"]["LowestShopOffer"] | undefined;
             referencePriceSnapshotsByProvider: {
-                [key: string]: {
-                    /** @enum {string} */
-                    provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
-                    /** @example 149.5 */
-                    price: number;
-                    /**
-                     * @description ISO-4217 currency code
-                     * @example SEK
-                     */
-                    currency: string;
-                    /**
-                     * @description price converted to SEK at the rate stored on the row
-                     * @example 149.5
-                     */
-                    priceSek: number;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    snapshotDate: string;
-                };
+                [key: string]: components["schemas"]["ReferencePriceSummary"];
             };
+        };
+        ReferencePriceSeries: {
+            /** @enum {string} */
+            source: "tcgdex" | "cmapi" | "tradera";
+            /** @enum {string} */
+            provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
+            /** @enum {string|null} */
+            variant: "normal" | "holo" | "reverse" | undefined;
+            /** @enum {string|null} */
+            cardType: "loose" | "graded" | undefined;
+            /** @enum {string|null} */
+            gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+            grade: number | undefined;
+            currency: string;
+            sampleSize: number | undefined;
+            points: components["schemas"]["ReferencePriceSeriesPoint"][];
+        };
+        ReferencePriceSeriesPoint: {
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            snapshotDate: string;
+            price: number;
+        };
+        ReferencePriceSummary: {
+            /** @enum {string} */
+            provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
+            /** @example 149.5 */
+            price: number;
+            /**
+             * @description ISO-4217 currency code
+             * @example SEK
+             */
+            currency: string;
+            /**
+             * @description price converted to SEK at the rate stored on the row
+             * @example 149.5
+             */
+            priceSek: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            snapshotDate: string;
         };
         Shop: {
             /**
@@ -7349,18 +5853,30 @@ export interface components {
              */
             updatedAt: string;
         };
+        ShopDeliveryTerms: {
+            /** @example 149.5 */
+            cost: number | undefined;
+            currency: string | undefined;
+            daysMin: number | undefined;
+            daysMax: number | undefined;
+            /** @example 149.5 */
+            freeShippingThreshold: number | undefined;
+            supportsLocalPickup: boolean | undefined;
+            note: string | undefined;
+        };
+        ShopItemPriceHistory: {
+            item: components["schemas"]["CatalogItemRef"];
+            history: components["schemas"]["ShopPricePoint"][];
+            /** @example 149.5 */
+            latestPrice: number | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            latestDate: string | undefined;
+        };
         ShopMatchStats: {
-            shop: {
-                technicalName: string;
-                name: string;
-                logoUrl: string | undefined;
-                websiteUrl: string | undefined;
-                description: string | undefined;
-                isActive: boolean;
-                isTemporarilyClosed: boolean;
-                isOptedOut: boolean;
-                deliveryNote: string | undefined;
-            };
+            shop: components["schemas"]["ShopSummary"];
             matchCount: number;
             /** @description Matches resolved to a catalog item */
             linkedMatchCount: number;
@@ -7380,12 +5896,7 @@ export interface components {
              * @example 6a577711abc1ce71383d3e10
              */
             id: string;
-            shop: {
-                /** @example cardlevels */
-                technicalName: string;
-                /** @example Cardlevels */
-                name: string;
-            };
+            shop: components["schemas"]["ShopRef"];
             url: string;
             /**
              * @description Resource identifier
@@ -7414,78 +5925,9 @@ export interface components {
             /** @enum {string|null} */
             gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
             grade: number | undefined;
-            item: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @enum {string} */
-                kind: "card" | "sealed";
-                name: string;
-                shortName: string | undefined;
-                technicalName: string;
-                cardNumber: string | undefined;
-                imageUrl: string | undefined;
-                language: string | undefined;
-                priceChartingId: string | undefined;
-            } | undefined;
-            expansion: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Mega Evolution 30th Celebration */
-                name: string;
-                /** @example 30th Celebration */
-                shortName: string;
-                /** @example jpn-mega-evolution-30th-celebration */
-                technicalName: string;
-                /**
-                 * @description Printing language of the item
-                 * @example JPN
-                 * @enum {string}
-                 */
-                language: "ENG" | "JPN" | "CHI";
-                /** @example m6a */
-                code: string | undefined;
-                /** @example m6a */
-                cardCode: string | undefined;
-                /** @example Mega Evolution */
-                seriesName: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                releaseDate: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                logoUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                symbolUrl: string | undefined;
-                /**
-                 * @description Absolute asset URL, or null when absent
-                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                 */
-                imageUrl: string | undefined;
-            } | undefined;
-            category: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                /** @example Booster Box */
-                name: string;
-                /** @example booster-box */
-                technicalName: string;
-            } | undefined;
+            item: components["schemas"]["MatchedItemRef"] | undefined;
+            expansion: components["schemas"]["ExpansionRef"] | undefined;
+            category: components["schemas"]["CategoryRef"] | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -7503,242 +5945,207 @@ export interface components {
             } | undefined;
         };
         ShopMatchesForShop: {
-            shop: {
-                technicalName: string;
-                name: string;
-                logoUrl: string | undefined;
-                websiteUrl: string | undefined;
-                description: string | undefined;
-                isActive: boolean;
-                isTemporarilyClosed: boolean;
-                isOptedOut: boolean;
-                deliveryNote: string | undefined;
-            } | undefined;
-            data: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                shop: {
-                    /** @example cardlevels */
-                    technicalName: string;
-                    /** @example Cardlevels */
-                    name: string;
-                };
-                url: string;
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                shopUrlId: string | undefined;
-                /** @example 149.5 */
-                price: number | undefined;
-                /**
-                 * @description ISO-4217 currency code
-                 * @example SEK
-                 */
-                currency: string | undefined;
-                inStock: boolean;
-                inPreorder: boolean;
-                inMonitor: boolean;
-                isFullyBooked: boolean;
-                scrapedName: string | undefined;
-                scrapedType: string | undefined;
-                matchScore: number | undefined;
-                hasCategoryMismatch: boolean;
-                /** @enum {string|null} */
-                cardType: "loose" | "graded" | undefined;
-                /** @enum {string|null} */
-                itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
-                /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
-                grade: number | undefined;
-                item: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @enum {string} */
-                    kind: "card" | "sealed";
-                    name: string;
-                    shortName: string | undefined;
-                    technicalName: string;
-                    cardNumber: string | undefined;
-                    imageUrl: string | undefined;
-                    language: string | undefined;
-                    priceChartingId: string | undefined;
-                } | undefined;
-                expansion: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Mega Evolution 30th Celebration */
-                    name: string;
-                    /** @example 30th Celebration */
-                    shortName: string;
-                    /** @example jpn-mega-evolution-30th-celebration */
-                    technicalName: string;
-                    /**
-                     * @description Printing language of the item
-                     * @example JPN
-                     * @enum {string}
-                     */
-                    language: "ENG" | "JPN" | "CHI";
-                    /** @example m6a */
-                    code: string | undefined;
-                    /** @example m6a */
-                    cardCode: string | undefined;
-                    /** @example Mega Evolution */
-                    seriesName: string | undefined;
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    releaseDate: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    logoUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    symbolUrl: string | undefined;
-                    /**
-                     * @description Absolute asset URL, or null when absent
-                     * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-                     */
-                    imageUrl: string | undefined;
-                } | undefined;
-                category: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    /** @example Booster Box */
-                    name: string;
-                    /** @example booster-box */
-                    technicalName: string;
-                } | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                matchedAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-                bargain: {
-                    discountPercent: number;
-                    /** @enum {string} */
-                    referenceSource: "retail" | "tradera" | "cardmarket";
-                } | undefined;
-            }[];
-            pagination: {
-                /** @description Total matching records, ignoring pagination */
-                total: number;
-                limit: number;
-                skip: number;
-                hasMore: boolean;
-            };
+            shop: components["schemas"]["ShopSummary"] | undefined;
+            data: components["schemas"]["ShopMatchWithItem"][];
+            pagination: components["schemas"]["PageMeta"];
+        };
+        ShopPriceComparisonRow: {
+            shop: string;
+            /** @example 149.5 */
+            price: number;
+            /**
+             * @description ISO-4217 currency code
+             * @example SEK
+             */
+            currency: string;
+            inStock: boolean;
+            url: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            snapshotDate: string;
+        };
+        ShopPriceComparisonStats: {
+            /** @example 149.5 */
+            lowestPrice: number;
+            /** @example 149.5 */
+            highestPrice: number;
+            /** @example 149.5 */
+            averagePrice: number;
+            inStockCount: number;
+        };
+        ShopPriceHistory: {
+            /** @description The shop's technicalName */
+            shop: string;
+            history: components["schemas"]["ShopPricePoint"][];
         };
         ShopPriceHistoryList: {
             shop: string;
-            items: {
-                item: {
-                    /**
-                     * @description Resource identifier
-                     * @example 6a577711abc1ce71383d3e10
-                     */
-                    id: string;
-                    name: string;
-                };
-                history: {
-                    /**
-                     * Format: date-time
-                     * @example 2026-07-15T12:03:29.322Z
-                     */
-                    snapshotDate: string;
-                    /** @example 149.5 */
-                    price: number;
-                    /**
-                     * @description ISO-4217 currency code
-                     * @example SEK
-                     */
-                    currency: string;
-                    inStock: boolean;
-                    url: string;
-                }[];
-                /** @example 149.5 */
-                latestPrice: number | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                latestDate: string | undefined;
-            }[];
+            items: components["schemas"]["ShopItemPriceHistory"][];
             itemCount: number;
+        };
+        ShopPricePoint: {
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            snapshotDate: string;
+            /** @example 149.5 */
+            price: number;
+            /**
+             * @description ISO-4217 currency code
+             * @example SEK
+             */
+            currency: string;
+            inStock: boolean;
+            url: string;
+        };
+        ShopProductMatch: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            shop: components["schemas"]["MatchShop"];
+            url: string;
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            shopUrlId: string | undefined;
+            /** @example 149.5 */
+            price: number | undefined;
+            /**
+             * @description ISO-4217 currency code
+             * @example SEK
+             */
+            currency: string | undefined;
+            inStock: boolean;
+            inPreorder: boolean;
+            inMonitor: boolean;
+            isFullyBooked: boolean;
+            scrapedName: string | undefined;
+            scrapedType: string | undefined;
+            matchScore: number | undefined;
+            hasCategoryMismatch: boolean;
+            /** @enum {string|null} */
+            cardType: "loose" | "graded" | undefined;
+            /** @enum {string|null} */
+            itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
+            /** @enum {string|null} */
+            gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+            grade: number | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            matchedAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+            bargain: {
+                discountPercent: number;
+                /** @enum {string} */
+                referenceSource: "retail" | "tradera" | "cardmarket";
+            } | undefined;
+        };
+        ShopRef: {
+            /** @example cardlevels */
+            technicalName: string;
+            /** @example Cardlevels */
+            name: string;
+        };
+        ShopSummary: {
+            technicalName: string;
+            name: string;
+            logoUrl: string | undefined;
+            websiteUrl: string | undefined;
+            description: string | undefined;
+            isActive: boolean;
+            isTemporarilyClosed: boolean;
+            isOptedOut: boolean;
+            deliveryNote: string | undefined;
+        };
+        ShopUrl: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            url: string;
+            shop: string | undefined;
+            status: components["schemas"]["ShopUrlStatus"];
+            /** @enum {string} */
+            discoveredBy: "scraper" | "user";
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            itemId: string | undefined;
+            /** @enum {string|null} */
+            itemKind: "card" | "sealed" | undefined;
+            lockedItem: boolean;
+            priceChartingId: string | undefined;
+            scrapedName: string | undefined;
+            matchScore: number | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            lastMatchedAt: string | undefined;
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            expansionId: string | undefined;
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            categoryId: string | undefined;
+            submittedByUserId: string | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
         };
         ShopUrlMutationResult: {
             message: string;
-            shopUrl: {
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                id: string;
-                url: string;
-                shop: string | undefined;
-                /** @enum {string} */
-                status: "pending" | "active" | "invalid" | "rejected" | "sanityRejected";
-                /** @enum {string} */
-                discoveredBy: "scraper" | "user";
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                itemId: string | undefined;
-                /** @enum {string|null} */
-                itemKind: "card" | "sealed" | undefined;
-                lockedItem: boolean;
-                priceChartingId: string | undefined;
-                scrapedName: string | undefined;
-                matchScore: number | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                lastMatchedAt: string | undefined;
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                expansionId: string | undefined;
-                /**
-                 * @description Resource identifier
-                 * @example 6a577711abc1ce71383d3e10
-                 */
-                categoryId: string | undefined;
-                submittedByUserId: string | undefined;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                createdAt: string;
-                /**
-                 * Format: date-time
-                 * @example 2026-07-15T12:03:29.322Z
-                 */
-                updatedAt: string;
-            };
+            shopUrl: components["schemas"]["ShopUrl"];
+        };
+        /** @enum {string} */
+        ShopUrlStatus: "pending" | "active" | "invalid" | "rejected" | "sanityRejected";
+        SoldPrice: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            url: string;
+            /** @example 149.5 */
+            price: number;
+            /**
+             * @description ISO-4217 currency code
+             * @example SEK
+             */
+            currency: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            soldAt: string | undefined;
+            itemId: string | undefined;
+            /** @example tradera */
+            source: string | undefined;
         };
         TopItem: {
             /**
@@ -7748,6 +6155,41 @@ export interface components {
             id: string;
             slug: string | undefined;
             shopMatchCount: number;
+        };
+        VariantBreakdown: {
+            loose: {
+                [key: string]: components["schemas"]["VariantPriceStats"];
+            };
+            graded: {
+                [key: string]: {
+                    [key: string]: components["schemas"]["VariantPriceStats"];
+                };
+            };
+        };
+        VariantPriceStats: {
+            /** @example 149.5 */
+            averagePrice: number;
+            dataPointCount: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            lastSaleDate: string;
+        };
+        VariantSelector: {
+            /** @enum {string|null} */
+            cardType: "loose" | "graded" | undefined;
+            /** @enum {string|null} */
+            condition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
+            /** @enum {string|null} */
+            gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+            grade: number | undefined;
+        };
+        VariantStatsSummary: {
+            /** @description Distinct cardType/condition/company/grade combinations */
+            variantCount: number;
+            looseCount: number;
+            gradedCount: number;
         };
     };
     responses: never;

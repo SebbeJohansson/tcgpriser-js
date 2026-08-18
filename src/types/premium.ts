@@ -11,8 +11,8 @@ import type { GradingCompany, ItemCondition } from './shop.js';
 
 // ---- Reference prices (Cardmarket / TCGplayer / eBay / Tradera history) ----
 
-export type ReferencePriceSeries = components['schemas']['ItemReferencePrices']['series'][number];
-export type ReferencePriceSeriesPoint = ReferencePriceSeries['points'][number];
+export type ReferencePriceSeries = components['schemas']['ReferencePriceSeries'];
+export type ReferencePriceSeriesPoint = components['schemas']['ReferencePriceSeriesPoint'];
 export type ReferencePriceSource = ReferencePriceSeries['source'];
 export type ReferencePriceCardVariant = NonNullable<ReferencePriceSeries['variant']>;
 export type ReferencePriceMetric = components['schemas']['ItemReferencePrices']['metric'];
@@ -29,7 +29,7 @@ export type ItemReferencePrices = components['schemas']['ItemReferencePrices'];
 
 // ---- Sold prices (marketplace auction sales) ----
 
-export type SoldPrice = components['schemas']['ItemSoldPrices']['data'][number];
+export type SoldPrice = components['schemas']['SoldPrice'];
 
 /** Response of `client.cards.prices()` / `client.products.prices()`. `premiumRequired` is always
  * `true` here. That field only exists because this envelope shape is shared with a free preview
@@ -38,7 +38,7 @@ export type ItemSoldPrices = components['schemas']['ItemSoldPrices'];
 
 // ---- Live pricing (freshly computed, not read from the last stats job) ----
 
-export type LivePricingDetail = components['schemas']['LivePricingForItem']['pricing'];
+export type LivePricingDetail = components['schemas']['LivePricing'];
 
 /** Response of `client.cards.livePricing()` / `client.products.livePricing()`. */
 export type LivePricingForItem = components['schemas']['LivePricingForItem'];
@@ -51,9 +51,9 @@ export type ExpansionLivePricing = components['schemas']['ExpansionLivePricing']
 /** The catalog item as embedded in stats responses: a `Card`/`SealedProduct` minus
  * `lowestShopOffer` and `referencePriceSnapshotsByProvider`, which these endpoints already answer
  * more precisely on their own. */
-export type StatsItemRef = components['schemas']['ItemStats']['item'];
+export type StatsItemRef = components['schemas']['CatalogItem'];
 
-export type VariantStatsSummary = components['schemas']['ItemStats']['variantStats'];
+export type VariantStatsSummary = components['schemas']['VariantStatsSummary'];
 
 /** Response of `client.priceStats.product()`. */
 export type ItemStats = components['schemas']['ItemStats'];
@@ -64,28 +64,29 @@ export type ItemFullStats = components['schemas']['ItemFullStats'];
 
 // ---- Per-variant (condition / grade) stats ----
 
-export type VariantPriceStat = components['schemas']['ItemVariantStats']['variants']['loose'][string];
+export type VariantPriceStat = components['schemas']['VariantPriceStats'];
 
-/** Response of `client.priceStats.productByVariant()`. The generated shape keys `loose`/`graded`
- * by a bare `string` (JSON Schema `additionalProperties` doesn't carry an enum), re-keyed here by
- * `ItemCondition`/`GradingCompany` for real autocomplete. Only hand-written wrapper in this file.
- * `graded` has a second string-keyed level for grade (`10`, `9.5` etc, straight from a JSON key). */
+/** Response of `client.priceStats.productByVariant()`. The generated shape (`VariantBreakdown`)
+ * keys `loose`/`graded` by a bare `string` (JSON Schema `additionalProperties` doesn't carry an
+ * enum), re-keyed here by `ItemCondition`/`GradingCompany` for real autocomplete. Only hand-written
+ * wrapper in this file. `graded` has a second string-keyed level for grade (`10`, `9.5` etc,
+ * straight from a JSON key). */
 export interface ItemVariantStats {
-  item: components['schemas']['ItemVariantStats']['item'];
+  item: components['schemas']['CatalogItemRef'];
   variants: {
     loose: Partial<Record<ItemCondition, VariantPriceStat>>;
     graded: Partial<Record<GradingCompany, Record<string, VariantPriceStat>>>;
   };
 }
 
-export type VariantSelector = components['schemas']['ItemVariantDailyStats']['variant'];
+export type VariantSelector = components['schemas']['VariantSelector'];
 
 /** Response of `client.priceStats.productDailyByVariant()`. */
 export type ItemVariantDailyStats = components['schemas']['ItemVariantDailyStats'];
 
 // ---- Shop <-> product price history ----
 
-export type ShopPricePoint = components['schemas']['ItemShopPriceHistory']['shops'][number]['history'][number];
+export type ShopPricePoint = components['schemas']['ShopPricePoint'];
 
 /** Response of `client.shopMatchStats.forProduct()`: one product's price history, broken out per
  * shop. */
@@ -97,8 +98,8 @@ export type ShopPriceHistoryList = components['schemas']['ShopPriceHistoryList']
 
 // ---- Cross-shop price comparison ----
 
-export type ShopPriceComparisonRow = components['schemas']['ItemPriceComparison']['items'][number];
-export type ShopPriceComparisonStats = NonNullable<components['schemas']['ItemPriceComparison']['stats']>;
+export type ShopPriceComparisonRow = components['schemas']['ShopPriceComparisonRow'];
+export type ShopPriceComparisonStats = components['schemas']['ShopPriceComparisonStats'];
 
 /** Response of `client.shopMatchStats.compare()`: one product's price at every shop that carries
  * it, as of one date. `stats` is `undefined` when no shop had a price on that date. */
@@ -106,11 +107,11 @@ export type ItemPriceComparison = components['schemas']['ItemPriceComparison'];
 
 // ---- Shop URL submission / assignment ----
 
-export type ShopUrlStatus = components['schemas']['ShopUrlMutationResult']['shopUrl']['status'];
-export type ShopUrlDiscoveredBy = components['schemas']['ShopUrlMutationResult']['shopUrl']['discoveredBy'];
+export type ShopUrlStatus = components['schemas']['ShopUrlStatus'];
+export type ShopUrlDiscoveredBy = components['schemas']['ShopUrl']['discoveredBy'];
 
 /** A URL at a shop that tcgpriser scrapes, and what it has been matched to. */
-export type ShopUrl = components['schemas']['ShopUrlMutationResult']['shopUrl'];
+export type ShopUrl = components['schemas']['ShopUrl'];
 
 /** Response of `client.shopUrls.submit()` / `client.shopUrls.assignProduct()`. */
 export type ShopUrlMutationResult = components['schemas']['ShopUrlMutationResult'];

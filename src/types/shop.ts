@@ -1,7 +1,7 @@
 import type { components } from '../generated/openapi.js';
 
 type ShopMatchWithItemSchema = components['schemas']['ShopMatchWithItem'];
-type ItemShopMatchSchema = components['schemas']['ItemShopMatches']['data'][number];
+type ItemShopMatchSchema = components['schemas']['ShopProductMatch'];
 
 /** A shop tracked by tcgpriser, as returned by `client.shops.list()` / `client.shops.get()`. The
  * `*Count` fields are `undefined` when the shop has never had a match computed (rather than `0`, which
@@ -10,7 +10,7 @@ export type Shop = components['schemas']['Shop'];
 
 /** The lighter shop shape embedded in shop-match responses: a subset of `Shop`, no id or delivery
  * cost breakdown. */
-export type ShopSummary = components['schemas']['ShopMatchStats']['shop'];
+export type ShopSummary = components['schemas']['ShopSummary'];
 
 export type CardType = NonNullable<ShopMatchWithItemSchema['cardType']>;
 export type ItemCondition = NonNullable<ShopMatchWithItemSchema['itemCondition']>;
@@ -20,7 +20,7 @@ export type GradingCompany = NonNullable<ShopMatchWithItemSchema['gradingCompany
  * `client.shopMatches.list()` and as the rows inside `client.shopMatches.forShop()`. */
 export type ShopMatch = ShopMatchWithItemSchema;
 
-export type ShopMatchDelivery = ItemShopMatchSchema['shop']['delivery'];
+export type ShopMatchDelivery = components['schemas']['ShopDeliveryTerms'];
 
 /** A shop-match row scoped to one already-known item. `client.cards.matches()` and
  * `client.products.matches()` drop `item`/`expansion`/`category` since the caller already has

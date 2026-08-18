@@ -3,16 +3,16 @@
  * indexed access instead of retyped by hand, so a field rename in the API is a compile error here,
  * not silent drift.
  *
- * `CardWithPricing` is the extraction source for the nested ref shapes (`brand`, `category`,
- * `expansion`, the shop/bargain shape on `lowestShopOffer`). The API inlines these instead of
- * `$ref`-ing a shared component, so there's no single canonical name to pull from. They're
- * byte-identical across `ProductWithPricing`, `PackRate` and the shop-match schemas too, so picking
- * one as the source of truth works fine.
+ * The API registers `Brand`, `CategoryRef`, `ExpansionRef`, `ShopRef` etc. as their own named
+ * components and `$ref`s them wherever they're embedded (in `CardWithPricing`, `ProductWithPricing`,
+ * `PackRate`, the shop-match schemas, ...), so those are pulled by name directly. `CardWithPricing`
+ * is still the extraction source for the handful of shapes that aren't independently registered
+ * (`lowestShopOffer`'s `bargain`, the reference-price snapshot map).
  */
 import type { components } from '../generated/openapi.js';
 
 type CardSchema = components['schemas']['CardWithPricing'];
-type LowestShopOfferSchema = NonNullable<CardSchema['lowestShopOffer']>;
+type LowestShopOfferSchema = components['schemas']['LowestShopOffer'];
 
 /** A Mongo ObjectId, always a 24-char lowercase hex string. Just `string`, not a branded type;
  * nothing here needs to tell it apart from any other id at compile time. */
@@ -42,16 +42,16 @@ export interface PaginationParams {
   skip?: number;
 }
 
-export type AlternativeName = CardSchema['alternativeNames'][number];
-export type BrandRef = CardSchema['brand'];
-export type CategoryRef = NonNullable<CardSchema['category']>;
+export type AlternativeName = components['schemas']['AlternativeName'];
+export type BrandRef = components['schemas']['Brand'];
+export type CategoryRef = components['schemas']['CategoryRef'];
 
 /** The expansion shape embedded on cards, products and pack rates. Not the full `Expansion`
  * returned by `client.expansions.list()`, which additionally carries counts and a `brand`. */
-export type ExpansionRef = NonNullable<CardSchema['expansion']>;
+export type ExpansionRef = components['schemas']['ExpansionRef'];
 
 /** The minimal shop identity embedded on offers and matches. */
-export type ShopRef = LowestShopOfferSchema['shop'];
+export type ShopRef = components['schemas']['ShopRef'];
 
 export type BargainReferenceSource = NonNullable<LowestShopOfferSchema['bargain']>['referenceSource'];
 
