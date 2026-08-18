@@ -101,7 +101,7 @@ export type ShopPriceComparisonRow = components['schemas']['ItemPriceComparison'
 export type ShopPriceComparisonStats = NonNullable<components['schemas']['ItemPriceComparison']['stats']>;
 
 /** Response of `client.shopMatchStats.compare()`: one product's price at every shop that carries
- * it, as of one date. `stats` is `null` when no shop had a price on that date. */
+ * it, as of one date. `stats` is `undefined` when no shop had a price on that date. */
 export type ItemPriceComparison = components['schemas']['ItemPriceComparison'];
 
 // ---- Shop URL submission / assignment ----

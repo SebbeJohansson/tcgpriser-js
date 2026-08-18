@@ -129,6 +129,21 @@ export class HttpClient {
 
     if (!res.ok) throw await toApiError(res, url);
     if (res.status === 204) return undefined as T;
-    return (await res.json()) as T;
+    return nullsToUndefined(await res.json()) as T;
   }
+}
+
+/** JSON has no `undefined`, so every optional field the API omits comes back over the wire as
+ * `null`. Recurses through the parsed response and turns those into `undefined` so callers work
+ * with idiomatic `foo?.bar` / `foo ?? fallback` instead of `foo !== null`, and so responses match
+ * the `T | undefined` types in `generated/openapi.d.ts` (see `scripts/generate-types.mjs`). */
+function nullsToUndefined<T>(value: T): T {
+  if (value === null) return undefined as T;
+  if (Array.isArray(value)) return value.map(nullsToUndefined) as T;
+  if (typeof value === 'object') {
+    const result: Record<string, unknown> = {};
+    for (const [key, v] of Object.entries(value)) result[key] = nullsToUndefined(v);
+    return result as T;
+  }
+  return value;
 }

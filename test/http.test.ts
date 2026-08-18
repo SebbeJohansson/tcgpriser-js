@@ -81,6 +81,32 @@ describe('TcgPriser client', () => {
     expect(capturedUrl).toContain(encodeURIComponent('shop with spaces/slash'));
   });
 
+  it('converts null to undefined, recursively, in response bodies', async () => {
+    const client = new TcgPriser({
+      advanced: {
+        fetch: fakeFetch(() =>
+          jsonResponse({
+            id: '1',
+            name: 'x',
+            technicalName: 'x',
+            imageUrl: null,
+            pricing: { retailPrice: null, nested: [{ note: null, value: 1 }] },
+          }),
+        ),
+      },
+    });
+
+    const card = await client.cards.livePricing('some-card');
+
+    expect(card).toEqual({
+      id: '1',
+      name: 'x',
+      technicalName: 'x',
+      imageUrl: undefined,
+      pricing: { retailPrice: undefined, nested: [{ note: undefined, value: 1 }] },
+    });
+  });
+
   it('unwraps the list envelope for expansions, shops and pack-rates', async () => {
     const client = new TcgPriser({
       advanced: { fetch: fakeFetch(() => jsonResponse({ data: [{ id: '1' }], pagination: {} })) },

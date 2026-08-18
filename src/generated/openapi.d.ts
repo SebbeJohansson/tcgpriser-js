@@ -5052,12 +5052,12 @@ export interface components {
             data: {
                 url: string;
                 /** @example 149.5 */
-                price: number | null;
+                price: number | undefined;
                 /**
                  * @description ISO-4217 currency code
                  * @example SEK
                  */
-                currency: string | null;
+                currency: string | undefined;
                 shop: {
                     /** @example cardlevels */
                     technicalName: string;
@@ -5080,7 +5080,7 @@ export interface components {
                     kind: "sealed" | "card";
                     name: string;
                     technicalName: string;
-                    imageUrl: string | null;
+                    imageUrl: string | undefined;
                 };
                 bargain: {
                     discountPercent: number;
@@ -5100,12 +5100,12 @@ export interface components {
             data: {
                 url: string;
                 /** @example 149.5 */
-                price: number | null;
+                price: number | undefined;
                 /**
                  * @description ISO-4217 currency code
                  * @example SEK
                  */
-                currency: string | null;
+                currency: string | undefined;
                 shop: {
                     /** @example cardlevels */
                     technicalName: string;
@@ -5128,7 +5128,7 @@ export interface components {
                     kind: "sealed" | "card";
                     name: string;
                     technicalName: string;
-                    imageUrl: string | null;
+                    imageUrl: string | undefined;
                 };
                 bargain: {
                     discountPercent: number;
@@ -5151,7 +5151,7 @@ export interface components {
              */
             id: string;
             name: string;
-            shortName: string | null;
+            shortName: string | undefined;
             technicalName: string;
             brand: {
                 /**
@@ -5175,7 +5175,7 @@ export interface components {
                 updatedAt: string;
             };
             manufacturer: string;
-            modelNumber: string | null;
+            modelNumber: string | undefined;
             category: {
                 /**
                  * @description Resource identifier
@@ -5186,7 +5186,7 @@ export interface components {
                 name: string;
                 /** @example booster-box */
                 technicalName: string;
-            } | null;
+            } | undefined;
             expansion: {
                 /**
                  * @description Resource identifier
@@ -5206,58 +5206,58 @@ export interface components {
                  */
                 language: "ENG" | "JPN" | "CHI";
                 /** @example m6a */
-                code: string | null;
+                code: string | undefined;
                 /** @example m6a */
-                cardCode: string | null;
+                cardCode: string | undefined;
                 /** @example Mega Evolution */
-                seriesName: string | null;
+                seriesName: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                releaseDate: string | null;
+                releaseDate: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                logoUrl: string | null;
+                logoUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                symbolUrl: string | null;
+                symbolUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
-            } | null;
+                imageUrl: string | undefined;
+            } | undefined;
             /**
              * @description Printing language of the item
              * @example JPN
              * @enum {string|null}
              */
-            language: "ENG" | "JPN" | "CHI" | null;
+            language: "ENG" | "JPN" | "CHI" | undefined;
             alternativeNames: {
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
             }[];
             supportsMultipackPricing: boolean;
             /**
              * @description Absolute asset URL, or null when absent
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
-            imageUrl: string | null;
+            imageUrl: string | undefined;
             /**
              * @description Cheapest current shop price, in SEK
              * @example 149.5
              */
-            retailPrice: number | null;
+            retailPrice: number | undefined;
             /**
              * @description Estimated market value, in SEK
              * @example 149.5
              */
-            estimatedValue: number | null;
+            estimatedValue: number | undefined;
             /** @description Active shops currently tracking this item */
             shopCount: number;
             /** @description Observations the estimate rests on */
@@ -5266,7 +5266,7 @@ export interface components {
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
              */
-            pricingUpdatedAt: string | null;
+            pricingUpdatedAt: string | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -5282,18 +5282,18 @@ export interface components {
             /** @example 4/102 */
             cardNumber: string;
             /** @example Rare Holo */
-            rarity: string | null;
-            artist: string | null;
-            cardmarketId: string | null;
-            tcgplayerId: string | null;
+            rarity: string | undefined;
+            artist: string | undefined;
+            cardmarketId: string | undefined;
+            tcgplayerId: string | undefined;
             variants: {
                 normal: boolean;
                 holo: boolean;
                 reverse: boolean;
                 firstEdition: boolean;
                 wPromo: boolean;
-            } | null;
-            prisjaktId: string | null;
+            } | undefined;
+            prisjaktId: string | undefined;
             lowestShopOffer: {
                 shop: {
                     /** @example cardlevels */
@@ -5327,8 +5327,8 @@ export interface components {
                     discountPercent: number;
                     /** @enum {string} */
                     referenceSource: "retail" | "tradera" | "cardmarket";
-                } | null;
-            } | null;
+                } | undefined;
+            } | undefined;
             referencePriceSnapshotsByProvider: {
                 [key: string]: {
                     /** @enum {string} */
@@ -5372,32 +5372,32 @@ export interface components {
              */
             language: "ENG" | "JPN" | "CHI";
             /** @example m6a */
-            code: string | null;
+            code: string | undefined;
             /** @example m6a */
-            cardCode: string | null;
+            cardCode: string | undefined;
             /** @example Mega Evolution */
-            seriesName: string | null;
+            seriesName: string | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
              */
-            releaseDate: string | null;
+            releaseDate: string | undefined;
             /**
              * @description Absolute asset URL, or null when absent
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
-            logoUrl: string | null;
+            logoUrl: string | undefined;
             /**
              * @description Absolute asset URL, or null when absent
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
-            symbolUrl: string | null;
+            symbolUrl: string | undefined;
             /**
              * @description Absolute asset URL, or null when absent
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
-            imageUrl: string | null;
-            year: number | null;
+            imageUrl: string | undefined;
+            year: number | undefined;
             brand: {
                 /**
                  * @description Resource identifier
@@ -5421,7 +5421,7 @@ export interface components {
             };
             alternativeNames: {
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
             }[];
             /** @description Sealed products in this expansion */
             sealedCount: number;
@@ -5460,31 +5460,31 @@ export interface components {
                  */
                 language: "ENG" | "JPN" | "CHI";
                 /** @example m6a */
-                code: string | null;
+                code: string | undefined;
                 /** @example m6a */
-                cardCode: string | null;
+                cardCode: string | undefined;
                 /** @example Mega Evolution */
-                seriesName: string | null;
+                seriesName: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                releaseDate: string | null;
+                releaseDate: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                logoUrl: string | null;
+                logoUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                symbolUrl: string | null;
+                symbolUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
+                imageUrl: string | undefined;
             };
             cards: {
                 count: number;
@@ -5495,7 +5495,7 @@ export interface components {
                      */
                     id: string;
                     name: string;
-                    shortName: string | null;
+                    shortName: string | undefined;
                     technicalName: string;
                     brand: {
                         /**
@@ -5519,7 +5519,7 @@ export interface components {
                         updatedAt: string;
                     };
                     manufacturer: string;
-                    modelNumber: string | null;
+                    modelNumber: string | undefined;
                     category: {
                         /**
                          * @description Resource identifier
@@ -5530,7 +5530,7 @@ export interface components {
                         name: string;
                         /** @example booster-box */
                         technicalName: string;
-                    } | null;
+                    } | undefined;
                     expansion: {
                         /**
                          * @description Resource identifier
@@ -5550,58 +5550,58 @@ export interface components {
                          */
                         language: "ENG" | "JPN" | "CHI";
                         /** @example m6a */
-                        code: string | null;
+                        code: string | undefined;
                         /** @example m6a */
-                        cardCode: string | null;
+                        cardCode: string | undefined;
                         /** @example Mega Evolution */
-                        seriesName: string | null;
+                        seriesName: string | undefined;
                         /**
                          * Format: date-time
                          * @example 2026-07-15T12:03:29.322Z
                          */
-                        releaseDate: string | null;
+                        releaseDate: string | undefined;
                         /**
                          * @description Absolute asset URL, or null when absent
                          * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                          */
-                        logoUrl: string | null;
+                        logoUrl: string | undefined;
                         /**
                          * @description Absolute asset URL, or null when absent
                          * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                          */
-                        symbolUrl: string | null;
+                        symbolUrl: string | undefined;
                         /**
                          * @description Absolute asset URL, or null when absent
                          * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                          */
-                        imageUrl: string | null;
-                    } | null;
+                        imageUrl: string | undefined;
+                    } | undefined;
                     /**
                      * @description Printing language of the item
                      * @example JPN
                      * @enum {string|null}
                      */
-                    language: "ENG" | "JPN" | "CHI" | null;
+                    language: "ENG" | "JPN" | "CHI" | undefined;
                     alternativeNames: {
                         name: string;
-                        shortName: string | null;
+                        shortName: string | undefined;
                     }[];
                     supportsMultipackPricing: boolean;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    imageUrl: string | null;
+                    imageUrl: string | undefined;
                     /**
                      * @description Cheapest current shop price, in SEK
                      * @example 149.5
                      */
-                    retailPrice: number | null;
+                    retailPrice: number | undefined;
                     /**
                      * @description Estimated market value, in SEK
                      * @example 149.5
                      */
-                    estimatedValue: number | null;
+                    estimatedValue: number | undefined;
                     /** @description Active shops currently tracking this item */
                     shopCount: number;
                     /** @description Observations the estimate rests on */
@@ -5610,7 +5610,7 @@ export interface components {
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
                      */
-                    pricingUpdatedAt: string | null;
+                    pricingUpdatedAt: string | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
@@ -5626,18 +5626,18 @@ export interface components {
                     /** @example 4/102 */
                     cardNumber: string;
                     /** @example Rare Holo */
-                    rarity: string | null;
-                    artist: string | null;
-                    cardmarketId: string | null;
-                    tcgplayerId: string | null;
+                    rarity: string | undefined;
+                    artist: string | undefined;
+                    cardmarketId: string | undefined;
+                    tcgplayerId: string | undefined;
                     variants: {
                         normal: boolean;
                         holo: boolean;
                         reverse: boolean;
                         firstEdition: boolean;
                         wPromo: boolean;
-                    } | null;
-                    prisjaktId: string | null;
+                    } | undefined;
+                    prisjaktId: string | undefined;
                     lowestShopOffer: {
                         shop: {
                             /** @example cardlevels */
@@ -5671,8 +5671,8 @@ export interface components {
                             discountPercent: number;
                             /** @enum {string} */
                             referenceSource: "retail" | "tradera" | "cardmarket";
-                        } | null;
-                    } | null;
+                        } | undefined;
+                    } | undefined;
                     referencePriceSnapshotsByProvider: {
                         [key: string]: {
                             /** @enum {string} */
@@ -5707,7 +5707,7 @@ export interface components {
                      */
                     id: string;
                     name: string;
-                    shortName: string | null;
+                    shortName: string | undefined;
                     technicalName: string;
                     brand: {
                         /**
@@ -5731,7 +5731,7 @@ export interface components {
                         updatedAt: string;
                     };
                     manufacturer: string;
-                    modelNumber: string | null;
+                    modelNumber: string | undefined;
                     category: {
                         /**
                          * @description Resource identifier
@@ -5742,7 +5742,7 @@ export interface components {
                         name: string;
                         /** @example booster-box */
                         technicalName: string;
-                    } | null;
+                    } | undefined;
                     expansion: {
                         /**
                          * @description Resource identifier
@@ -5762,58 +5762,58 @@ export interface components {
                          */
                         language: "ENG" | "JPN" | "CHI";
                         /** @example m6a */
-                        code: string | null;
+                        code: string | undefined;
                         /** @example m6a */
-                        cardCode: string | null;
+                        cardCode: string | undefined;
                         /** @example Mega Evolution */
-                        seriesName: string | null;
+                        seriesName: string | undefined;
                         /**
                          * Format: date-time
                          * @example 2026-07-15T12:03:29.322Z
                          */
-                        releaseDate: string | null;
+                        releaseDate: string | undefined;
                         /**
                          * @description Absolute asset URL, or null when absent
                          * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                          */
-                        logoUrl: string | null;
+                        logoUrl: string | undefined;
                         /**
                          * @description Absolute asset URL, or null when absent
                          * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                          */
-                        symbolUrl: string | null;
+                        symbolUrl: string | undefined;
                         /**
                          * @description Absolute asset URL, or null when absent
                          * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                          */
-                        imageUrl: string | null;
-                    } | null;
+                        imageUrl: string | undefined;
+                    } | undefined;
                     /**
                      * @description Printing language of the item
                      * @example JPN
                      * @enum {string|null}
                      */
-                    language: "ENG" | "JPN" | "CHI" | null;
+                    language: "ENG" | "JPN" | "CHI" | undefined;
                     alternativeNames: {
                         name: string;
-                        shortName: string | null;
+                        shortName: string | undefined;
                     }[];
                     supportsMultipackPricing: boolean;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    imageUrl: string | null;
+                    imageUrl: string | undefined;
                     /**
                      * @description Cheapest current shop price, in SEK
                      * @example 149.5
                      */
-                    retailPrice: number | null;
+                    retailPrice: number | undefined;
                     /**
                      * @description Estimated market value, in SEK
                      * @example 149.5
                      */
-                    estimatedValue: number | null;
+                    estimatedValue: number | undefined;
                     /** @description Active shops currently tracking this item */
                     shopCount: number;
                     /** @description Observations the estimate rests on */
@@ -5822,7 +5822,7 @@ export interface components {
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
                      */
-                    pricingUpdatedAt: string | null;
+                    pricingUpdatedAt: string | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
@@ -5835,11 +5835,11 @@ export interface components {
                     updatedAt: string;
                     /** @enum {string} */
                     kind: "sealed";
-                    upc: string | null;
-                    asin: string | null;
-                    epid: string | null;
-                    priceChartingId: string | null;
-                    prisjaktId: string | null;
+                    upc: string | undefined;
+                    asin: string | undefined;
+                    epid: string | undefined;
+                    priceChartingId: string | undefined;
+                    prisjaktId: string | undefined;
                     lowestShopOffer: {
                         shop: {
                             /** @example cardlevels */
@@ -5873,8 +5873,8 @@ export interface components {
                             discountPercent: number;
                             /** @enum {string} */
                             referenceSource: "retail" | "tradera" | "cardmarket";
-                        } | null;
-                    } | null;
+                        } | undefined;
+                    } | undefined;
                     referencePriceSnapshotsByProvider: {
                         [key: string]: {
                             /** @enum {string} */
@@ -5915,9 +5915,9 @@ export interface components {
                 technicalName: string;
                 pricing: {
                     /** @example 149.5 */
-                    retailPrice: number | null;
+                    retailPrice: number | undefined;
                     /** @example 149.5 */
-                    estimatedValue: number | null;
+                    estimatedValue: number | undefined;
                     shopCount: number;
                     pricingDataPoints: number;
                     /**
@@ -5958,12 +5958,12 @@ export interface components {
             };
             estimate: {
                 /** @example 149.5 */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                estimateUpdatedAt: string | null;
+                estimateUpdatedAt: string | undefined;
                 dataPointCount: number;
             };
         };
@@ -5975,7 +5975,7 @@ export interface components {
                  */
                 id: string;
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
                 technicalName: string;
                 brand: {
                     /**
@@ -5999,7 +5999,7 @@ export interface components {
                     updatedAt: string;
                 };
                 manufacturer: string;
-                modelNumber: string | null;
+                modelNumber: string | undefined;
                 category: {
                     /**
                      * @description Resource identifier
@@ -6010,7 +6010,7 @@ export interface components {
                     name: string;
                     /** @example booster-box */
                     technicalName: string;
-                } | null;
+                } | undefined;
                 expansion: {
                     /**
                      * @description Resource identifier
@@ -6030,58 +6030,58 @@ export interface components {
                      */
                     language: "ENG" | "JPN" | "CHI";
                     /** @example m6a */
-                    code: string | null;
+                    code: string | undefined;
                     /** @example m6a */
-                    cardCode: string | null;
+                    cardCode: string | undefined;
                     /** @example Mega Evolution */
-                    seriesName: string | null;
+                    seriesName: string | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
                      */
-                    releaseDate: string | null;
+                    releaseDate: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    logoUrl: string | null;
+                    logoUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    symbolUrl: string | null;
+                    symbolUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    imageUrl: string | null;
-                } | null;
+                    imageUrl: string | undefined;
+                } | undefined;
                 /**
                  * @description Printing language of the item
                  * @example JPN
                  * @enum {string|null}
                  */
-                language: "ENG" | "JPN" | "CHI" | null;
+                language: "ENG" | "JPN" | "CHI" | undefined;
                 alternativeNames: {
                     name: string;
-                    shortName: string | null;
+                    shortName: string | undefined;
                 }[];
                 supportsMultipackPricing: boolean;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
+                imageUrl: string | undefined;
                 /**
                  * @description Cheapest current shop price, in SEK
                  * @example 149.5
                  */
-                retailPrice: number | null;
+                retailPrice: number | undefined;
                 /**
                  * @description Estimated market value, in SEK
                  * @example 149.5
                  */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 /** @description Active shops currently tracking this item */
                 shopCount: number;
                 /** @description Observations the estimate rests on */
@@ -6090,7 +6090,7 @@ export interface components {
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                pricingUpdatedAt: string | null;
+                pricingUpdatedAt: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
@@ -6106,18 +6106,18 @@ export interface components {
                 /** @example 4/102 */
                 cardNumber: string;
                 /** @example Rare Holo */
-                rarity: string | null;
-                artist: string | null;
-                cardmarketId: string | null;
-                tcgplayerId: string | null;
+                rarity: string | undefined;
+                artist: string | undefined;
+                cardmarketId: string | undefined;
+                tcgplayerId: string | undefined;
                 variants: {
                     normal: boolean;
                     holo: boolean;
                     reverse: boolean;
                     firstEdition: boolean;
                     wPromo: boolean;
-                } | null;
-                prisjaktId: string | null;
+                } | undefined;
+                prisjaktId: string | undefined;
             } | {
                 /**
                  * @description Resource identifier
@@ -6125,7 +6125,7 @@ export interface components {
                  */
                 id: string;
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
                 technicalName: string;
                 brand: {
                     /**
@@ -6149,7 +6149,7 @@ export interface components {
                     updatedAt: string;
                 };
                 manufacturer: string;
-                modelNumber: string | null;
+                modelNumber: string | undefined;
                 category: {
                     /**
                      * @description Resource identifier
@@ -6160,7 +6160,7 @@ export interface components {
                     name: string;
                     /** @example booster-box */
                     technicalName: string;
-                } | null;
+                } | undefined;
                 expansion: {
                     /**
                      * @description Resource identifier
@@ -6180,58 +6180,58 @@ export interface components {
                      */
                     language: "ENG" | "JPN" | "CHI";
                     /** @example m6a */
-                    code: string | null;
+                    code: string | undefined;
                     /** @example m6a */
-                    cardCode: string | null;
+                    cardCode: string | undefined;
                     /** @example Mega Evolution */
-                    seriesName: string | null;
+                    seriesName: string | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
                      */
-                    releaseDate: string | null;
+                    releaseDate: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    logoUrl: string | null;
+                    logoUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    symbolUrl: string | null;
+                    symbolUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    imageUrl: string | null;
-                } | null;
+                    imageUrl: string | undefined;
+                } | undefined;
                 /**
                  * @description Printing language of the item
                  * @example JPN
                  * @enum {string|null}
                  */
-                language: "ENG" | "JPN" | "CHI" | null;
+                language: "ENG" | "JPN" | "CHI" | undefined;
                 alternativeNames: {
                     name: string;
-                    shortName: string | null;
+                    shortName: string | undefined;
                 }[];
                 supportsMultipackPricing: boolean;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
+                imageUrl: string | undefined;
                 /**
                  * @description Cheapest current shop price, in SEK
                  * @example 149.5
                  */
-                retailPrice: number | null;
+                retailPrice: number | undefined;
                 /**
                  * @description Estimated market value, in SEK
                  * @example 149.5
                  */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 /** @description Active shops currently tracking this item */
                 shopCount: number;
                 /** @description Observations the estimate rests on */
@@ -6240,7 +6240,7 @@ export interface components {
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                pricingUpdatedAt: string | null;
+                pricingUpdatedAt: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
@@ -6253,11 +6253,11 @@ export interface components {
                 updatedAt: string;
                 /** @enum {string} */
                 kind: "sealed";
-                upc: string | null;
-                asin: string | null;
-                epid: string | null;
-                priceChartingId: string | null;
-                prisjaktId: string | null;
+                upc: string | undefined;
+                asin: string | undefined;
+                epid: string | undefined;
+                priceChartingId: string | undefined;
+                prisjaktId: string | undefined;
             };
             stats: {
                 dailyStats: {
@@ -6278,12 +6278,12 @@ export interface components {
             };
             estimate: {
                 /** @example 149.5 */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                estimateUpdatedAt: string | null;
+                estimateUpdatedAt: string | undefined;
                 dataPointCount: number;
             };
             shopMatches: {
@@ -6300,14 +6300,14 @@ export interface components {
                         name: string;
                         delivery: {
                             /** @example 149.5 */
-                            cost: number | null;
-                            currency: string | null;
-                            daysMin: number | null;
-                            daysMax: number | null;
+                            cost: number | undefined;
+                            currency: string | undefined;
+                            daysMin: number | undefined;
+                            daysMax: number | undefined;
                             /** @example 149.5 */
-                            freeShippingThreshold: number | null;
-                            supportsLocalPickup: boolean | null;
-                            note: string | null;
+                            freeShippingThreshold: number | undefined;
+                            supportsLocalPickup: boolean | undefined;
+                            note: string | undefined;
                         };
                     };
                     url: string;
@@ -6315,29 +6315,29 @@ export interface components {
                      * @description Resource identifier
                      * @example 6a577711abc1ce71383d3e10
                      */
-                    shopUrlId: string | null;
+                    shopUrlId: string | undefined;
                     /** @example 149.5 */
-                    price: number | null;
+                    price: number | undefined;
                     /**
                      * @description ISO-4217 currency code
                      * @example SEK
                      */
-                    currency: string | null;
+                    currency: string | undefined;
                     inStock: boolean;
                     inPreorder: boolean;
                     inMonitor: boolean;
                     isFullyBooked: boolean;
-                    scrapedName: string | null;
-                    scrapedType: string | null;
-                    matchScore: number | null;
+                    scrapedName: string | undefined;
+                    scrapedType: string | undefined;
+                    matchScore: number | undefined;
                     hasCategoryMismatch: boolean;
                     /** @enum {string|null} */
-                    cardType: "loose" | "graded" | null;
+                    cardType: "loose" | "graded" | undefined;
                     /** @enum {string|null} */
-                    itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | null;
+                    itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
                     /** @enum {string|null} */
-                    gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | null;
-                    grade: number | null;
+                    gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+                    grade: number | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
@@ -6352,7 +6352,7 @@ export interface components {
                         discountPercent: number;
                         /** @enum {string} */
                         referenceSource: "retail" | "tradera" | "cardmarket";
-                    } | null;
+                    } | undefined;
                 }[];
                 pagination: {
                     /** @description Total matching records, ignoring pagination */
@@ -6397,7 +6397,7 @@ export interface components {
                 /** @example 149.5 */
                 averagePrice: number;
                 inStockCount: number;
-            } | null;
+            } | undefined;
         };
         ItemReferencePrices: {
             item: {
@@ -6428,14 +6428,14 @@ export interface components {
                 /** @enum {string} */
                 provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
                 /** @enum {string|null} */
-                variant: "normal" | "holo" | "reverse" | null;
+                variant: "normal" | "holo" | "reverse" | undefined;
                 /** @enum {string|null} */
-                cardType: "loose" | "graded" | null;
+                cardType: "loose" | "graded" | undefined;
                 /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | null;
-                grade: number | null;
+                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+                grade: number | undefined;
                 currency: string;
-                sampleSize: number | null;
+                sampleSize: number | undefined;
                 points: {
                     /**
                      * Format: date-time
@@ -6468,14 +6468,14 @@ export interface components {
                     name: string;
                     delivery: {
                         /** @example 149.5 */
-                        cost: number | null;
-                        currency: string | null;
-                        daysMin: number | null;
-                        daysMax: number | null;
+                        cost: number | undefined;
+                        currency: string | undefined;
+                        daysMin: number | undefined;
+                        daysMax: number | undefined;
                         /** @example 149.5 */
-                        freeShippingThreshold: number | null;
-                        supportsLocalPickup: boolean | null;
-                        note: string | null;
+                        freeShippingThreshold: number | undefined;
+                        supportsLocalPickup: boolean | undefined;
+                        note: string | undefined;
                     };
                 };
                 url: string;
@@ -6483,29 +6483,29 @@ export interface components {
                  * @description Resource identifier
                  * @example 6a577711abc1ce71383d3e10
                  */
-                shopUrlId: string | null;
+                shopUrlId: string | undefined;
                 /** @example 149.5 */
-                price: number | null;
+                price: number | undefined;
                 /**
                  * @description ISO-4217 currency code
                  * @example SEK
                  */
-                currency: string | null;
+                currency: string | undefined;
                 inStock: boolean;
                 inPreorder: boolean;
                 inMonitor: boolean;
                 isFullyBooked: boolean;
-                scrapedName: string | null;
-                scrapedType: string | null;
-                matchScore: number | null;
+                scrapedName: string | undefined;
+                scrapedType: string | undefined;
+                matchScore: number | undefined;
                 hasCategoryMismatch: boolean;
                 /** @enum {string|null} */
-                cardType: "loose" | "graded" | null;
+                cardType: "loose" | "graded" | undefined;
                 /** @enum {string|null} */
-                itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | null;
+                itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
                 /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | null;
-                grade: number | null;
+                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+                grade: number | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
@@ -6520,7 +6520,7 @@ export interface components {
                     discountPercent: number;
                     /** @enum {string} */
                     referenceSource: "retail" | "tradera" | "cardmarket";
-                } | null;
+                } | undefined;
             }[];
             pagination: {
                 /** @description Total matching records, ignoring pagination */
@@ -6588,10 +6588,10 @@ export interface components {
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                soldAt: string | null;
-                itemId: string | null;
+                soldAt: string | undefined;
+                itemId: string | undefined;
                 /** @example tradera */
-                source: string | null;
+                source: string | undefined;
             }[];
             pagination: {
                 /** @description Total matching records, ignoring pagination */
@@ -6611,7 +6611,7 @@ export interface components {
                  */
                 id: string;
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
                 technicalName: string;
                 brand: {
                     /**
@@ -6635,7 +6635,7 @@ export interface components {
                     updatedAt: string;
                 };
                 manufacturer: string;
-                modelNumber: string | null;
+                modelNumber: string | undefined;
                 category: {
                     /**
                      * @description Resource identifier
@@ -6646,7 +6646,7 @@ export interface components {
                     name: string;
                     /** @example booster-box */
                     technicalName: string;
-                } | null;
+                } | undefined;
                 expansion: {
                     /**
                      * @description Resource identifier
@@ -6666,58 +6666,58 @@ export interface components {
                      */
                     language: "ENG" | "JPN" | "CHI";
                     /** @example m6a */
-                    code: string | null;
+                    code: string | undefined;
                     /** @example m6a */
-                    cardCode: string | null;
+                    cardCode: string | undefined;
                     /** @example Mega Evolution */
-                    seriesName: string | null;
+                    seriesName: string | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
                      */
-                    releaseDate: string | null;
+                    releaseDate: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    logoUrl: string | null;
+                    logoUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    symbolUrl: string | null;
+                    symbolUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    imageUrl: string | null;
-                } | null;
+                    imageUrl: string | undefined;
+                } | undefined;
                 /**
                  * @description Printing language of the item
                  * @example JPN
                  * @enum {string|null}
                  */
-                language: "ENG" | "JPN" | "CHI" | null;
+                language: "ENG" | "JPN" | "CHI" | undefined;
                 alternativeNames: {
                     name: string;
-                    shortName: string | null;
+                    shortName: string | undefined;
                 }[];
                 supportsMultipackPricing: boolean;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
+                imageUrl: string | undefined;
                 /**
                  * @description Cheapest current shop price, in SEK
                  * @example 149.5
                  */
-                retailPrice: number | null;
+                retailPrice: number | undefined;
                 /**
                  * @description Estimated market value, in SEK
                  * @example 149.5
                  */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 /** @description Active shops currently tracking this item */
                 shopCount: number;
                 /** @description Observations the estimate rests on */
@@ -6726,7 +6726,7 @@ export interface components {
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                pricingUpdatedAt: string | null;
+                pricingUpdatedAt: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
@@ -6742,18 +6742,18 @@ export interface components {
                 /** @example 4/102 */
                 cardNumber: string;
                 /** @example Rare Holo */
-                rarity: string | null;
-                artist: string | null;
-                cardmarketId: string | null;
-                tcgplayerId: string | null;
+                rarity: string | undefined;
+                artist: string | undefined;
+                cardmarketId: string | undefined;
+                tcgplayerId: string | undefined;
                 variants: {
                     normal: boolean;
                     holo: boolean;
                     reverse: boolean;
                     firstEdition: boolean;
                     wPromo: boolean;
-                } | null;
-                prisjaktId: string | null;
+                } | undefined;
+                prisjaktId: string | undefined;
             } | {
                 /**
                  * @description Resource identifier
@@ -6761,7 +6761,7 @@ export interface components {
                  */
                 id: string;
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
                 technicalName: string;
                 brand: {
                     /**
@@ -6785,7 +6785,7 @@ export interface components {
                     updatedAt: string;
                 };
                 manufacturer: string;
-                modelNumber: string | null;
+                modelNumber: string | undefined;
                 category: {
                     /**
                      * @description Resource identifier
@@ -6796,7 +6796,7 @@ export interface components {
                     name: string;
                     /** @example booster-box */
                     technicalName: string;
-                } | null;
+                } | undefined;
                 expansion: {
                     /**
                      * @description Resource identifier
@@ -6816,58 +6816,58 @@ export interface components {
                      */
                     language: "ENG" | "JPN" | "CHI";
                     /** @example m6a */
-                    code: string | null;
+                    code: string | undefined;
                     /** @example m6a */
-                    cardCode: string | null;
+                    cardCode: string | undefined;
                     /** @example Mega Evolution */
-                    seriesName: string | null;
+                    seriesName: string | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
                      */
-                    releaseDate: string | null;
+                    releaseDate: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    logoUrl: string | null;
+                    logoUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    symbolUrl: string | null;
+                    symbolUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    imageUrl: string | null;
-                } | null;
+                    imageUrl: string | undefined;
+                } | undefined;
                 /**
                  * @description Printing language of the item
                  * @example JPN
                  * @enum {string|null}
                  */
-                language: "ENG" | "JPN" | "CHI" | null;
+                language: "ENG" | "JPN" | "CHI" | undefined;
                 alternativeNames: {
                     name: string;
-                    shortName: string | null;
+                    shortName: string | undefined;
                 }[];
                 supportsMultipackPricing: boolean;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
+                imageUrl: string | undefined;
                 /**
                  * @description Cheapest current shop price, in SEK
                  * @example 149.5
                  */
-                retailPrice: number | null;
+                retailPrice: number | undefined;
                 /**
                  * @description Estimated market value, in SEK
                  * @example 149.5
                  */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 /** @description Active shops currently tracking this item */
                 shopCount: number;
                 /** @description Observations the estimate rests on */
@@ -6876,7 +6876,7 @@ export interface components {
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                pricingUpdatedAt: string | null;
+                pricingUpdatedAt: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
@@ -6889,11 +6889,11 @@ export interface components {
                 updatedAt: string;
                 /** @enum {string} */
                 kind: "sealed";
-                upc: string | null;
-                asin: string | null;
-                epid: string | null;
-                priceChartingId: string | null;
-                prisjaktId: string | null;
+                upc: string | undefined;
+                asin: string | undefined;
+                epid: string | undefined;
+                priceChartingId: string | undefined;
+                prisjaktId: string | undefined;
             };
             dailyStats: {
                 /**
@@ -6906,12 +6906,12 @@ export interface components {
             }[];
             estimate: {
                 /** @example 149.5 */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                estimateUpdatedAt: string | null;
+                estimateUpdatedAt: string | undefined;
                 dataPointCount: number;
             };
             variantStats: {
@@ -6932,12 +6932,12 @@ export interface components {
             };
             variant: {
                 /** @enum {string|null} */
-                cardType: "loose" | "graded" | null;
+                cardType: "loose" | "graded" | undefined;
                 /** @enum {string|null} */
-                condition: "NM" | "LP" | "MP" | "HP" | "DMG" | null;
+                condition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
                 /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | null;
-                grade: number | null;
+                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+                grade: number | undefined;
             };
             dailyStats: {
                 /**
@@ -6997,9 +6997,9 @@ export interface components {
             technicalName: string;
             pricing: {
                 /** @example 149.5 */
-                retailPrice: number | null;
+                retailPrice: number | undefined;
                 /** @example 149.5 */
-                estimatedValue: number | null;
+                estimatedValue: number | undefined;
                 shopCount: number;
                 pricingDataPoints: number;
                 /**
@@ -7034,31 +7034,31 @@ export interface components {
                  */
                 language: "ENG" | "JPN" | "CHI";
                 /** @example m6a */
-                code: string | null;
+                code: string | undefined;
                 /** @example m6a */
-                cardCode: string | null;
+                cardCode: string | undefined;
                 /** @example Mega Evolution */
-                seriesName: string | null;
+                seriesName: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                releaseDate: string | null;
+                releaseDate: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                logoUrl: string | null;
+                logoUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                symbolUrl: string | null;
+                symbolUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
+                imageUrl: string | undefined;
             };
             buckets: {
                 /** @example Double rare */
@@ -7101,7 +7101,7 @@ export interface components {
              */
             id: string;
             name: string;
-            shortName: string | null;
+            shortName: string | undefined;
             technicalName: string;
             brand: {
                 /**
@@ -7125,7 +7125,7 @@ export interface components {
                 updatedAt: string;
             };
             manufacturer: string;
-            modelNumber: string | null;
+            modelNumber: string | undefined;
             category: {
                 /**
                  * @description Resource identifier
@@ -7136,7 +7136,7 @@ export interface components {
                 name: string;
                 /** @example booster-box */
                 technicalName: string;
-            } | null;
+            } | undefined;
             expansion: {
                 /**
                  * @description Resource identifier
@@ -7156,58 +7156,58 @@ export interface components {
                  */
                 language: "ENG" | "JPN" | "CHI";
                 /** @example m6a */
-                code: string | null;
+                code: string | undefined;
                 /** @example m6a */
-                cardCode: string | null;
+                cardCode: string | undefined;
                 /** @example Mega Evolution */
-                seriesName: string | null;
+                seriesName: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                releaseDate: string | null;
+                releaseDate: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                logoUrl: string | null;
+                logoUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                symbolUrl: string | null;
+                symbolUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
-            } | null;
+                imageUrl: string | undefined;
+            } | undefined;
             /**
              * @description Printing language of the item
              * @example JPN
              * @enum {string|null}
              */
-            language: "ENG" | "JPN" | "CHI" | null;
+            language: "ENG" | "JPN" | "CHI" | undefined;
             alternativeNames: {
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
             }[];
             supportsMultipackPricing: boolean;
             /**
              * @description Absolute asset URL, or null when absent
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
-            imageUrl: string | null;
+            imageUrl: string | undefined;
             /**
              * @description Cheapest current shop price, in SEK
              * @example 149.5
              */
-            retailPrice: number | null;
+            retailPrice: number | undefined;
             /**
              * @description Estimated market value, in SEK
              * @example 149.5
              */
-            estimatedValue: number | null;
+            estimatedValue: number | undefined;
             /** @description Active shops currently tracking this item */
             shopCount: number;
             /** @description Observations the estimate rests on */
@@ -7216,7 +7216,7 @@ export interface components {
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
              */
-            pricingUpdatedAt: string | null;
+            pricingUpdatedAt: string | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -7229,11 +7229,11 @@ export interface components {
             updatedAt: string;
             /** @enum {string} */
             kind: "sealed";
-            upc: string | null;
-            asin: string | null;
-            epid: string | null;
-            priceChartingId: string | null;
-            prisjaktId: string | null;
+            upc: string | undefined;
+            asin: string | undefined;
+            epid: string | undefined;
+            priceChartingId: string | undefined;
+            prisjaktId: string | undefined;
             lowestShopOffer: {
                 shop: {
                     /** @example cardlevels */
@@ -7267,8 +7267,8 @@ export interface components {
                     discountPercent: number;
                     /** @enum {string} */
                     referenceSource: "retail" | "tradera" | "cardmarket";
-                } | null;
-            } | null;
+                } | undefined;
+            } | undefined;
             referencePriceSnapshotsByProvider: {
                 [key: string]: {
                     /** @enum {string} */
@@ -7303,41 +7303,41 @@ export interface components {
             name: string;
             /** @example cardlevels */
             technicalName: string;
-            websiteUrl: string | null;
+            websiteUrl: string | undefined;
             /**
              * @description Absolute asset URL, or null when absent
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
-            logoUrl: string | null;
-            description: string | null;
+            logoUrl: string | undefined;
+            description: string | undefined;
             /** @example 149.5 */
-            defaultDeliveryCost: number | null;
+            defaultDeliveryCost: number | undefined;
             /**
              * @description ISO-4217, or null
              * @example SEK
              */
-            deliveryCurrency: string | null;
-            deliveryDaysMin: number | null;
-            deliveryDaysMax: number | null;
+            deliveryCurrency: string | undefined;
+            deliveryDaysMin: number | undefined;
+            deliveryDaysMax: number | undefined;
             /** @example 149.5 */
-            freeShippingThreshold: number | null;
+            freeShippingThreshold: number | undefined;
             supportsLocalPickup: boolean;
-            deliveryNote: string | null;
+            deliveryNote: string | undefined;
             isActive: boolean;
             isTemporarilyClosed: boolean;
             isOptedOut: boolean;
-            matchCount: number | null;
+            matchCount: number | undefined;
             /** @description Matches resolved to a catalog item */
-            linkedMatchCount: number | null;
-            inStockCount: number | null;
-            preorderCount: number | null;
-            monitorCount: number | null;
-            fullyBookedCount: number | null;
+            linkedMatchCount: number | undefined;
+            inStockCount: number | undefined;
+            preorderCount: number | undefined;
+            monitorCount: number | undefined;
+            fullyBookedCount: number | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
              */
-            lastMatchedAt: string | null;
+            lastMatchedAt: string | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -7353,13 +7353,13 @@ export interface components {
             shop: {
                 technicalName: string;
                 name: string;
-                logoUrl: string | null;
-                websiteUrl: string | null;
-                description: string | null;
+                logoUrl: string | undefined;
+                websiteUrl: string | undefined;
+                description: string | undefined;
                 isActive: boolean;
                 isTemporarilyClosed: boolean;
                 isOptedOut: boolean;
-                deliveryNote: string | null;
+                deliveryNote: string | undefined;
             };
             matchCount: number;
             /** @description Matches resolved to a catalog item */
@@ -7372,7 +7372,7 @@ export interface components {
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
              */
-            lastMatchedAt: string | null;
+            lastMatchedAt: string | undefined;
         };
         ShopMatchWithItem: {
             /**
@@ -7391,29 +7391,29 @@ export interface components {
              * @description Resource identifier
              * @example 6a577711abc1ce71383d3e10
              */
-            shopUrlId: string | null;
+            shopUrlId: string | undefined;
             /** @example 149.5 */
-            price: number | null;
+            price: number | undefined;
             /**
              * @description ISO-4217 currency code
              * @example SEK
              */
-            currency: string | null;
+            currency: string | undefined;
             inStock: boolean;
             inPreorder: boolean;
             inMonitor: boolean;
             isFullyBooked: boolean;
-            scrapedName: string | null;
-            scrapedType: string | null;
-            matchScore: number | null;
+            scrapedName: string | undefined;
+            scrapedType: string | undefined;
+            matchScore: number | undefined;
             hasCategoryMismatch: boolean;
             /** @enum {string|null} */
-            cardType: "loose" | "graded" | null;
+            cardType: "loose" | "graded" | undefined;
             /** @enum {string|null} */
-            itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | null;
+            itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
             /** @enum {string|null} */
-            gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | null;
-            grade: number | null;
+            gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+            grade: number | undefined;
             item: {
                 /**
                  * @description Resource identifier
@@ -7423,13 +7423,13 @@ export interface components {
                 /** @enum {string} */
                 kind: "card" | "sealed";
                 name: string;
-                shortName: string | null;
+                shortName: string | undefined;
                 technicalName: string;
-                cardNumber: string | null;
-                imageUrl: string | null;
-                language: string | null;
-                priceChartingId: string | null;
-            } | null;
+                cardNumber: string | undefined;
+                imageUrl: string | undefined;
+                language: string | undefined;
+                priceChartingId: string | undefined;
+            } | undefined;
             expansion: {
                 /**
                  * @description Resource identifier
@@ -7449,32 +7449,32 @@ export interface components {
                  */
                 language: "ENG" | "JPN" | "CHI";
                 /** @example m6a */
-                code: string | null;
+                code: string | undefined;
                 /** @example m6a */
-                cardCode: string | null;
+                cardCode: string | undefined;
                 /** @example Mega Evolution */
-                seriesName: string | null;
+                seriesName: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                releaseDate: string | null;
+                releaseDate: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                logoUrl: string | null;
+                logoUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                symbolUrl: string | null;
+                symbolUrl: string | undefined;
                 /**
                  * @description Absolute asset URL, or null when absent
                  * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                  */
-                imageUrl: string | null;
-            } | null;
+                imageUrl: string | undefined;
+            } | undefined;
             category: {
                 /**
                  * @description Resource identifier
@@ -7485,7 +7485,7 @@ export interface components {
                 name: string;
                 /** @example booster-box */
                 technicalName: string;
-            } | null;
+            } | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -7500,20 +7500,20 @@ export interface components {
                 discountPercent: number;
                 /** @enum {string} */
                 referenceSource: "retail" | "tradera" | "cardmarket";
-            } | null;
+            } | undefined;
         };
         ShopMatchesForShop: {
             shop: {
                 technicalName: string;
                 name: string;
-                logoUrl: string | null;
-                websiteUrl: string | null;
-                description: string | null;
+                logoUrl: string | undefined;
+                websiteUrl: string | undefined;
+                description: string | undefined;
                 isActive: boolean;
                 isTemporarilyClosed: boolean;
                 isOptedOut: boolean;
-                deliveryNote: string | null;
-            } | null;
+                deliveryNote: string | undefined;
+            } | undefined;
             data: {
                 /**
                  * @description Resource identifier
@@ -7531,29 +7531,29 @@ export interface components {
                  * @description Resource identifier
                  * @example 6a577711abc1ce71383d3e10
                  */
-                shopUrlId: string | null;
+                shopUrlId: string | undefined;
                 /** @example 149.5 */
-                price: number | null;
+                price: number | undefined;
                 /**
                  * @description ISO-4217 currency code
                  * @example SEK
                  */
-                currency: string | null;
+                currency: string | undefined;
                 inStock: boolean;
                 inPreorder: boolean;
                 inMonitor: boolean;
                 isFullyBooked: boolean;
-                scrapedName: string | null;
-                scrapedType: string | null;
-                matchScore: number | null;
+                scrapedName: string | undefined;
+                scrapedType: string | undefined;
+                matchScore: number | undefined;
                 hasCategoryMismatch: boolean;
                 /** @enum {string|null} */
-                cardType: "loose" | "graded" | null;
+                cardType: "loose" | "graded" | undefined;
                 /** @enum {string|null} */
-                itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | null;
+                itemCondition: "NM" | "LP" | "MP" | "HP" | "DMG" | undefined;
                 /** @enum {string|null} */
-                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | null;
-                grade: number | null;
+                gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA" | undefined;
+                grade: number | undefined;
                 item: {
                     /**
                      * @description Resource identifier
@@ -7563,13 +7563,13 @@ export interface components {
                     /** @enum {string} */
                     kind: "card" | "sealed";
                     name: string;
-                    shortName: string | null;
+                    shortName: string | undefined;
                     technicalName: string;
-                    cardNumber: string | null;
-                    imageUrl: string | null;
-                    language: string | null;
-                    priceChartingId: string | null;
-                } | null;
+                    cardNumber: string | undefined;
+                    imageUrl: string | undefined;
+                    language: string | undefined;
+                    priceChartingId: string | undefined;
+                } | undefined;
                 expansion: {
                     /**
                      * @description Resource identifier
@@ -7589,32 +7589,32 @@ export interface components {
                      */
                     language: "ENG" | "JPN" | "CHI";
                     /** @example m6a */
-                    code: string | null;
+                    code: string | undefined;
                     /** @example m6a */
-                    cardCode: string | null;
+                    cardCode: string | undefined;
                     /** @example Mega Evolution */
-                    seriesName: string | null;
+                    seriesName: string | undefined;
                     /**
                      * Format: date-time
                      * @example 2026-07-15T12:03:29.322Z
                      */
-                    releaseDate: string | null;
+                    releaseDate: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    logoUrl: string | null;
+                    logoUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    symbolUrl: string | null;
+                    symbolUrl: string | undefined;
                     /**
                      * @description Absolute asset URL, or null when absent
                      * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
                      */
-                    imageUrl: string | null;
-                } | null;
+                    imageUrl: string | undefined;
+                } | undefined;
                 category: {
                     /**
                      * @description Resource identifier
@@ -7625,7 +7625,7 @@ export interface components {
                     name: string;
                     /** @example booster-box */
                     technicalName: string;
-                } | null;
+                } | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
@@ -7640,7 +7640,7 @@ export interface components {
                     discountPercent: number;
                     /** @enum {string} */
                     referenceSource: "retail" | "tradera" | "cardmarket";
-                } | null;
+                } | undefined;
             }[];
             pagination: {
                 /** @description Total matching records, ignoring pagination */
@@ -7678,12 +7678,12 @@ export interface components {
                     url: string;
                 }[];
                 /** @example 149.5 */
-                latestPrice: number | null;
+                latestPrice: number | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                latestDate: string | null;
+                latestDate: string | undefined;
             }[];
             itemCount: number;
         };
@@ -7696,7 +7696,7 @@ export interface components {
                  */
                 id: string;
                 url: string;
-                shop: string | null;
+                shop: string | undefined;
                 /** @enum {string} */
                 status: "pending" | "active" | "invalid" | "rejected" | "sanityRejected";
                 /** @enum {string} */
@@ -7705,29 +7705,29 @@ export interface components {
                  * @description Resource identifier
                  * @example 6a577711abc1ce71383d3e10
                  */
-                itemId: string | null;
+                itemId: string | undefined;
                 /** @enum {string|null} */
-                itemKind: "card" | "sealed" | null;
+                itemKind: "card" | "sealed" | undefined;
                 lockedItem: boolean;
-                priceChartingId: string | null;
-                scrapedName: string | null;
-                matchScore: number | null;
+                priceChartingId: string | undefined;
+                scrapedName: string | undefined;
+                matchScore: number | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
                  */
-                lastMatchedAt: string | null;
+                lastMatchedAt: string | undefined;
                 /**
                  * @description Resource identifier
                  * @example 6a577711abc1ce71383d3e10
                  */
-                expansionId: string | null;
+                expansionId: string | undefined;
                 /**
                  * @description Resource identifier
                  * @example 6a577711abc1ce71383d3e10
                  */
-                categoryId: string | null;
-                submittedByUserId: string | null;
+                categoryId: string | undefined;
+                submittedByUserId: string | undefined;
                 /**
                  * Format: date-time
                  * @example 2026-07-15T12:03:29.322Z
@@ -7746,7 +7746,7 @@ export interface components {
              * @example 6a577711abc1ce71383d3e10
              */
             id: string;
-            slug: string | null;
+            slug: string | undefined;
             shopMatchCount: number;
         };
     };

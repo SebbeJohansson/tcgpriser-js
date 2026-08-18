@@ -4,7 +4,7 @@ type ShopMatchWithItemSchema = components['schemas']['ShopMatchWithItem'];
 type ItemShopMatchSchema = components['schemas']['ItemShopMatches']['data'][number];
 
 /** A shop tracked by tcgpriser, as returned by `client.shops.list()` / `client.shops.get()`. The
- * `*Count` fields are `null` when the shop has never had a match computed (rather than `0`, which
+ * `*Count` fields are `undefined` when the shop has never had a match computed (rather than `0`, which
  * would mean "matched, currently empty"). */
 export type Shop = components['schemas']['Shop'];
 
