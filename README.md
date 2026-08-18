@@ -256,6 +256,47 @@ type CardSchema = components['schemas']['CardWithPricing'];
 
 Most types in `tcgpriser` are direct aliases onto that generated schema, so a field in your code and a field in the API docs are the same field, always.
 
+## Images
+
+`imageUrl`, `logoUrl` and `symbolUrl` fields point at tcgpriser.se's own CDN, which is sized for
+tcgpriser.se's own traffic, not for hotlinking from other sites and apps. **For best performance,
+rehost these images on your own storage/CDN and cache them there** instead of linking to them
+directly — one less hop, tuned to your own traffic and geography, and no dependency on
+infrastructure that isn't yours.
+
+A simple way to do this: fetch the image once, save it under the URL's path (e.g.
+`products/eng-scarlet-violet-booster-pack.png`) as a stable local key, serve it from your own
+storage from then on, and periodically re-fetch (a nightly job is plenty) using a conditional
+`GET` so you only pay for images that actually changed:
+
+```typescript
+import { mkdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+
+const etags = new Map<string, string>(); // persist this however you persist anything else
+
+async function rehostImage(imageUrl: string, cacheDir: string): Promise<string> {
+  const key = new URL(imageUrl).pathname.replace(/^\/[^/]+\//, ''); // "products/....webp"
+  const localPath = join(cacheDir, key);
+  const knownEtag = etags.get(key);
+
+  const res = await fetch(imageUrl, { headers: knownEtag ? { 'If-None-Match': knownEtag } : {} });
+  if (res.status === 304) return localPath; // unchanged since last sync
+
+  if (!res.ok) throw new Error(`Failed to fetch ${imageUrl}: ${res.status}`);
+  await mkdir(dirname(localPath), { recursive: true });
+  await writeFile(localPath, Buffer.from(await res.arrayBuffer()));
+
+  const etag = res.headers.get('etag');
+  if (etag) etags.set(key, etag);
+  return localPath;
+}
+```
+
+Swap the `fs`/`mkdir`/`writeFile` calls for your own storage's SDK (S3, R2, Cloudflare Images, ...)
+if you're not caching to local disk. See `examples/rehost-images.ts` for a runnable version of this
+against a live `tcgpriser` response.
+
 ## Scripts
 
 ### Build
@@ -289,6 +330,12 @@ yarn example
 ```
 
 Runs `examples/basic.ts` against a local dev API. Set `TCGPRISER_AUTH_TOKEN` to see the premium call succeed instead of the expected 401.
+
+```bash
+yarn example:rehost-images
+```
+
+Runs `examples/rehost-images.ts` — the "Images" section's rehosting pattern against a handful of real product images. Run it twice to see the second pass come back as `304`s.
 
 ## Scope
 

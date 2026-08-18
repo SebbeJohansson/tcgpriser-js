@@ -565,6 +565,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/cards/technical-names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List every card's technicalName and updatedAt
+         * @description An unpaginated projection with no pricing lookups, for callers that need to enumerate the whole catalog's slugs and freshness — the sitemap, most notably — without paying for the pricing-joined page that `GET /cards` builds per item.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Every card's technicalName and updatedAt */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: components["schemas"]["CatalogSlug"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/cards/{id}/reference-prices": {
         parameters: {
             query?: never;
@@ -1618,6 +1669,7 @@ export interface paths {
                 query?: never;
                 header?: never;
                 path: {
+                    /** @description Expansion id or technicalName */
                     expansionId: string;
                 };
                 cookie?: never;
@@ -3394,6 +3446,57 @@ export interface paths {
                     };
                     content: {
                         "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/technical-names": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List every product's technicalName and updatedAt
+         * @description An unpaginated projection with no pricing lookups, for callers that need to enumerate the whole catalog's slugs and freshness — the sitemap, most notably — without paying for the pricing-joined page that `GET /product` builds per item.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Every product's technicalName and updatedAt */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: components["schemas"]["CatalogSlug"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
                     };
                 };
                 /** @description Server error */
@@ -5271,6 +5374,14 @@ export interface components {
             id: string;
             name: string;
         };
+        CatalogSlug: {
+            technicalName: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+        };
         CategoryRef: {
             /**
              * @description Resource identifier
@@ -5586,6 +5697,36 @@ export interface components {
             id: string;
             expansion: components["schemas"]["ExpansionRef"];
             buckets: components["schemas"]["PackRateBucket"][];
+            /**
+             * @example [
+             *       "code",
+             *       "common",
+             *       "common",
+             *       "common",
+             *       "uncommon",
+             *       "uncommon",
+             *       "uncommon",
+             *       "reverse",
+             *       "common",
+             *       "hit",
+             *       "energy"
+             *     ]
+             */
+            slotOrder: ("common" | "uncommon" | "reverse" | "hit" | "energy" | "code")[] | undefined;
+            source: {
+                /** @example pullrates.gg */
+                name: string;
+                /**
+                 * Format: uri
+                 * @description The specific page these rates were read from, if any
+                 */
+                url: string | undefined;
+                /**
+                 * Format: date-time
+                 * @example 2026-07-15T12:03:29.322Z
+                 */
+                fetchedAt: string | undefined;
+            } | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
