@@ -22,6 +22,10 @@ export type ShopMatch = ShopMatchWithItemSchema;
 
 export type ShopMatchDelivery = components['schemas']['ShopDeliveryTerms'];
 
+/** The shop identity embedded on an item-scoped match (`ItemShopMatch.shop`): like `ShopRef`, plus
+ * delivery terms -- this is the one place a match row prices in shipping. */
+export type MatchShop = components['schemas']['MatchShop'];
+
 /** A shop-match row scoped to one already-known item. `client.cards.matches()` and
  * `client.products.matches()` drop `item`/`expansion`/`category` since the caller already has
  * them, but add delivery terms since you're looking at one listing's total cost here. */

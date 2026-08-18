@@ -61,10 +61,9 @@ export type BargainInfo = NonNullable<LowestShopOfferSchema['bargain']>;
 /** The cheapest current shop offer for a card or product. */
 export type LowestShopOffer = LowestShopOfferSchema;
 
-export type ReferencePriceProvider =
-  CardSchema['referencePriceSnapshotsByProvider'][string]['provider'];
+export type ReferencePriceSnapshot = components['schemas']['ReferencePriceSummary'];
 
-export type ReferencePriceSnapshot = CardSchema['referencePriceSnapshotsByProvider'][string];
+export type ReferencePriceProvider = ReferencePriceSnapshot['provider'];
 
 /** Keyed by provider, at most one snapshot per provider. */
 export type ReferencePriceSnapshotsByProvider = Partial<

@@ -88,9 +88,15 @@ export type ItemVariantDailyStats = components['schemas']['ItemVariantDailyStats
 
 export type ShopPricePoint = components['schemas']['ShopPricePoint'];
 
+/** One shop's history for the item `ItemShopPriceHistory` is scoped to. */
+export type ShopPriceHistory = components['schemas']['ShopPriceHistory'];
+
 /** Response of `client.shopMatchStats.forProduct()`: one product's price history, broken out per
  * shop. */
 export type ItemShopPriceHistory = components['schemas']['ItemShopPriceHistory'];
+
+/** One product's history for the shop `ShopPriceHistoryList` is scoped to. */
+export type ShopItemPriceHistory = components['schemas']['ShopItemPriceHistory'];
 
 /** Response of `client.shopMatchStats.forShop()`: one shop's price history, broken out per
  * product. */

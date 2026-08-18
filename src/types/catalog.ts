@@ -12,7 +12,7 @@ export type SealedProduct = components['schemas']['ProductWithPricing'];
 /** A card or sealed product, discriminated on `kind`. */
 export type CatalogItem = Card | SealedProduct;
 
-export type CardVariants = NonNullable<Card['variants']>;
+export type CardVariants = components['schemas']['CardVariants'];
 
 /** The compact item reference used inside flat shop-match rows (`client.shopMatches.list()` /
  * `.forShop()`), enough to render a result list, not the full `CatalogItem`. */
