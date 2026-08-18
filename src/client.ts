@@ -88,7 +88,11 @@ export class TcgPriser {
 
     const http = new HttpClient({
       baseUrl: advanced.baseUrl ?? DEFAULT_BASE_URL,
-      fetch: advanced.fetch ?? fetch,
+      // Bound to globalThis: both browsers and Node's undici implement fetch as a method that
+      // checks its receiver, so an unbound reference throws "Illegal invocation" the moment it's
+      // called through anything other than `window.fetch(...)`/`globalThis.fetch(...)` — which is
+      // exactly what happens once HttpClient stores it and calls `this.fetchImpl(...)`.
+      fetch: advanced.fetch ?? fetch.bind(globalThis),
       headers: advanced.headers,
       authToken: options.authToken,
     });

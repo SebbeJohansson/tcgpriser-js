@@ -1,6 +1,6 @@
 {
   "name": "tcgpriser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Typed Node.js/browser client for the tcgpriser.se API: Pokémon TCG price data, catalog, shop matches and bargains.",
   "type": "module",
   "main": "./dist/index.cjs",

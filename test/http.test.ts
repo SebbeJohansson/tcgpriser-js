@@ -170,6 +170,28 @@ describe('TcgPriser client', () => {
     it('constructs with no arguments for an anonymous client', () => {
       expect(() => new TcgPriser()).not.toThrow();
     });
+
+    it('calls the default global fetch bound to its receiver, not detached', async () => {
+      // Real browser/undici fetch is a brand-checked method: calling an extracted reference with
+      // the wrong `this` throws "Illegal invocation" (browsers) or the undici equivalent, which
+      // mimics that exact message even under Node/SSR. Simulates that here instead of using
+      // fakeFetch(), which is a plain arrow function and wouldn't catch a regression of this bug.
+      const originalFetch = globalThis.fetch;
+      function brandCheckedFetch(this: unknown) {
+        if (this !== globalThis) {
+          throw new TypeError("Failed to execute 'fetch' on 'Window': Illegal invocation");
+        }
+        return Promise.resolve(jsonResponse({}));
+      }
+      globalThis.fetch = brandCheckedFetch as typeof fetch;
+
+      try {
+        const client = new TcgPriser();
+        await expect(client.stats.platform()).resolves.toEqual({});
+      } finally {
+        globalThis.fetch = originalFetch;
+      }
+    });
   });
 
   describe('premium endpoints', () => {
