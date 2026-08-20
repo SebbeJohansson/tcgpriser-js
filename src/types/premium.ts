@@ -1,5 +1,5 @@
 /**
- * Types for the premium tier: endpoints that need a signed-in subscriber's JWT (see
+ * Types for the premium tier: endpoints that need a subscriber's API token (see
  * `TcgPriserOptions.authToken`, or the `authToken` field on each premium method's params). Split
  * out from the public-tier types because none of these mean anything without a token: without one,
  * the API just answers `403 premiumRequired`.

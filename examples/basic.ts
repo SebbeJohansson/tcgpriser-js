@@ -52,8 +52,8 @@ async function main() {
     console.log('\nExpected 404 for a bad id:', error instanceof Error ? error.message : error);
   }
 
-  // Premium needs a subscriber's JWT. Sign in via the website and pass the token here, either as
-  // the client's default (set above) or per call: cards.livePricing(id, { authToken: ... }).
+  // Premium needs a subscriber's API token, generated from tcgpriser.se/account/api-token. Pass it
+  // here, either as the client's default (set above) or per call: cards.livePricing(id, { authToken: ... }).
   if (firstCard) {
     try {
       const live = await tcgpriser.cards.livePricing(firstCard.technicalName);

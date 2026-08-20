@@ -188,14 +188,14 @@ await tcgpriser.packRates.get(expansionId);
 |---|---|
 | `platform()` | Platform-wide overview counts |
 
-🔒 = premium, needs a subscriber's token. See below.
+🔒 = premium, needs an API token. See below.
 
 ## Authentication
 
-Public methods work with no setup. Premium methods (marked 🔒 above) need a signed-in subscriber's JWT from tcgpriser.se. This package doesn't handle login itself; the site's sign-in is OAuth-based, so a headless client can't drive it. Pass a token your own app already has:
+Public methods work with no setup. Premium methods (marked 🔒 above) need a Premium subscriber's API token, generated from **tcgpriser.se/account/api-token**. Unlike the site's own session login, which is OAuth-based and can't be driven headlessly, the API token is a long-lived, revocable secret made specifically for scripts and other programmatic callers. Generate it once from your account page and pass it in:
 
 ```typescript
-const tcgpriser = new TcgPriser(myJwt); // shorthand for { authToken: myJwt }
+const tcgpriser = new TcgPriser(myApiToken); // shorthand for { authToken: myApiToken }
 await tcgpriser.cards.livePricing('fezandipiti-ex');
 ```
 
@@ -203,7 +203,7 @@ Or set no default and pass a token per call, which fits better when one client i
 
 ```typescript
 const tcgpriser = new TcgPriser();
-await tcgpriser.cards.livePricing('fezandipiti-ex', { authToken: requestUserJwt });
+await tcgpriser.cards.livePricing('fezandipiti-ex', { authToken: requestUserApiToken });
 ```
 
 A missing or invalid token gets `401 unauthorized`. A valid token without an active subscription gets `403 premiumRequired`. Both come back as `TcgPriserError`:
@@ -223,11 +223,11 @@ try {
 ## Options
 
 ```typescript
-new TcgPriser(myJwt);  // shorthand for { authToken: myJwt }
-new TcgPriser();       // no token, public methods only
+new TcgPriser(myApiToken);  // shorthand for { authToken: myApiToken }
+new TcgPriser();            // no token, public methods only
 
 new TcgPriser({
-  authToken: myJwt,
+  authToken: myApiToken,
 
   // Local dev, self-hosting or tests only. Leave this out for normal use.
   advanced: {

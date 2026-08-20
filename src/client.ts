@@ -25,9 +25,11 @@ export interface TcgPriserAdvancedOptions {
 
 export interface TcgPriserOptions {
   /**
-   * A signed-in subscriber's JWT. Only needed for premium methods (`cards.prices()`,
-   * `priceStats.product()`, `bargains.search()` etc.); public methods work fine without it.
-   * This client has no login flow of its own, so bring your own token.
+   * A per-account API token, generated from your account page at tcgpriser.se/account/api-token.
+   * Only needed for premium methods (`cards.prices()`, `priceStats.product()`,
+   * `bargains.search()` etc.); public methods work fine without it. This client has no login flow
+   * of its own, and doesn't need one: the API token is a long-lived, revocable secret made for
+   * exactly this, so there's no OAuth dance to drive.
    *
    * Every premium method also accepts its own `authToken` to override this per call. Useful when
    * one server-side client is shared across requests for several different signed-in users.
@@ -51,10 +53,11 @@ export interface TcgPriserOptions {
  *
  * That example needs no token. Most of the API is public (https://api.tcgpriser.se/docs). A
  * smaller set of premium methods (live pricing, per-condition history, shop comparison, bargain
- * search, shop-URL submission) need a subscriber's JWT (https://api.tcgpriser.se/premium-docs):
+ * search, shop-URL submission) need a Premium subscriber's API token
+ * (https://api.tcgpriser.se/premium-docs), generated from tcgpriser.se/account/api-token:
  *
  * ```ts
- * const tcgpriser = new TcgPriser(myJwt); // shorthand for { authToken: myJwt }
+ * const tcgpriser = new TcgPriser(myApiToken); // shorthand for { authToken: myApiToken }
  * await tcgpriser.cards.livePricing('fezandipiti-ex');
  * ```
  */
@@ -72,7 +75,7 @@ export class TcgPriser {
   readonly stats: StatsResource;
 
   /**
-   * @param optionsOrAuthToken A subscriber JWT (`new TcgPriser(myJwt)`), a full
+   * @param optionsOrAuthToken A subscriber's API token (`new TcgPriser(myApiToken)`), a full
    * `TcgPriserOptions` object, or omit it entirely for an anonymous, public-only client.
    */
   constructor(optionsOrAuthToken?: string | TcgPriserOptions) {

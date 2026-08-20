@@ -735,7 +735,7 @@ export interface paths {
         };
         /**
          * Get marketplace auction prices for a specific card
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -1005,7 +1005,7 @@ export interface paths {
          * Get freshly computed pricing for a card
          * @description Recomputes rather than reading the cached figures on the card. Signed-in users only, and rate limited to 30 requests per minute per client.
          *
-         *     **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -1482,7 +1482,7 @@ export interface paths {
          * Get freshly computed pricing for every product in an expansion
          * @description The one Premium-gated read in the API: a signed-in user without an active subscription gets 403 `premiumRequired`, not 401. Rate limited per client.
          *
-         *     **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -1926,7 +1926,7 @@ export interface paths {
         };
         /**
          * Get all info about a product, including price stats
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -2097,7 +2097,7 @@ export interface paths {
          * Get complete product information with all stats, estimated values, and shop matches
          * @description Combined endpoint that returns all product data in a single request for SSG optimization.
          *
-         *     **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -2383,7 +2383,7 @@ export interface paths {
         };
         /**
          * Get daily price stats for a specific product
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -2573,7 +2573,7 @@ export interface paths {
         };
         /**
          * Get estimated value for a product
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -2671,7 +2671,7 @@ export interface paths {
         };
         /**
          * Get price statistics grouped by card type, condition, and grade
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -2771,7 +2771,7 @@ export interface paths {
         };
         /**
          * Get daily price history for a specific card variant
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -3636,7 +3636,7 @@ export interface paths {
         };
         /**
          * Get marketplace auction prices for a specific product
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -3910,7 +3910,7 @@ export interface paths {
          * Get freshly computed pricing for a product
          * @description Recomputes rather than reading the cached figures on the product. Signed-in users only, and rate limited to 30 requests per minute per client.
          *
-         *     **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -4002,7 +4002,7 @@ export interface paths {
         };
         /**
          * Get price history across all shops for a product
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -4104,7 +4104,7 @@ export interface paths {
         };
         /**
          * Get price history for all products at a specific shop
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -4196,7 +4196,7 @@ export interface paths {
         };
         /**
          * Compare prices for a product across multiple shops
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: {
             parameters: {
@@ -4742,7 +4742,7 @@ export interface paths {
         put?: never;
         /**
          * User submits a shop URL for scraping
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`.
          */
         post: {
             parameters: {
@@ -4813,7 +4813,7 @@ export interface paths {
         head?: never;
         /**
          * Manually assign a product to a shop URL (premium)
-         * @description **Requires the `premium` level.** The same user JWT as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`.
+         * @description **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`.
          */
         patch: {
             parameters: {
@@ -5146,6 +5146,11 @@ export interface components {
         AlternativeName: {
             name: string;
             shortName: string | undefined;
+            /**
+             * @description ISO 639-1 language code the alias is written in (e.g. "sv"), possibly combined ("sv/da/no"). Null means unspecified.
+             * @example sv
+             */
+            language: string | undefined;
         };
         ApiError: {
             error: {
@@ -5185,6 +5190,10 @@ export interface components {
                 kind: "sealed" | "card";
                 name: string;
                 technicalName: string;
+                /**
+                 * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
+                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+                 */
                 imageUrl: string | undefined;
             };
             bargain: {
@@ -5241,7 +5250,7 @@ export interface components {
             alternativeNames: components["schemas"]["AlternativeName"][];
             supportsMultipackPricing: boolean;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
@@ -5316,7 +5325,7 @@ export interface components {
             alternativeNames: components["schemas"]["AlternativeName"][];
             supportsMultipackPricing: boolean;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
@@ -5442,17 +5451,17 @@ export interface components {
              */
             releaseDate: string | undefined;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             logoUrl: string | undefined;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             symbolUrl: string | undefined;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
@@ -5523,17 +5532,17 @@ export interface components {
              */
             releaseDate: string | undefined;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             logoUrl: string | undefined;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             symbolUrl: string | undefined;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
@@ -5685,6 +5694,10 @@ export interface components {
             shortName: string | undefined;
             technicalName: string;
             cardNumber: string | undefined;
+            /**
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
             imageUrl: string | undefined;
             language: string | undefined;
             priceChartingId: string | undefined;
@@ -5784,7 +5797,7 @@ export interface components {
             alternativeNames: components["schemas"]["AlternativeName"][];
             supportsMultipackPricing: boolean;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
@@ -5848,7 +5861,7 @@ export interface components {
             alternativeNames: components["schemas"]["AlternativeName"][];
             supportsMultipackPricing: boolean;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
@@ -5950,7 +5963,7 @@ export interface components {
             technicalName: string;
             websiteUrl: string | undefined;
             /**
-             * @description Absolute asset URL, or null when absent
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             logoUrl: string | undefined;
@@ -6202,6 +6215,10 @@ export interface components {
         ShopSummary: {
             technicalName: string;
             name: string;
+            /**
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
             logoUrl: string | undefined;
             websiteUrl: string | undefined;
             description: string | undefined;
