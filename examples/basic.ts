@@ -22,10 +22,15 @@ async function main() {
   const expansions = await tcgpriser.expansions.list();
   console.log(`\n${expansions.length} expansions. Newest:`, expansions[0]?.name);
 
+  // list()/get() return content only (name, images, expansion, ...) — pricing is a separate,
+  // shorter-cached call. pricingBatch() fetches it for every id in the search results at once.
   const { data: cards } = await tcgpriser.cards.list({ search: 'pikachu', limit: 3 });
+  const { data: cardPricing } = await tcgpriser.cards.pricingBatch(cards.map((card) => card.id));
+  const pricingById = new Map(cardPricing.map((pricing) => [pricing.id, pricing]));
   console.log(`\nFound ${cards.length} cards matching "pikachu":`);
   for (const card of cards) {
-    console.log(`  - ${card.name} (${card.expansion?.name ?? 'no set'}): ${card.retailPrice ?? '?'} SEK`);
+    const retailPrice = pricingById.get(card.id)?.retailPrice;
+    console.log(`  - ${card.name} (${card.expansion?.name ?? 'no set'}): ${retailPrice ?? '?'} SEK`);
   }
 
   const firstCard = cards[0];

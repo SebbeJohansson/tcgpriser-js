@@ -312,11 +312,6 @@ export interface paths {
                          *           "alternativeNames": [],
                          *           "supportsMultipackPricing": true,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-mega-evolution-ascended-heroes-fezandipiti-ex-288-217.webp",
-                         *           "retailPrice": null,
-                         *           "estimatedValue": null,
-                         *           "shopCount": 0,
-                         *           "pricingDataPoints": 0,
-                         *           "pricingUpdatedAt": null,
                          *           "createdAt": "2026-08-12T15:48:58.811Z",
                          *           "updatedAt": "2026-08-12T15:48:58.811Z",
                          *           "cardNumber": "288/217",
@@ -331,24 +326,7 @@ export interface paths {
                          *             "firstEdition": false,
                          *             "wPromo": false
                          *           },
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": null,
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "cardmarket": {
-                         *               "provider": "cardmarket",
-                         *               "price": 46.73,
-                         *               "currency": "EUR",
-                         *               "priceSek": 512.32,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             },
-                         *             "tcgplayer": {
-                         *               "provider": "tcgplayer",
-                         *               "price": 59.54,
-                         *               "currency": "USD",
-                         *               "priceSek": 565.65,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         },
                          *         {
                          *           "id": "698093fb3830469b48e39b35",
@@ -388,11 +366,6 @@ export interface paths {
                          *           "alternativeNames": [],
                          *           "supportsMultipackPricing": true,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-scarlet-violet-prismatic-evolutions-fezandipiti.webp",
-                         *           "retailPrice": null,
-                         *           "estimatedValue": null,
-                         *           "shopCount": 0,
-                         *           "pricingDataPoints": 0,
-                         *           "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *           "createdAt": "2026-02-02T12:09:31.934Z",
                          *           "updatedAt": "2026-08-12T09:00:01.656Z",
                          *           "cardNumber": "045/131",
@@ -407,24 +380,7 @@ export interface paths {
                          *             "firstEdition": false,
                          *             "wPromo": false
                          *           },
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": null,
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "cardmarket": {
-                         *               "provider": "cardmarket",
-                         *               "price": 0.32,
-                         *               "currency": "EUR",
-                         *               "priceSek": 3.51,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             },
-                         *             "tcgplayer": {
-                         *               "provider": "tcgplayer",
-                         *               "price": 0.2,
-                         *               "currency": "USD",
-                         *               "priceSek": 1.9,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         }
                          *       ],
                          *       "pagination": {
@@ -436,7 +392,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: components["schemas"]["CardWithPricing"][];
+                            data?: components["schemas"]["Card"][];
                             pagination?: components["schemas"]["PageMeta"];
                         };
                     };
@@ -595,6 +551,72 @@ export interface paths {
                             data?: components["schemas"]["CatalogSlug"][];
                             pagination?: components["schemas"]["PageMeta"];
                         };
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get pricing for a batch of cards
+         * @description Pricing for up to 200 cards at once, keyed by `id` — the batch counterpart to `GET /cards/{id}/pricing`, for a page of results (a search page, an expansion's contents) that needs pricing for many items in one request instead of one call per item.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /**
+                     * @description Comma-separated card ids, max 200
+                     * @example 69808864100d0aea4dc3f7f4,6a7c95eafcba9642616149f4
+                     */
+                    ids: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Pricing for the requested cards. Ids that don't exist are silently omitted. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: components["schemas"]["CatalogItemPricing"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
+                    };
+                };
+                /** @description Missing, empty, malformed, or too many ids */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
                     };
                 };
                 /** @description Server error */
@@ -856,7 +878,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a card by id or technicalName, including pricing info */
+        /**
+         * Get a card by id or technicalName
+         * @description Content only — no pricing. See `GET /cards/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -868,7 +893,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The card, with its cached pricing */
+                /** @description The card */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -913,11 +938,6 @@ export interface paths {
                          *       "alternativeNames": [],
                          *       "supportsMultipackPricing": true,
                          *       "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-mega-evolution-ascended-heroes-fezandipiti-ex.webp",
-                         *       "retailPrice": 800,
-                         *       "estimatedValue": 22.5,
-                         *       "shopCount": 2,
-                         *       "pricingDataPoints": 2,
-                         *       "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *       "createdAt": "2026-02-02T11:20:04.997Z",
                          *       "updatedAt": "2026-08-12T09:00:01.655Z",
                          *       "cardNumber": "142/217",
@@ -932,49 +952,10 @@ export interface paths {
                          *         "firstEdition": false,
                          *         "wPromo": false
                          *       },
-                         *       "prisjaktId": null,
-                         *       "lowestShopOffer": {
-                         *         "shop": {
-                         *           "technicalName": "samlarhobby",
-                         *           "name": "Samlarhobby"
-                         *         },
-                         *         "url": "https://www.samlarhobby.se/products/fezandipiti-ex-asc-288-ascended-heroes",
-                         *         "price": 800,
-                         *         "currency": "SEK",
-                         *         "inStock": true,
-                         *         "inPreorder": false,
-                         *         "inMonitor": false,
-                         *         "isFullyBooked": false,
-                         *         "matchedAt": "2026-08-07T06:45:11.000Z",
-                         *         "updatedAt": "2026-08-12T14:18:16.455Z",
-                         *         "bargain": null
-                         *       },
-                         *       "referencePriceSnapshotsByProvider": {
-                         *         "cardmarket": {
-                         *           "provider": "cardmarket",
-                         *           "price": 3.46,
-                         *           "currency": "EUR",
-                         *           "priceSek": 37.93,
-                         *           "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *         },
-                         *         "tcgplayer": {
-                         *           "provider": "tcgplayer",
-                         *           "price": 3.52,
-                         *           "currency": "USD",
-                         *           "priceSek": 33.44,
-                         *           "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *         },
-                         *         "tradera": {
-                         *           "provider": "tradera",
-                         *           "price": 35,
-                         *           "currency": "SEK",
-                         *           "priceSek": 35,
-                         *           "snapshotDate": "2026-08-10T00:00:00.000Z"
-                         *         }
-                         *       }
+                         *       "prisjaktId": null
                          *     }
                          */
-                        "application/json": components["schemas"]["CardWithPricing"];
+                        "application/json": components["schemas"]["Card"];
                     };
                 };
                 /** @description Card not found */
@@ -983,6 +964,66 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/{id}/pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the current price snapshot for a card
+         * @description Retail price, estimated value, cheapest live shop offer and reference-price snapshots — refreshed by the nightly pricing/scraper jobs, not computed per request (that's `GET /cards/{id}/pricing/live`, below). Cached on a short TTL, separately from `GET /cards/{id}`, since this is the part of the card that actually changes day to day.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Card _id or technicalName */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The card's current pricing */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CatalogItemPricing"];
+                    };
+                };
+                /** @description Card not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
                 };
             };
         };
@@ -1276,28 +1317,13 @@ export interface paths {
                          *           "alternativeNames": [],
                          *           "supportsMultipackPricing": false,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-mega-evolution-30th-celebration-lapras-drifloon-mini-tin.png",
-                         *           "retailPrice": null,
-                         *           "estimatedValue": null,
-                         *           "shopCount": 0,
-                         *           "pricingDataPoints": 0,
-                         *           "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *           "createdAt": "2026-07-22T08:13:16.268Z",
                          *           "updatedAt": "2026-08-12T09:00:01.623Z",
                          *           "upc": null,
                          *           "asin": null,
                          *           "epid": null,
                          *           "priceChartingId": null,
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": null,
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "cardmarket": {
-                         *               "provider": "cardmarket",
-                         *               "price": 29.93,
-                         *               "currency": "EUR",
-                         *               "priceSek": 328.14,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         },
                          *         {
                          *           "id": "6a607b9c954cf540a81602bd",
@@ -1337,28 +1363,13 @@ export interface paths {
                          *           "alternativeNames": [],
                          *           "supportsMultipackPricing": false,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-mega-evolution-30th-celebration-binder-collection.png",
-                         *           "retailPrice": null,
-                         *           "estimatedValue": null,
-                         *           "shopCount": 0,
-                         *           "pricingDataPoints": 0,
-                         *           "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *           "createdAt": "2026-07-22T08:13:16.271Z",
                          *           "updatedAt": "2026-08-12T09:00:01.623Z",
                          *           "upc": null,
                          *           "asin": null,
                          *           "epid": null,
                          *           "priceChartingId": null,
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": null,
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "cardmarket": {
-                         *               "provider": "cardmarket",
-                         *               "price": 84.99,
-                         *               "currency": "EUR",
-                         *               "priceSek": 931.79,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         },
                          *         {
                          *           "id": "6a607b9c954cf540a81602bf",
@@ -1398,28 +1409,13 @@ export interface paths {
                          *           "alternativeNames": [],
                          *           "supportsMultipackPricing": false,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-mega-evolution-30th-celebration-eevee-2-pack-blister.png",
-                         *           "retailPrice": null,
-                         *           "estimatedValue": null,
-                         *           "shopCount": 0,
-                         *           "pricingDataPoints": 0,
-                         *           "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *           "createdAt": "2026-07-22T08:13:16.305Z",
                          *           "updatedAt": "2026-08-12T09:00:01.623Z",
                          *           "upc": null,
                          *           "asin": null,
                          *           "epid": null,
                          *           "priceChartingId": null,
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": null,
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "cardmarket": {
-                         *               "provider": "cardmarket",
-                         *               "price": 24.99,
-                         *               "currency": "EUR",
-                         *               "priceSek": 273.98,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         }
                          *       ],
                          *       "pagination": {
@@ -3020,43 +3016,13 @@ export interface paths {
                          *           ],
                          *           "supportsMultipackPricing": true,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-scarlet-violet-booster-pack.png",
-                         *           "retailPrice": 65.67,
-                         *           "estimatedValue": 138.75,
-                         *           "shopCount": 5,
-                         *           "pricingDataPoints": 4,
-                         *           "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *           "createdAt": "2025-06-12T14:55:01.203Z",
                          *           "updatedAt": "2026-08-12T09:00:01.623Z",
                          *           "upc": null,
                          *           "asin": null,
                          *           "epid": null,
                          *           "priceChartingId": "4954135",
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": {
-                         *             "shop": {
-                         *               "technicalName": "shinycards",
-                         *               "name": "Shinycards"
-                         *             },
-                         *             "url": "https://www.shinycards.se/pokemon/singles-loskort/kopia-bulbasaur-reverse-holo-mew001-black-star-promo-pokemon-scarlet-violet-151",
-                         *             "price": 29,
-                         *             "currency": "SEK",
-                         *             "inStock": true,
-                         *             "inPreorder": false,
-                         *             "inMonitor": false,
-                         *             "isFullyBooked": false,
-                         *             "matchedAt": "2026-07-29T03:30:08.000Z",
-                         *             "updatedAt": "2026-08-12T14:18:16.455Z",
-                         *             "bargain": null
-                         *           },
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "tradera": {
-                         *               "provider": "tradera",
-                         *               "price": 55,
-                         *               "currency": "SEK",
-                         *               "priceSek": 55,
-                         *               "snapshotDate": "2026-07-26T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         },
                          *         {
                          *           "id": "684aea450554072ffe597b3c",
@@ -3101,50 +3067,13 @@ export interface paths {
                          *           ],
                          *           "supportsMultipackPricing": true,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-scarlet-violet-stellar-crown-booster-pack.png",
-                         *           "retailPrice": 104.33,
-                         *           "estimatedValue": 129,
-                         *           "shopCount": 7,
-                         *           "pricingDataPoints": 3,
-                         *           "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *           "createdAt": "2025-06-12T14:55:01.197Z",
                          *           "updatedAt": "2026-08-12T09:00:01.623Z",
                          *           "upc": null,
                          *           "asin": null,
                          *           "epid": null,
                          *           "priceChartingId": "7418479",
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": {
-                         *             "shop": {
-                         *               "technicalName": "swepoke",
-                         *               "name": "Swepoke"
-                         *             },
-                         *             "url": "https://www.swepoke.se/swepoke-live/stellar-crown-booster-pack-live-max-5-per-kund",
-                         *             "price": 75,
-                         *             "currency": "SEK",
-                         *             "inStock": true,
-                         *             "inPreorder": false,
-                         *             "inMonitor": false,
-                         *             "isFullyBooked": false,
-                         *             "matchedAt": "2026-04-03T16:17:54.000Z",
-                         *             "updatedAt": "2026-08-12T14:18:16.455Z",
-                         *             "bargain": null
-                         *           },
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "cardmarket": {
-                         *               "provider": "cardmarket",
-                         *               "price": 5.49,
-                         *               "currency": "EUR",
-                         *               "priceSek": 60.19,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             },
-                         *             "tradera": {
-                         *               "provider": "tradera",
-                         *               "price": 110,
-                         *               "currency": "SEK",
-                         *               "priceSek": 110,
-                         *               "snapshotDate": "2026-05-17T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         },
                          *         {
                          *           "id": "684aea450554072ffe597b34",
@@ -3189,50 +3118,13 @@ export interface paths {
                          *           ],
                          *           "supportsMultipackPricing": true,
                          *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-scarlet-violet-obsidian-flames-booster-pack.png",
-                         *           "retailPrice": 125.67,
-                         *           "estimatedValue": 105.07,
-                         *           "shopCount": 5,
-                         *           "pricingDataPoints": 12,
-                         *           "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *           "createdAt": "2025-06-12T14:55:01.191Z",
                          *           "updatedAt": "2026-08-12T09:00:01.623Z",
                          *           "upc": null,
                          *           "asin": null,
                          *           "epid": null,
                          *           "priceChartingId": "5605517",
-                         *           "prisjaktId": null,
-                         *           "lowestShopOffer": {
-                         *             "shop": {
-                         *               "technicalName": "cardlevels",
-                         *               "name": "Cardlevels"
-                         *             },
-                         *             "url": "https://cardlevels.se/products/pokemon-tcg-scarlet-violet-obsidian-flames-booster-pack",
-                         *             "price": 99,
-                         *             "currency": "SEK",
-                         *             "inStock": true,
-                         *             "inPreorder": false,
-                         *             "inMonitor": false,
-                         *             "isFullyBooked": false,
-                         *             "matchedAt": "2026-03-11T04:45:03.000Z",
-                         *             "updatedAt": "2026-08-12T14:18:16.454Z",
-                         *             "bargain": null
-                         *           },
-                         *           "referencePriceSnapshotsByProvider": {
-                         *             "tradera": {
-                         *               "provider": "tradera",
-                         *               "price": 94.33,
-                         *               "currency": "SEK",
-                         *               "priceSek": 94.33,
-                         *               "snapshotDate": "2026-08-09T00:00:00.000Z"
-                         *             },
-                         *             "cardmarket": {
-                         *               "provider": "cardmarket",
-                         *               "price": 6.9,
-                         *               "currency": "EUR",
-                         *               "priceSek": 75.65,
-                         *               "snapshotDate": "2026-08-12T00:00:00.000Z"
-                         *             }
-                         *           }
+                         *           "prisjaktId": null
                          *         }
                          *       ],
                          *       "pagination": {
@@ -3244,7 +3136,7 @@ export interface paths {
                          *     }
                          */
                         "application/json": {
-                            data?: components["schemas"]["ProductWithPricing"][];
+                            data?: components["schemas"]["Product"][];
                             pagination?: components["schemas"]["PageMeta"];
                         };
                     };
@@ -3518,6 +3410,72 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/product/pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get pricing for a batch of sealed products
+         * @description Pricing for up to 200 sealed products at once, keyed by `id` — the batch counterpart to `GET /product/{id}/pricing`, for a page of results (a search page, an expansion's contents) that needs pricing for many items in one request instead of one call per item.
+         */
+        get: {
+            parameters: {
+                query: {
+                    /**
+                     * @description Comma-separated product ids, max 200
+                     * @example 684aea450554072ffe597b44,684aea450554072ffe597b3c
+                     */
+                    ids: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Pricing for the requested products. Ids that don't exist are silently omitted. */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: components["schemas"]["CatalogItemPricing"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
+                    };
+                };
+                /** @description Missing, empty, malformed, or too many ids */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/product/{id}/reference-prices": {
         parameters: {
             query?: never;
@@ -3766,7 +3724,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get a product by id or technical name */
+        /**
+         * Get a product by id or technical name
+         * @description Content only — no pricing. See `GET /product/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -3779,7 +3740,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description The product, with its cached pricing */
+                /** @description The product */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -3829,46 +3790,76 @@ export interface paths {
                          *       ],
                          *       "supportsMultipackPricing": true,
                          *       "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-scarlet-violet-booster-pack.png",
-                         *       "retailPrice": 65.67,
-                         *       "estimatedValue": 138.75,
-                         *       "shopCount": 5,
-                         *       "pricingDataPoints": 4,
-                         *       "pricingUpdatedAt": "2026-08-12T09:00:01.416Z",
                          *       "createdAt": "2025-06-12T14:55:01.203Z",
                          *       "updatedAt": "2026-08-12T09:00:01.623Z",
                          *       "upc": null,
                          *       "asin": null,
                          *       "epid": null,
                          *       "priceChartingId": "4954135",
-                         *       "prisjaktId": null,
-                         *       "lowestShopOffer": {
-                         *         "shop": {
-                         *           "technicalName": "shinycards",
-                         *           "name": "Shinycards"
-                         *         },
-                         *         "url": "https://www.shinycards.se/pokemon/singles-loskort/kopia-bulbasaur-reverse-holo-mew001-black-star-promo-pokemon-scarlet-violet-151",
-                         *         "price": 29,
-                         *         "currency": "SEK",
-                         *         "inStock": true,
-                         *         "inPreorder": false,
-                         *         "inMonitor": false,
-                         *         "isFullyBooked": false,
-                         *         "matchedAt": "2026-07-29T03:30:08.000Z",
-                         *         "updatedAt": "2026-08-12T14:18:16.455Z",
-                         *         "bargain": null
-                         *       },
-                         *       "referencePriceSnapshotsByProvider": {
-                         *         "tradera": {
-                         *           "provider": "tradera",
-                         *           "price": 55,
-                         *           "currency": "SEK",
-                         *           "priceSek": 55,
-                         *           "snapshotDate": "2026-07-26T00:00:00.000Z"
-                         *         }
-                         *       }
+                         *       "prisjaktId": null
                          *     }
                          */
-                        "application/json": components["schemas"]["ProductWithPricing"];
+                        "application/json": components["schemas"]["Product"];
+                    };
+                };
+                /** @description Product not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/{id}/pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get the current price snapshot for a sealed product
+         * @description Retail price, estimated value, cheapest live shop offer and reference-price snapshots — refreshed by the nightly pricing/scraper jobs, not computed per request (that's `GET /product/{id}/pricing/live`, below). Cached on a short TTL, separately from `GET /product/{id}`, since this is the part of the product that actually changes day to day.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Product _id or technicalName */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The product's current pricing */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CatalogItemPricing"];
                     };
                 };
                 /** @description Product not found */
@@ -5155,7 +5146,7 @@ export interface components {
         ApiError: {
             error: {
                 /** @enum {string} */
-                code: "validationFailed" | "unauthorized" | "forbidden" | "notFound" | "conflict" | "readOnlyField" | "rateLimited" | "premiumRequired" | "internalError";
+                code: "validationFailed" | "unauthorized" | "forbidden" | "notFound" | "conflict" | "readOnlyField" | "rateLimited" | "premiumRequired" | "businessRequired" | "internalError";
                 message: string;
                 details: unknown;
             };
@@ -5254,25 +5245,7 @@ export interface components {
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
-            /**
-             * @description Cheapest current shop price, in SEK
-             * @example 149.5
-             */
-            retailPrice: number | undefined;
-            /**
-             * @description Estimated market value, in SEK
-             * @example 149.5
-             */
-            estimatedValue: number | undefined;
-            /** @description Active shops currently tracking this item */
-            shopCount: number;
-            /** @description Observations the estimate rests on */
-            pricingDataPoints: number;
-            /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
-             */
-            pricingUpdatedAt: string | undefined;
+            lockedFields: string[];
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -5302,33 +5275,13 @@ export interface components {
             firstEdition: boolean;
             wPromo: boolean;
         };
-        CardWithPricing: {
+        CatalogItem: components["schemas"]["Card"] | components["schemas"]["Product"];
+        CatalogItemPricing: {
             /**
              * @description Resource identifier
              * @example 6a577711abc1ce71383d3e10
              */
             id: string;
-            name: string;
-            shortName: string | undefined;
-            technicalName: string;
-            brand: components["schemas"]["Brand"];
-            manufacturer: string;
-            modelNumber: string | undefined;
-            category: components["schemas"]["CategoryRef"] | undefined;
-            expansion: components["schemas"]["ExpansionRef"] | undefined;
-            /**
-             * @description Printing language of the item
-             * @example JPN
-             * @enum {string|null}
-             */
-            language: "ENG" | "JPN" | "CHI" | undefined;
-            alternativeNames: components["schemas"]["AlternativeName"][];
-            supportsMultipackPricing: boolean;
-            /**
-             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
-             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-             */
-            imageUrl: string | undefined;
             /**
              * @description Cheapest current shop price, in SEK
              * @example 149.5
@@ -5348,33 +5301,11 @@ export interface components {
              * @example 2026-07-15T12:03:29.322Z
              */
             pricingUpdatedAt: string | undefined;
-            /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
-             */
-            updatedAt: string;
-            /** @enum {string} */
-            kind: "card";
-            /** @example 4/102 */
-            cardNumber: string;
-            /** @example Rare Holo */
-            rarity: string | undefined;
-            artist: string | undefined;
-            cardmarketId: string | undefined;
-            tcgplayerId: string | undefined;
-            variants: components["schemas"]["CardVariants"] | undefined;
-            prisjaktId: string | undefined;
             lowestShopOffer: components["schemas"]["LowestShopOffer"] | undefined;
             referencePriceSnapshotsByProvider: {
                 [key: string]: components["schemas"]["ReferencePriceSummary"];
             };
         };
-        CatalogItem: components["schemas"]["Card"] | components["schemas"]["Product"];
         CatalogItemRef: {
             /**
              * @description Resource identifier
@@ -5489,11 +5420,11 @@ export interface components {
             expansion: components["schemas"]["ExpansionRef"];
             cards: {
                 count: number;
-                items: components["schemas"]["CardWithPricing"][];
+                items: components["schemas"]["Card"][];
             };
             sealed: {
                 count: number;
-                items: components["schemas"]["ProductWithPricing"][];
+                items: components["schemas"]["Product"][];
             };
         };
         ExpansionLivePricing: {
@@ -5801,25 +5732,7 @@ export interface components {
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
-            /**
-             * @description Cheapest current shop price, in SEK
-             * @example 149.5
-             */
-            retailPrice: number | undefined;
-            /**
-             * @description Estimated market value, in SEK
-             * @example 149.5
-             */
-            estimatedValue: number | undefined;
-            /** @description Active shops currently tracking this item */
-            shopCount: number;
-            /** @description Observations the estimate rests on */
-            pricingDataPoints: number;
-            /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
-             */
-            pricingUpdatedAt: string | undefined;
+            lockedFields: string[];
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -5837,78 +5750,10 @@ export interface components {
             epid: string | undefined;
             priceChartingId: string | undefined;
             prisjaktId: string | undefined;
-        };
-        ProductWithPricing: {
-            /**
-             * @description Resource identifier
-             * @example 6a577711abc1ce71383d3e10
-             */
-            id: string;
-            name: string;
-            shortName: string | undefined;
-            technicalName: string;
-            brand: components["schemas"]["Brand"];
-            manufacturer: string;
-            modelNumber: string | undefined;
-            category: components["schemas"]["CategoryRef"] | undefined;
-            expansion: components["schemas"]["ExpansionRef"] | undefined;
-            /**
-             * @description Printing language of the item
-             * @example JPN
-             * @enum {string|null}
-             */
-            language: "ENG" | "JPN" | "CHI" | undefined;
-            alternativeNames: components["schemas"]["AlternativeName"][];
-            supportsMultipackPricing: boolean;
-            /**
-             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
-             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
-             */
-            imageUrl: string | undefined;
-            /**
-             * @description Cheapest current shop price, in SEK
-             * @example 149.5
-             */
-            retailPrice: number | undefined;
-            /**
-             * @description Estimated market value, in SEK
-             * @example 149.5
-             */
-            estimatedValue: number | undefined;
-            /** @description Active shops currently tracking this item */
-            shopCount: number;
-            /** @description Observations the estimate rests on */
-            pricingDataPoints: number;
-            /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
-             */
-            pricingUpdatedAt: string | undefined;
-            /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
-             */
-            createdAt: string;
-            /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
-             */
-            updatedAt: string;
-            /** @enum {string} */
-            kind: "sealed";
-            upc: string | undefined;
-            asin: string | undefined;
-            epid: string | undefined;
-            priceChartingId: string | undefined;
-            prisjaktId: string | undefined;
-            lowestShopOffer: components["schemas"]["LowestShopOffer"] | undefined;
-            referencePriceSnapshotsByProvider: {
-                [key: string]: components["schemas"]["ReferencePriceSummary"];
-            };
         };
         ReferencePriceSeries: {
             /** @enum {string} */
-            source: "tcgdex" | "cmapi" | "tradera";
+            source: "tcgdex" | "cmapi" | "tradera" | "pokemonpricetracker";
             /** @enum {string} */
             provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
             /** @enum {string|null} */

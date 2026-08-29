@@ -4,14 +4,14 @@
  * not silent drift.
  *
  * The API registers `Brand`, `CategoryRef`, `ExpansionRef`, `ShopRef` etc. as their own named
- * components and `$ref`s them wherever they're embedded (in `CardWithPricing`, `ProductWithPricing`,
- * `PackRate`, the shop-match schemas, ...), so those are pulled by name directly. `CardWithPricing`
- * is still the extraction source for the handful of shapes that aren't independently registered
+ * components and `$ref`s them wherever they're embedded (in `Card`, `Product`, `PackRate`, the
+ * shop-match schemas, ...), so those are pulled by name directly. `CardSchema` is still the
+ * extraction source for the handful of shapes that aren't independently registered
  * (`lowestShopOffer`'s `bargain`, the reference-price snapshot map).
  */
 import type { components } from '../generated/openapi.js';
 
-type CardSchema = components['schemas']['CardWithPricing'];
+type CardSchema = components['schemas']['Card'];
 type LowestShopOfferSchema = components['schemas']['LowestShopOffer'];
 
 /** A Mongo ObjectId, always a 24-char lowercase hex string. Just `string`, not a branded type;

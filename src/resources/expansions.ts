@@ -11,7 +11,10 @@ export class ExpansionsResource {
   }
 
   /** `GET /expansions/{technicalName}/products`: every card and sealed product in one
-   * expansion, kept as separate `cards`/`sealed` groups. */
+   * expansion, kept as separate `cards`/`sealed` groups. Content only, no pricing fields — pass the
+   * `id`s from the result to `client.cards.pricingBatch()` / `client.products.pricingBatch()` if you
+   * need pricing too. This mirrors the API 1:1 rather than fetching pricing for you, since pricing
+   * for every item in an expansion is a second, separately-cached call the caller may not want. */
   products(technicalName: string): Promise<ExpansionContents> {
     return this.http.get(`/expansions/${encodeURIComponent(technicalName)}/products?grouped=true`);
   }

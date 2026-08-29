@@ -2,6 +2,7 @@ import type { HttpClient, PremiumOptions } from '../http.js';
 import { splitAuthToken, toQueryString } from '../http.js';
 import type {
   CardType,
+  CatalogItemPricing,
   GradingCompany,
   ItemCondition,
   ItemReferencePrices,
@@ -90,5 +91,22 @@ export class ProductsResource {
    * stats job. Premium. */
   livePricing(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<LivePricingForItem> {
     return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}/pricing/live`, options);
+  }
+
+  /** `GET /product/{id}/pricing`: this product's current pricing snapshot — `retailPrice`,
+   * `estimatedValue`, `lowestShopOffer`, `referencePriceSnapshotsByProvider` — refreshed once a day
+   * by the nightly pricing/scraper jobs. `get()` returns content only; this is the separate,
+   * shorter-cached call for the part of a product that actually changes day to day. */
+  pricing(idOrTechnicalName: string): Promise<CatalogItemPricing> {
+    return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}/pricing`);
+  }
+
+  /** `GET /product/pricing`: pricing for up to 200 sealed products in one request, keyed by `id` —
+   * the batch counterpart to `pricing()`, for a page of results (a search page, an expansion's
+   * contents) that needs pricing for many items at once. Unlike `get()`/`pricing()`, this only
+   * accepts `id`s, not technicalNames — pass the `id`s already on the products you fetched. Ids with
+   * no match are silently omitted from the result rather than causing an error. */
+  pricingBatch(ids: string[]): Promise<ListResponse<CatalogItemPricing>> {
+    return this.http.get(`/product/pricing?ids=${ids.map(encodeURIComponent).join(',')}`);
   }
 }

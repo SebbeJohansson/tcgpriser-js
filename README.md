@@ -36,7 +36,12 @@ import { TcgPriser } from 'tcgpriser';
 const tcgpriser = new TcgPriser();
 
 const card = await tcgpriser.cards.get('mega-evolution-ascended-heroes-fezandipiti-ex');
-console.log(card.retailPrice, card.lowestShopOffer?.shop.name);
+console.log(card.name, card.expansion?.name);
+
+// Content (name, images, expansion, ...) and pricing (retailPrice, lowestShopOffer, ...) are
+// separate, differently-cached calls — see "Pricing" below.
+const pricing = await tcgpriser.cards.pricing('mega-evolution-ascended-heroes-fezandipiti-ex');
+console.log(pricing.retailPrice, pricing.lowestShopOffer?.shop.name);
 
 const { data: bargains } = await tcgpriser.bargains.list({ type: 'card' });
 ```
@@ -65,7 +70,24 @@ await tcgpriser.products.matches('scarlet-violet-booster-pack');
 
 ```typescript
 await tcgpriser.expansions.list();
-await tcgpriser.expansions.products('eng-scarlet-violet-journey-together'); // { expansion, cards, sealed }
+await tcgpriser.expansions.products('eng-scarlet-violet-journey-together'); // { expansion, cards, sealed } — content only
+```
+
+### Pricing
+
+`list()`/`get()`/`expansions.products()` all return catalog content only — name, images, brand,
+expansion, rarity. Pricing (`retailPrice`, `estimatedValue`, `lowestShopOffer`,
+`referencePriceSnapshotsByProvider`) is a separate, shorter-cached call: content changes on an
+admin edit or catalog import, pricing refreshes daily, so each is cached at the TTL its own
+freshness supports.
+
+```typescript
+await tcgpriser.cards.pricing('fezandipiti-ex'); // id or technicalName
+await tcgpriser.products.pricing('scarlet-violet-booster-pack');
+
+// Batch form, up to 200 ids at once — ids only, not technicalNames.
+const { data: cards } = await tcgpriser.cards.list({ search: 'pikachu' });
+await tcgpriser.cards.pricingBatch(cards.map((card) => card.id));
 ```
 
 ### Shops

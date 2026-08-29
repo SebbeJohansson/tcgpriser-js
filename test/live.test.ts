@@ -45,9 +45,27 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
 
     const card = await client.cards.get(cards.data[0]!.technicalName);
     expect(card.id).toBe(cards.data[0]!.id);
+    expect(card).not.toHaveProperty('retailPrice');
+
+    const cardPricing = await client.cards.pricing(card.id);
+    expect(cardPricing.id).toBe(card.id);
+    expect(cardPricing).toHaveProperty('retailPrice');
+
+    const { data: cardPricingBatch } = await client.cards.pricingBatch([card.id]);
+    expect(cardPricingBatch[0]?.id).toBe(card.id);
 
     const products = await client.products.list({ limit: 1 });
     expect(products.data[0]?.kind).toBe('sealed');
+    expect(products.data[0]).not.toHaveProperty('retailPrice');
+
+    const product = products.data[0];
+    if (product) {
+      const productPricing = await client.products.pricing(product.id);
+      expect(productPricing.id).toBe(product.id);
+
+      const { data: productPricingBatch } = await client.products.pricingBatch([product.id]);
+      expect(productPricingBatch[0]?.id).toBe(product.id);
+    }
 
     const bargains = await client.bargains.list();
     expect(bargains.pagination).toHaveProperty('total');
