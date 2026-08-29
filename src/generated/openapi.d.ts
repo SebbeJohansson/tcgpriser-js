@@ -1129,6 +1129,142 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/cards/price-stats/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get daily price stats for cards
+         * @description Cards only — the sealed-product equivalent is `GET /product/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Card` collection.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Start date (YYYY-MM-DD) */
+                    startDate?: string;
+                    /** @description End date (YYYY-MM-DD) */
+                    endDate?: string;
+                    /** @description Card name */
+                    productName?: string;
+                    /** @description Technical name */
+                    technicalName?: string;
+                    /** @description Category technical name */
+                    category?: string;
+                    /** @description Expansion technical name */
+                    expansion?: string;
+                    /** @description Category ID (ObjectId) */
+                    categoryId?: string;
+                    /** @description Expansion ID (ObjectId) */
+                    expansionId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ItemDailyStats"];
+                    };
+                };
+                /** @description Invalid date format */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No cards found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/price-stats/estimated-values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get estimated values for cards based on recent sales data
+         * @description Cards only — the sealed-product equivalent is `GET /product/price-stats/estimated-values`. Same filters and shape as `GET /price-stats/estimated-values`, scoped to the `Card` collection.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Page number for pagination */
+                    page?: number;
+                    /** @description Number of cards per page (max 100) */
+                    limit?: number;
+                    /** @description Card name */
+                    productName?: string;
+                    /** @description Technical name */
+                    technicalName?: string;
+                    /** @description Category technical name */
+                    category?: string;
+                    /** @description Expansion technical name */
+                    expansion?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ItemEstimatedValue"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/expansions": {
         parameters: {
             query?: never;
@@ -1250,14 +1386,17 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/expansions/{technicalName}/products": {
+    "/expansions/{technicalName}": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        /** Get all products for a given expansion */
+        /**
+         * Get a single expansion by technical name
+         * @description Metadata only — no cards or sealed products, and no `sealedCount`/`cardCount` (those come from the aggregation `GET /expansions` runs; a plain lookup by technicalName does not recompute them, so this returns an `ExpansionRef` rather than a full `Expansion`). See `GET /expansions/{technicalName}/cards` and `GET /expansions/{technicalName}/products` for its contents.
+         */
         get: {
             parameters: {
                 query?: never;
@@ -1270,7 +1409,149 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description List of products for the expansion */
+                /** @description The expansion */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ExpansionRef"];
+                    };
+                };
+                /** @description Multiple expansions found with the same name (legacy slug) - returns options to choose from */
+                300: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Redirect to the new URL format (when a unique legacy slug is found) */
+                301: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Expansion not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/expansions/{technicalName}/cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all cards for a given expansion
+         * @description Individual cards only. Sealed products (booster boxes, ETBs, tins, ...) are a separate resource — see `GET /expansions/{technicalName}/products`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Technical name of the expansion (e.g., 'eng-scarlet-violet-base-set' or legacy 'scarlet-violet-base-set') */
+                    technicalName: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Cards for the expansion, sorted by card number ascending */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            data?: components["schemas"]["Card"][];
+                        };
+                    };
+                };
+                /** @description Multiple expansions found with the same name (legacy slug) - returns options to choose from */
+                300: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Redirect to the new URL format (when a unique legacy slug is found) */
+                301: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Expansion not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/expansions/{technicalName}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get all sealed products for a given expansion
+         * @description Sealed products only. Individual cards are a separate resource — see `GET /expansions/{technicalName}/cards`.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Technical name of the expansion (e.g., 'eng-scarlet-violet-base-set' or legacy 'scarlet-violet-base-set') */
+                    technicalName: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Sealed products for the expansion, sorted by shop count descending */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1324,98 +1605,6 @@ export interface paths {
                          *           "epid": null,
                          *           "priceChartingId": null,
                          *           "prisjaktId": null
-                         *         },
-                         *         {
-                         *           "id": "6a607b9c954cf540a81602bd",
-                         *           "kind": "sealed",
-                         *           "name": "Mega Evolution 30th Celebration Binder Collection",
-                         *           "shortName": "30th Celebration Binder Collection",
-                         *           "technicalName": "mega-evolution-30th-celebration-binder-collection",
-                         *           "brand": {
-                         *             "id": "6841cfd656b8f021ecb0483b",
-                         *             "name": "Pokémon",
-                         *             "technicalName": "pokemon",
-                         *             "createdAt": "2025-06-05T17:11:50.316Z",
-                         *             "updatedAt": "2025-06-05T17:11:50.316Z"
-                         *           },
-                         *           "manufacturer": "Pokemon",
-                         *           "modelNumber": null,
-                         *           "category": {
-                         *             "id": "696a3ab4683b8133873c1b0d",
-                         *             "name": "Binder Collection",
-                         *             "technicalName": "binder-collection"
-                         *           },
-                         *           "expansion": {
-                         *             "id": "6a5f8693d7d69cc373a5d74f",
-                         *             "name": "Mega Evolution 30th Celebration",
-                         *             "shortName": "30th Celebration",
-                         *             "technicalName": "eng-mega-evolution-30th-celebration",
-                         *             "language": "ENG",
-                         *             "code": "30c",
-                         *             "cardCode": null,
-                         *             "seriesName": "Mega Evolution",
-                         *             "releaseDate": "2026-09-16T00:00:00.000Z",
-                         *             "logoUrl": "https://ik.imagekit.io/xgtytqdnv/expansions/eng-mega-evolution-30th-celebration-logo.png",
-                         *             "symbolUrl": null,
-                         *             "imageUrl": null
-                         *           },
-                         *           "language": "ENG",
-                         *           "alternativeNames": [],
-                         *           "supportsMultipackPricing": false,
-                         *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-mega-evolution-30th-celebration-binder-collection.png",
-                         *           "createdAt": "2026-07-22T08:13:16.271Z",
-                         *           "updatedAt": "2026-08-12T09:00:01.623Z",
-                         *           "upc": null,
-                         *           "asin": null,
-                         *           "epid": null,
-                         *           "priceChartingId": null,
-                         *           "prisjaktId": null
-                         *         },
-                         *         {
-                         *           "id": "6a607b9c954cf540a81602bf",
-                         *           "kind": "sealed",
-                         *           "name": "Mega Evolution 30th Celebration Eevee 2-Pack Blister",
-                         *           "shortName": "30th Celebration Eevee 2-Pack Blister",
-                         *           "technicalName": "mega-evolution-30th-celebration-eevee-2-pack-blister",
-                         *           "brand": {
-                         *             "id": "6841cfd656b8f021ecb0483b",
-                         *             "name": "Pokémon",
-                         *             "technicalName": "pokemon",
-                         *             "createdAt": "2025-06-05T17:11:50.316Z",
-                         *             "updatedAt": "2025-06-05T17:11:50.316Z"
-                         *           },
-                         *           "manufacturer": "Pokemon",
-                         *           "modelNumber": null,
-                         *           "category": {
-                         *             "id": "6a607b9b954cf540a816028c",
-                         *             "name": "Eevee 2-Pack Blister",
-                         *             "technicalName": "eevee-2-pack-blister"
-                         *           },
-                         *           "expansion": {
-                         *             "id": "6a5f8693d7d69cc373a5d74f",
-                         *             "name": "Mega Evolution 30th Celebration",
-                         *             "shortName": "30th Celebration",
-                         *             "technicalName": "eng-mega-evolution-30th-celebration",
-                         *             "language": "ENG",
-                         *             "code": "30c",
-                         *             "cardCode": null,
-                         *             "seriesName": "Mega Evolution",
-                         *             "releaseDate": "2026-09-16T00:00:00.000Z",
-                         *             "logoUrl": "https://ik.imagekit.io/xgtytqdnv/expansions/eng-mega-evolution-30th-celebration-logo.png",
-                         *             "symbolUrl": null,
-                         *             "imageUrl": null
-                         *           },
-                         *           "language": "ENG",
-                         *           "alternativeNames": [],
-                         *           "supportsMultipackPricing": false,
-                         *           "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-mega-evolution-30th-celebration-eevee-2-pack-blister.png",
-                         *           "createdAt": "2026-07-22T08:13:16.305Z",
-                         *           "updatedAt": "2026-08-12T09:00:01.623Z",
-                         *           "upc": null,
-                         *           "asin": null,
-                         *           "epid": null,
-                         *           "priceChartingId": null,
-                         *           "prisjaktId": null
                          *         }
                          *       ],
                          *       "pagination": {
@@ -1426,7 +1615,9 @@ export interface paths {
                          *       }
                          *     }
                          */
-                        "application/json": components["schemas"]["ExpansionContents"];
+                        "application/json": {
+                            data?: components["schemas"]["Product"][];
+                        };
                     };
                 };
                 /** @description Multiple expansions found with the same name (legacy slug) - returns options to choose from */
@@ -1467,7 +1658,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/expansions/{technicalName}/products/live-pricing": {
+    "/expansions/{technicalName}/cards/live-pricing": {
         parameters: {
             query?: never;
             header?: never;
@@ -1475,7 +1666,7 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get freshly computed pricing for every product in an expansion
+         * Get freshly computed pricing for every card in an expansion
          * @description The one Premium-gated read in the API: a signed-in user without an active subscription gets 403 `premiumRequired`, not 401. Rate limited per client.
          *
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
@@ -1492,7 +1683,96 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Live pricing for the expansion's products */
+                /** @description Live pricing for the expansion's cards */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ExpansionLivePricing"];
+                    };
+                };
+                /** @description Missing or invalid bearer token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Active Premium subscription required */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Expansion not found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Rate limit exceeded */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/expansions/{technicalName}/products/live-pricing": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get freshly computed pricing for every sealed product in an expansion
+         * @description The one Premium-gated read in the API: a signed-in user without an active subscription gets 403 `premiumRequired`, not 401. Rate limited per client.
+         *
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description Expansion technicalName */
+                    technicalName: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Live pricing for the expansion's sealed products */
                 200: {
                     headers: {
                         [name: string]: unknown;
@@ -1514,30 +1794,6 @@ export interface paths {
                          *             "shopCount": 0,
                          *             "pricingDataPoints": 0,
                          *             "calculatedAt": "2026-08-12T16:34:43.410Z"
-                         *           }
-                         *         },
-                         *         {
-                         *           "id": "6a607b9c954cf540a81602bd",
-                         *           "name": "Mega Evolution 30th Celebration Binder Collection",
-                         *           "technicalName": "mega-evolution-30th-celebration-binder-collection",
-                         *           "pricing": {
-                         *             "retailPrice": null,
-                         *             "estimatedValue": null,
-                         *             "shopCount": 0,
-                         *             "pricingDataPoints": 0,
-                         *             "calculatedAt": "2026-08-12T16:34:43.417Z"
-                         *           }
-                         *         },
-                         *         {
-                         *           "id": "6a607b9c954cf540a81602bf",
-                         *           "name": "Mega Evolution 30th Celebration Eevee 2-Pack Blister",
-                         *           "technicalName": "mega-evolution-30th-celebration-eevee-2-pack-blister",
-                         *           "pricing": {
-                         *             "retailPrice": null,
-                         *             "estimatedValue": null,
-                         *             "shopCount": 0,
-                         *             "pricingDataPoints": 0,
-                         *             "calculatedAt": "2026-08-12T16:34:43.427Z"
                          *           }
                          *         }
                          *       ]
@@ -3984,6 +4240,146 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/product/price-stats/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get daily price stats for sealed products
+         * @description Sealed products only — the card equivalent is `GET /cards/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Product` collection.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Start date (YYYY-MM-DD) */
+                    startDate?: string;
+                    /** @description End date (YYYY-MM-DD) */
+                    endDate?: string;
+                    /** @description Product name */
+                    productName?: string;
+                    /** @description Technical name */
+                    technicalName?: string;
+                    /** @description PriceCharting ID */
+                    priceChartingId?: string;
+                    /** @description Model number */
+                    modelNumber?: string;
+                    /** @description Category technical name */
+                    category?: string;
+                    /** @description Expansion technical name */
+                    expansion?: string;
+                    /** @description Category ID (ObjectId) */
+                    categoryId?: string;
+                    /** @description Expansion ID (ObjectId) */
+                    expansionId?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ItemDailyStats"];
+                    };
+                };
+                /** @description Invalid date format */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description No products found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/price-stats/estimated-values": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get estimated values for sealed products based on recent sales data
+         * @description Sealed products only — the card equivalent is `GET /cards/price-stats/estimated-values`. Same filters and shape as `GET /price-stats/estimated-values`, scoped to the `Product` collection.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Page number for pagination */
+                    page?: number;
+                    /** @description Number of products per page (max 100) */
+                    limit?: number;
+                    /** @description Product name */
+                    productName?: string;
+                    /** @description Technical name */
+                    technicalName?: string;
+                    /** @description Category technical name */
+                    category?: string;
+                    /** @description Expansion technical name */
+                    expansion?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Success */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ItemEstimatedValue"];
+                    };
+                };
+                /** @description Server error */
+                500: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/shop-match-stats/product/{productId}": {
         parameters: {
             query?: never;
@@ -5146,7 +5542,7 @@ export interface components {
         ApiError: {
             error: {
                 /** @enum {string} */
-                code: "validationFailed" | "unauthorized" | "forbidden" | "notFound" | "conflict" | "readOnlyField" | "rateLimited" | "premiumRequired" | "businessRequired" | "internalError";
+                code: "validationFailed" | "unauthorized" | "forbidden" | "notFound" | "conflict" | "readOnlyField" | "rateLimited" | "premiumRequired" | "businessRequired" | "creditsExhausted" | "internalError";
                 message: string;
                 details: unknown;
             };
@@ -5415,17 +5811,6 @@ export interface components {
              * @example 2026-07-15T12:03:29.322Z
              */
             updatedAt: string;
-        };
-        ExpansionContents: {
-            expansion: components["schemas"]["ExpansionRef"];
-            cards: {
-                count: number;
-                items: components["schemas"]["Card"][];
-            };
-            sealed: {
-                count: number;
-                items: components["schemas"]["Product"][];
-            };
         };
         ExpansionLivePricing: {
             expansion: {

@@ -68,16 +68,20 @@ await tcgpriser.products.matches('scarlet-violet-booster-pack');
 
 ### Expansions
 
+Cards and sealed products are never merged into one response — fetch each separately.
+
 ```typescript
 await tcgpriser.expansions.list();
-await tcgpriser.expansions.products('eng-scarlet-violet-journey-together'); // { expansion, cards, sealed } — content only
+await tcgpriser.expansions.get('eng-scarlet-violet-journey-together'); // metadata only
+await tcgpriser.expansions.cards('eng-scarlet-violet-journey-together'); // content only
+await tcgpriser.expansions.sealedProducts('eng-scarlet-violet-journey-together'); // content only
 ```
 
 ### Pricing
 
-`list()`/`get()`/`expansions.products()` all return catalog content only — name, images, brand,
-expansion, rarity. Pricing (`retailPrice`, `estimatedValue`, `lowestShopOffer`,
-`referencePriceSnapshotsByProvider`) is a separate, shorter-cached call: content changes on an
+`list()`/`get()`/`expansions.cards()`/`expansions.sealedProducts()` all return catalog content
+only — name, images, brand, expansion, rarity. Pricing (`retailPrice`, `estimatedValue`,
+`lowestShopOffer`, `referencePriceSnapshotsByProvider`) is a separate, shorter-cached call: content changes on an
 admin edit or catalog import, pricing refreshes daily, so each is cached at the TTL its own
 freshness supports.
 

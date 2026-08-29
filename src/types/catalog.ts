@@ -1,14 +1,15 @@
 import type { components } from '../generated/openapi.js';
 
 /** A card, as returned by `client.cards.get()` / `client.cards.list()`, and as embedded in
- * `client.expansions.products()`. `kind: 'card'` is a literal on the generated type, which is what
+ * `client.expansions.cards()`. `kind: 'card'` is a literal on the generated type, which is what
  * makes `CatalogItem` (below) discriminate cleanly. Content only — no pricing fields; fetch those
  * separately via `client.cards.pricing()` / `.pricingBatch()`. */
 export type Card = components['schemas']['Card'];
 
 /** A sealed product (booster box, ETB, tin, ...), as returned by `client.products.get()` /
- * `client.products.list()`. `kind: 'sealed'` is a literal on the generated type. Content only — no
- * pricing fields; fetch those separately via `client.products.pricing()` / `.pricingBatch()`. */
+ * `client.products.list()`, and as embedded in `client.expansions.sealedProducts()`. `kind:
+ * 'sealed'` is a literal on the generated type. Content only — no pricing fields; fetch those
+ * separately via `client.products.pricing()` / `.pricingBatch()`. */
 export type SealedProduct = components['schemas']['Product'];
 
 /** A card or sealed product, discriminated on `kind`. */
