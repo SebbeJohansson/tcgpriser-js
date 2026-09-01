@@ -1222,7 +1222,7 @@ export interface paths {
                 query?: {
                     /** @description Page number for pagination */
                     page?: number;
-                    /** @description Number of cards per page (max 100) */
+                    /** @description Number of cards per page (max 50) */
                     limit?: number;
                     /** @description Card name */
                     productName?: string;
@@ -1996,6 +1996,10 @@ export interface paths {
                     categoryId?: string;
                     /** @description Expansion ID (ObjectId) */
                     expansionId?: string;
+                    /** @description Max products to return (page over the matching set with `skip`) */
+                    limit?: number;
+                    /** @description Number of matching products to skip */
+                    skip?: number;
                 };
                 header?: never;
                 path?: never;
@@ -4337,7 +4341,7 @@ export interface paths {
                 query?: {
                     /** @description Page number for pagination */
                     page?: number;
-                    /** @description Number of products per page (max 100) */
+                    /** @description Number of products per page (max 50) */
                     limit?: number;
                     /** @description Product name */
                     productName?: string;
@@ -6511,7 +6515,7 @@ export interface components {
             shopUrl: components["schemas"]["ShopUrl"];
         };
         /** @enum {string} */
-        ShopUrlStatus: "pending" | "active" | "invalid" | "rejected" | "sanityRejected";
+        ShopUrlStatus: "pending" | "active" | "invalid" | "rejected" | "sanityRejected" | "wrongBrand";
         SoldPrice: {
             /**
              * @description Resource identifier

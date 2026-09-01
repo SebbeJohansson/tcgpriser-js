@@ -18,7 +18,7 @@ export interface ShopMatchStatsForShopParams {
   startDate?: string;
   /** `YYYY-MM-DD` */
   endDate?: string;
-  /** Maximum products to return. Default 100. */
+  /** Maximum products to return. Default 20, max 50. */
   limit?: number;
 }
 
