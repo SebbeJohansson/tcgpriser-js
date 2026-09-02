@@ -8,6 +8,8 @@ export type TcgPriserErrorCode =
   | 'readOnlyField'
   | 'rateLimited'
   | 'premiumRequired'
+  | 'businessRequired'
+  | 'creditsExhausted'
   | 'internalError'
   /** Response body wasn't the `{ error: { code, message } }` shape. Probably a proxy or gateway
    * error in front of the API. */

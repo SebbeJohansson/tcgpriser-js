@@ -39,6 +39,8 @@ const KNOWN_ERROR_CODES: ReadonlySet<string> = new Set([
   'readOnlyField',
   'rateLimited',
   'premiumRequired',
+  'businessRequired',
+  'creditsExhausted',
   'internalError',
 ]);
 

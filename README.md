@@ -121,33 +121,33 @@ await tcgpriser.packRates.get(expansionId);
 
 ### `cards`
 
-| Method | Description |
-|---|---|
-| `list(params)` | Search or list cards |
-| `get(id)` | Fetch one card by id or technicalName |
-| `matches(id, params)` | Current shop listings matched to this card |
-| `prices(id, params)` 🔒 | Individual marketplace sale records |
-| `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / eBay / Tradera price history |
-| `livePricing(id)` 🔒 | Pricing computed fresh for this request |
+| Method | Description | Credits |
+|---|---|---|
+| `list(params)` | Search or list cards | — |
+| `get(id)` | Fetch one card by id or technicalName | — |
+| `matches(id, params)` | Current shop listings matched to this card | — |
+| `prices(id, params)` 🔒 | Individual marketplace sale records | 2 |
+| `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / eBay / Tradera price history | 2 |
+| `livePricing(id)` 🔒 | Pricing computed fresh for this request | 3 |
 
 ### `products`
 
-| Method | Description |
-|---|---|
-| `list(params)` | Search or list sealed products |
-| `get(id)` | Fetch one product by id or technicalName |
-| `matches(id, params)` | Current shop listings matched to this product |
-| `prices(id, params)` 🔒 | Individual marketplace sale records |
-| `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / Tradera price history |
-| `livePricing(id)` 🔒 | Pricing computed fresh for this request |
+| Method | Description | Credits |
+|---|---|---|
+| `list(params)` | Search or list sealed products | — |
+| `get(id)` | Fetch one product by id or technicalName | — |
+| `matches(id, params)` | Current shop listings matched to this product | — |
+| `prices(id, params)` 🔒 | Individual marketplace sale records | 2 |
+| `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / Tradera price history | 2 |
+| `livePricing(id)` 🔒 | Pricing computed fresh for this request | 3 |
 
 ### `expansions`
 
-| Method | Description |
-|---|---|
-| `list()` | Every expansion |
-| `products(technicalName)` | Every card and sealed product in one expansion |
-| `livePricing(technicalName)` 🔒 | Fresh pricing for every item in one expansion |
+| Method | Description | Credits |
+|---|---|---|
+| `list()` | Every expansion | — |
+| `products(technicalName)` | Every card and sealed product in one expansion | — |
+| `livePricing(technicalName)` 🔒 | Fresh pricing for every item in one expansion | 8 |
 
 ### `shops`
 
@@ -166,33 +166,33 @@ await tcgpriser.packRates.get(expansionId);
 
 ### `shopMatchStats` 🔒
 
-| Method | Description |
-|---|---|
-| `forProduct(id, params)` | One product's price history, broken out per shop |
-| `forShop(shop, params)` | One shop's price history, broken out per product |
-| `compare(params)` | One product's price at every shop that carries it |
+| Method | Description | Credits |
+|---|---|---|
+| `forProduct(id, params)` | One product's price history, broken out per shop | 3 |
+| `forShop(shop, params)` | One shop's price history, broken out per product | 3 |
+| `compare(params)` | One product's price at every shop that carries it | 3 |
 
 ### `priceStats`
 
-| Method | Description |
-|---|---|
-| `daily(params)` | Daily average price history |
-| `estimatedValues(params)` | Current estimated market value |
-| `topProducts(params)` | Items ranked by shop availability |
-| `product(id)` 🔒 | Daily history, estimate and variant summary for one product |
-| `productFull(id)` 🔒 | `product()` plus the item's current shop matches |
-| `productDaily(id, params)` 🔒 | Daily history for one product, custom window |
-| `productDailyLast30(id)` 🔒 | Daily history, fixed to the last 30 days |
-| `productEstimatedValue(id)` 🔒 | Current estimated value only |
-| `productByVariant(id, params)` 🔒 | Price stats per card condition/grade |
-| `productDailyByVariant(id, params)` 🔒 | Daily history for one condition/grade |
+| Method | Description | Credits |
+|---|---|---|
+| `daily(params)` | Daily average price history | — |
+| `estimatedValues(params)` | Current estimated market value | — |
+| `topProducts(params)` | Items ranked by shop availability | — |
+| `product(id)` 🔒 | Daily history, estimate and variant summary for one product | 2 |
+| `productFull(id)` 🔒 | `product()` plus the item's current shop matches | 5 |
+| `productDaily(id, params)` 🔒 | Daily history for one product, custom window | 1 |
+| `productDailyLast30(id)` 🔒 | Daily history, fixed to the last 30 days | 1 |
+| `productEstimatedValue(id)` 🔒 | Current estimated value only | 2 |
+| `productByVariant(id, params)` 🔒 | Price stats per card condition/grade | 3 |
+| `productDailyByVariant(id, params)` 🔒 | Daily history for one condition/grade | 1 |
 
 ### `bargains`
 
-| Method | Description |
-|---|---|
-| `list(params)` | Current listings priced below their reference price |
-| `search(params)` 🔒 | Same, with real pagination and filters |
+| Method | Description | Credits |
+|---|---|---|
+| `list(params)` | Current listings priced below their reference price | — |
+| `search(params)` 🔒 | Same, with real pagination and filters | 5 |
 
 ### `packRates`
 
@@ -214,7 +214,9 @@ await tcgpriser.packRates.get(expansionId);
 |---|---|
 | `platform()` | Platform-wide overview counts |
 
-🔒 = premium, needs an API token. See below.
+🔒 = premium, needs an API token. See below. The Credits column applies only to methods that draw
+from your weekly credit allowance when called with an API token. A session login (not available to
+this client) and `shopUrls` are exempt. See [Credits](#credits).
 
 ## Authentication
 
@@ -245,6 +247,31 @@ try {
   }
 }
 ```
+
+## Credits
+
+Methods marked with a credit count in the tables above draw from your account's weekly credit
+allowance when called with an API token (Premium: 1500/week, Business: 6000/week, both reset Monday
+00:00 UTC). Cost is weighted by how much work the call does server-side: a cached single-item lookup
+costs less than a whole-expansion recompute. `expansions.livePricing` is the most expensive call in
+the API at 8 credits, since it recomputes pricing for every card or product in the set.
+
+Once the week's credits run out, further calls reject with `429 creditsExhausted`, surfaced the same
+way as any other error:
+
+```typescript
+try {
+  await tcgpriser.cards.livePricing('fezandipiti-ex');
+} catch (error) {
+  if (error instanceof TcgPriserError && error.code === 'creditsExhausted') {
+    console.log('Out of credits for this week:', error.message);
+  }
+}
+```
+
+This client doesn't currently surface the `X-Credits-Remaining` response header. To track your
+remaining balance mid-week, read it off the raw HTTP response yourself outside this SDK, or poll
+`GET /subscription` on the main API.
 
 ## Options
 
