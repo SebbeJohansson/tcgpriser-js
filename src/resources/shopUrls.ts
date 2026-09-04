@@ -1,13 +1,13 @@
-import type { HttpClient, PremiumOptions } from '../http.js';
+import type { HttpClient, RequestOptions } from '../http.js';
 import type { ShopUrlMutationResult } from '../types/index.js';
 
-export interface SubmitShopUrlParams extends PremiumOptions {
+export interface SubmitShopUrlParams extends RequestOptions {
   url: string;
   /** Shop technicalName. Auto-created if it doesn't exist yet. */
   shop: string;
 }
 
-export interface AssignShopUrlProductParams extends PremiumOptions {
+export interface AssignShopUrlProductParams extends RequestOptions {
   /** Product/card id to link, or `null` to unlink and let auto-matching resume. */
   productId: string | null;
 }
@@ -19,8 +19,8 @@ export class ShopUrlsResource {
 
   /** `POST /shop-urls/submit`: submit a shop URL for scraping. */
   submit(params: SubmitShopUrlParams): Promise<ShopUrlMutationResult> {
-    const { authToken, url, shop } = params;
-    return this.http.post('/shop-urls/submit', { url, shop }, { authToken });
+    const { url, shop, ...requestOptions } = params;
+    return this.http.post('/shop-urls/submit', { url, shop }, requestOptions);
   }
 
   /** `PATCH /shop-urls/{id}/product`: manually assign (or clear) the product a shop URL resolves to. */
@@ -28,11 +28,11 @@ export class ShopUrlsResource {
     shopUrlId: string,
     params: AssignShopUrlProductParams,
   ): Promise<ShopUrlMutationResult> {
-    const { authToken, productId } = params;
+    const { productId, ...requestOptions } = params;
     return this.http.patch(
       `/shop-urls/${encodeURIComponent(shopUrlId)}/product`,
       { productId },
-      { authToken },
+      requestOptions,
     );
   }
 }

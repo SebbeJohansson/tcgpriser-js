@@ -1,5 +1,5 @@
-import type { HttpClient, PremiumOptions } from '../http.js';
-import { splitAuthToken, toQueryString } from '../http.js';
+import type { HttpClient, RequestOptions } from '../http.js';
+import { splitRequestOptions, toQueryString } from '../http.js';
 import type {
   CardType,
   GradingCompany,
@@ -16,7 +16,7 @@ import type {
 
 /** Filters shared by `daily()` and `estimatedValues()`: all narrow which product(s) the stats
  * cover; combine as many as you like. */
-export interface ProductFilterParams {
+export interface ProductFilterParams extends RequestOptions {
   productName?: string;
   technicalName?: string;
   priceChartingId?: string;
@@ -43,24 +43,21 @@ export interface EstimatedValuesParams extends ProductFilterParams {
   limit?: number;
 }
 
-export interface TopProductsParams {
+export interface TopProductsParams extends RequestOptions {
   limit?: number;
 }
 
-export interface ProductDailyStatsParams {
-  authToken?: string;
+export interface ProductDailyStatsParams extends RequestOptions {
   /** Number of days to retrieve, from today backwards. Default 30. */
   days?: number;
 }
 
-export interface ProductByVariantParams {
-  authToken?: string;
+export interface ProductByVariantParams extends RequestOptions {
   /** Number of days to include in the average calculation. Default 30. */
   days?: number;
 }
 
-export interface ProductDailyByVariantParams {
-  authToken?: string;
+export interface ProductDailyByVariantParams extends RequestOptions {
   cardType: CardType;
   /** Required when `cardType` is `'loose'`. */
   condition?: ItemCondition;
@@ -77,30 +74,33 @@ export class PriceStatsResource {
 
   /** `GET /price-stats/daily`: daily average price history, filtered to matching product(s). */
   daily(params: DailyPriceStatsParams = {}): Promise<ListResponse<ItemDailyStats>> {
-    return this.http.get(`/price-stats/daily${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/price-stats/daily${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /price-stats/estimated-values`: current estimated market value, filtered to matching
    * product(s). */
   estimatedValues(params: EstimatedValuesParams = {}): Promise<ListResponse<ItemEstimatedValue>> {
-    return this.http.get(`/price-stats/estimated-values${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/price-stats/estimated-values${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /price-stats/top-products`: items ranked by shop availability (how many shops carry
    * them), not by price. */
   topProducts(params: TopProductsParams = {}): Promise<ListResponse<TopItem>> {
-    return this.http.get(`/price-stats/top-products${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/price-stats/top-products${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /price-stats/product/{id}`: daily price history, current estimate, and a variant-count
    * summary for one product. Premium. */
-  product(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<ItemStats> {
+  product(idOrTechnicalName: string, options: RequestOptions = {}): Promise<ItemStats> {
     return this.http.get(`/price-stats/product/${encodeURIComponent(idOrTechnicalName)}`, options);
   }
 
   /** `GET /price-stats/product/{id}/full`: everything `product()` has, plus the item's current
    * shop matches. Premium. */
-  productFull(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<ItemFullStats> {
+  productFull(idOrTechnicalName: string, options: RequestOptions = {}): Promise<ItemFullStats> {
     return this.http.get(`/price-stats/product/${encodeURIComponent(idOrTechnicalName)}/full`, options);
   }
 
@@ -110,16 +110,16 @@ export class PriceStatsResource {
     idOrTechnicalName: string,
     params: ProductDailyStatsParams = {},
   ): Promise<ItemDailyStats> {
-    const [query, authToken] = splitAuthToken(params);
+    const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
       `/price-stats/product/${encodeURIComponent(idOrTechnicalName)}/daily${toQueryString(query)}`,
-      { authToken },
+      requestOptions,
     );
   }
 
   /** `GET /price-stats/product/{id}/daily-last-30`: daily price history for the last 30 days
    * exactly (no window param, for callers that want a stable cache key). Premium. */
-  productDailyLast30(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<ItemDailyStats> {
+  productDailyLast30(idOrTechnicalName: string, options: RequestOptions = {}): Promise<ItemDailyStats> {
     return this.http.get(
       `/price-stats/product/${encodeURIComponent(idOrTechnicalName)}/daily-last-30`,
       options,
@@ -129,7 +129,7 @@ export class PriceStatsResource {
   /** `GET /price-stats/product/{id}/estimated-value`: current estimated value only. Premium. */
   productEstimatedValue(
     idOrTechnicalName: string,
-    options: PremiumOptions = {},
+    options: RequestOptions = {},
   ): Promise<ItemEstimatedValue> {
     return this.http.get(
       `/price-stats/product/${encodeURIComponent(idOrTechnicalName)}/estimated-value`,
@@ -143,10 +143,10 @@ export class PriceStatsResource {
     idOrTechnicalName: string,
     params: ProductByVariantParams = {},
   ): Promise<ItemVariantStats> {
-    const [query, authToken] = splitAuthToken(params);
+    const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
       `/price-stats/product/${encodeURIComponent(idOrTechnicalName)}/by-variant${toQueryString(query)}`,
-      { authToken },
+      requestOptions,
     );
   }
 
@@ -157,10 +157,10 @@ export class PriceStatsResource {
     idOrTechnicalName: string,
     params: ProductDailyByVariantParams,
   ): Promise<ItemVariantDailyStats> {
-    const [query, authToken] = splitAuthToken(params);
+    const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
       `/price-stats/product/${encodeURIComponent(idOrTechnicalName)}/daily-by-variant${toQueryString(query)}`,
-      { authToken },
+      requestOptions,
     );
   }
 }

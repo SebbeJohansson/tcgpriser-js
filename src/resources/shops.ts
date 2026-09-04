@@ -1,8 +1,8 @@
-import type { HttpClient } from '../http.js';
-import { toQueryString } from '../http.js';
+import type { HttpClient, RequestOptions } from '../http.js';
+import { splitRequestOptions, toQueryString } from '../http.js';
 import type { Shop } from '../types/index.js';
 
-export interface ListShopsParams {
+export interface ListShopsParams extends RequestOptions {
   active?: boolean;
 }
 
@@ -11,12 +11,13 @@ export class ShopsResource {
 
   /** `GET /shops`: every tracked shop. Unwrapped to a plain array, nothing to paginate here. */
   async list(params: ListShopsParams = {}): Promise<Shop[]> {
-    const res = await this.http.get<{ data: Shop[] }>(`/shops${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    const res = await this.http.get<{ data: Shop[] }>(`/shops${toQueryString(query)}`, requestOptions);
     return res.data;
   }
 
   /** `GET /shops/{id}`: fetch one shop by its id or technicalName. */
-  get(idOrTechnicalName: string): Promise<Shop> {
-    return this.http.get(`/shops/${encodeURIComponent(idOrTechnicalName)}`);
+  get(idOrTechnicalName: string, options: RequestOptions = {}): Promise<Shop> {
+    return this.http.get(`/shops/${encodeURIComponent(idOrTechnicalName)}`, options);
   }
 }

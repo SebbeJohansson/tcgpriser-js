@@ -1,5 +1,5 @@
-import type { HttpClient } from '../http.js';
-import { toQueryString } from '../http.js';
+import type { HttpClient, RequestOptions } from '../http.js';
+import { splitRequestOptions, toQueryString } from '../http.js';
 import type { ListResponse, PaginationParams, ShopMatch, ShopMatchesForShop, ShopMatchStats } from '../types/index.js';
 
 export interface ListShopMatchesParams extends PaginationParams {
@@ -23,16 +23,22 @@ export class ShopMatchesResource {
 
   /** `GET /shop-matches`: every current match across every shop (latest record per url+shop). */
   list(params: ListShopMatchesParams = {}): Promise<ListResponse<ShopMatch>> {
-    return this.http.get(`/shop-matches${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/shop-matches${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /shop-matches/{shop}`: every current match at one shop (latest record per url). */
   forShop(technicalName: string, params: ShopMatchesForShopParams = {}): Promise<ShopMatchesForShop> {
-    return this.http.get(`/shop-matches/${encodeURIComponent(technicalName)}${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(
+      `/shop-matches/${encodeURIComponent(technicalName)}${toQueryString(query)}`,
+      requestOptions,
+    );
   }
 
   /** `GET /shop-matches/shops`: match counts per shop (based on latest records only). */
   shopStats(params: PaginationParams = {}): Promise<ListResponse<ShopMatchStats>> {
-    return this.http.get(`/shop-matches/shops${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/shop-matches/shops${toQueryString(query)}`, requestOptions);
   }
 }

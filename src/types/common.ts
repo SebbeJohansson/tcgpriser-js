@@ -10,6 +10,7 @@
  * (`lowestShopOffer`'s `bargain`, the reference-price snapshot map).
  */
 import type { components } from '../generated/openapi.js';
+import type { RequestOptions } from '../http.js';
 
 type CardSchema = components['schemas']['Card'];
 type LowestShopOfferSchema = components['schemas']['LowestShopOffer'];
@@ -36,8 +37,14 @@ export interface ListResponse<T> {
   pagination: PageMeta;
 }
 
-/** Query params shared by every offset-paginated list endpoint. */
-export interface PaginationParams {
+/**
+ * Query params shared by every offset-paginated list endpoint.
+ *
+ * Extends `RequestOptions` so `signal` and `timeoutMs` can be passed inline alongside the filters,
+ * rather than as a second argument on some methods and a merged field on others. `splitRequestOptions`
+ * strips them back out before the query string is built, so they never reach the URL.
+ */
+export interface PaginationParams extends RequestOptions {
   limit?: number;
   skip?: number;
 }

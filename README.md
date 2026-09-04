@@ -14,6 +14,7 @@ A typed Node.js / browser client for the [tcgpriser.se](https://tcgpriser.se) AP
 - ⚡ **Async/await** on every method, no callbacks
 - 🛠️ **Full IntelliSense** for every method and response field
 - 📦 **Zero runtime dependencies**, built on the standard `fetch` API, ships as ESM and CJS
+- ⏱️ **Timeouts and `AbortSignal`** on every call, with a sane default rather than none
 - 🔄 **Types stay in sync with the API**: `yarn generate:types` regenerates them from a live instance
 
 ## Installation
@@ -110,6 +111,26 @@ await tcgpriser.priceStats.estimatedValues({ expansion: 'eng-scarlet-violet-jour
 await tcgpriser.bargains.list({ type: 'sealed' }); // 'sealed' | 'card' | 'all'
 ```
 
+`priceStats` covers cards and sealed products together. To scope to one kind — so an `expansion`
+filter doesn't pull in that set's single cards alongside its booster boxes — use the equivalents on
+`cards` and `products`:
+
+```typescript
+await tcgpriser.cards.dailyStats({ expansion: 'eng-scarlet-violet-journey-together' });
+await tcgpriser.products.estimatedValues({ expansion: 'eng-scarlet-violet-journey-together' });
+```
+
+### Enumerating the catalog
+
+`technicalNames()` returns every slug with its `updatedAt` and nothing else — no pricing joins, no
+paging through full documents. It's what you want for a sitemap, or to work out which items have
+changed since your last sync:
+
+```typescript
+const { data: slugs } = await tcgpriser.cards.technicalNames();
+const stale = slugs.filter((slug) => slug.updatedAt > lastSyncedAt);
+```
+
 ### Pack rates
 
 ```typescript
@@ -119,6 +140,9 @@ await tcgpriser.packRates.get(expansionId);
 
 ## Available Methods
 
+🔒 = premium, 🏢 = business. Both need an API token — see [Authentication](#authentication). The
+Credits column applies only to calls that draw from your weekly allowance; see [Credits](#credits).
+
 ### `cards`
 
 | Method | Description | Credits |
@@ -126,28 +150,45 @@ await tcgpriser.packRates.get(expansionId);
 | `list(params)` | Search or list cards | — |
 | `get(id)` | Fetch one card by id or technicalName | — |
 | `matches(id, params)` | Current shop listings matched to this card | — |
+| `pricing(id)` | This card's current pricing snapshot | — |
+| `pricingBatch(ids)` | Pricing for up to 200 cards at once, by id | — |
+| `technicalNames()` | Every card's slug and `updatedAt`, for sitemaps and syncs | — |
+| `dailyStats(params)` | Daily average price history, cards only | — |
+| `estimatedValues(params)` | Current estimated market value, cards only | — |
 | `prices(id, params)` 🔒 | Individual marketplace sale records | 2 |
 | `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / eBay / Tradera price history | 2 |
 | `livePricing(id)` 🔒 | Pricing computed fresh for this request | 3 |
 
 ### `products`
 
+Sealed products only. Single cards live under `cards`.
+
 | Method | Description | Credits |
 |---|---|---|
 | `list(params)` | Search or list sealed products | — |
 | `get(id)` | Fetch one product by id or technicalName | — |
 | `matches(id, params)` | Current shop listings matched to this product | — |
+| `pricing(id)` | This product's current pricing snapshot | — |
+| `pricingBatch(ids)` | Pricing for up to 200 products at once, by id | — |
+| `technicalNames()` | Every product's slug and `updatedAt` | — |
+| `dailyStats(params)` | Daily average price history, sealed only | — |
+| `estimatedValues(params)` | Current estimated market value, sealed only | — |
 | `prices(id, params)` 🔒 | Individual marketplace sale records | 2 |
 | `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / Tradera price history | 2 |
 | `livePricing(id)` 🔒 | Pricing computed fresh for this request | 3 |
 
 ### `expansions`
 
+Cards and sealed products are always separate calls — nothing here merges them.
+
 | Method | Description | Credits |
 |---|---|---|
-| `list()` | Every expansion | — |
-| `products(technicalName)` | Every card and sealed product in one expansion | — |
-| `livePricing(technicalName)` 🔒 | Fresh pricing for every item in one expansion | 8 |
+| `list()` | Every expansion, with counts | — |
+| `get(technicalName)` | One expansion's metadata (no contents) | — |
+| `cards(technicalName)` | Every card in the expansion, content only | — |
+| `sealedProducts(technicalName)` | Every sealed product in the expansion, content only | — |
+| `cardsLivePricing(technicalName)` 🔒 | Fresh pricing for every card in the expansion | 8 |
+| `productsLivePricing(technicalName)` 🔒 | Fresh pricing for every sealed product in it | 8 |
 
 ### `shops`
 
@@ -173,6 +214,9 @@ await tcgpriser.packRates.get(expansionId);
 | `compare(params)` | One product's price at every shop that carries it | 3 |
 
 ### `priceStats`
+
+`daily()` and `estimatedValues()` cover cards and sealed products together. For one or the other,
+use `cards.dailyStats()` / `products.dailyStats()` and their `estimatedValues()` counterparts.
 
 | Method | Description | Credits |
 |---|---|---|
@@ -208,15 +252,24 @@ await tcgpriser.packRates.get(expansionId);
 | `submit(params)` | Submit a shop URL for scraping |
 | `assignProduct(id, params)` | Manually assign (or clear) the product a URL resolves to |
 
+### `webhooks` 🏢
+
+Business tier. See [Webhooks](#webhooks) below.
+
+| Method | Description |
+|---|---|
+| `create(params)` | Register a webhook; returns its signing secret once |
+| `list()` | Every webhook on the account |
+| `delete(id)` | Revoke a webhook |
+| `test(id)` | Send a sample delivery |
+
 ### `stats`
 
 | Method | Description |
 |---|---|
 | `platform()` | Platform-wide overview counts |
 
-🔒 = premium, needs an API token. See below. The Credits column applies only to methods that draw
-from your weekly credit allowance when called with an API token. A session login (not available to
-this client) and `shopUrls` are exempt. See [Credits](#credits).
+Every method also takes `signal` and `timeoutMs` — see [Timeouts and cancellation](#timeouts-and-cancellation).
 
 ## Authentication
 
@@ -253,8 +306,9 @@ try {
 Methods marked with a credit count in the tables above draw from your account's weekly credit
 allowance when called with an API token (Premium: 1500/week, Business: 6000/week, both reset Monday
 00:00 UTC). Cost is weighted by how much work the call does server-side: a cached single-item lookup
-costs less than a whole-expansion recompute. `expansions.livePricing` is the most expensive call in
-the API at 8 credits, since it recomputes pricing for every card or product in the set.
+costs less than a whole-expansion recompute. `expansions.cardsLivePricing()` and
+`expansions.productsLivePricing()` are the most expensive calls in the API at 8 credits, since each
+recomputes pricing for every item in the set.
 
 Once the week's credits run out, further calls reject with `429 creditsExhausted`, surfaced the same
 way as any other error:
@@ -269,9 +323,24 @@ try {
 }
 ```
 
-This client doesn't currently surface the `X-Credits-Remaining` response header. To track your
-remaining balance mid-week, read it off the raw HTTP response yourself outside this SDK, or poll
-`GET /subscription` on the main API.
+To track your balance mid-week, read `creditsRemaining` off the client. It's updated from the
+`X-Credits-Remaining` header the API returns on every charged response, so it costs no extra
+request — but it's only as current as your last premium call, and `undefined` until you make one:
+
+```typescript
+await tcgpriser.cards.livePricing('fezandipiti-ex');
+console.log(tcgpriser.creditsRemaining); // 1487
+```
+
+It's also on the error, which is where it matters most:
+
+```typescript
+catch (error) {
+  if (error instanceof TcgPriserError && error.code === 'creditsExhausted') {
+    console.log(error.creditsRemaining); // 0
+  }
+}
+```
 
 ## Options
 
@@ -287,9 +356,82 @@ new TcgPriser({
     baseUrl: 'https://api.tcgpriser.se', // default; point at a local dev server instead
     headers: { 'User-Agent': 'my-app/1.0' },
     fetch: myCustomFetch, // defaults to global fetch (Node 18+)
+    timeoutMs: 60_000,    // default; 0 disables the timeout entirely
   },
 });
 ```
+
+## Timeouts and cancellation
+
+Every method takes `timeoutMs` and `signal`, either as a second argument or alongside the other
+params:
+
+```typescript
+await tcgpriser.cards.get('fezandipiti-ex', { timeoutMs: 5000 });
+await tcgpriser.cards.list({ search: 'pikachu', timeoutMs: 5000 });
+```
+
+Requests time out after 60 seconds by default. A timeout rejects with a `TcgPriserError` whose
+`code` is `'timeout'` — the one code this package raises itself, so a stalled connection is always
+distinguishable from a server that actually answered:
+
+```typescript
+try {
+  await tcgpriser.expansions.cardsLivePricing('eng-scarlet-violet-journey-together');
+} catch (error) {
+  if (error instanceof TcgPriserError && error.code === 'timeout') {
+    // A whole-expansion recompute on a large set is the one call worth raising the limit for.
+    await tcgpriser.expansions.cardsLivePricing('eng-scarlet-violet-journey-together', {
+      timeoutMs: 0, // no timeout
+    });
+  }
+}
+```
+
+Pass a `signal` to cancel from outside — a user navigating away, a request being abandoned. Whichever
+fires first wins, and aborting through your own signal rejects with the standard `AbortError` rather
+than a `TcgPriserError`, since that's you getting what you asked for:
+
+```typescript
+const controller = new AbortController();
+setTimeout(() => controller.abort(), 1000);
+await tcgpriser.cards.list({ search: 'pikachu', signal: controller.signal });
+```
+
+## Rate limits
+
+Anonymous traffic is capped per IP, and premium reads per token (Premium 30/min, Business 120/min).
+Going over rejects with `429 rateLimited`, carrying the seconds to wait:
+
+```typescript
+if (error instanceof TcgPriserError && error.code === 'rateLimited') {
+  await sleep((error.retryAfter ?? 60) * 1000);
+}
+```
+
+## Webhooks
+
+Business tier only — a Premium token gets `403 businessRequired`. Instead of polling, the API POSTs
+to a URL you register when a catalog event fires.
+
+```typescript
+const tcgpriser = new TcgPriser(myBusinessApiToken);
+
+const webhook = await tcgpriser.webhooks.create({
+  url: 'https://example.com/hooks/tcgpriser', // must be https
+  events: ['price.updated', 'bargain.found'],
+});
+
+// The only time you will ever see this. Store it now — deliveries are signed with it, and no
+// endpoint reads it back. Lost it? Delete the webhook and register a new one.
+await saveSecret(webhook.secret);
+
+await tcgpriser.webhooks.test(webhook.id); // sample delivery, so you can verify your endpoint
+await tcgpriser.webhooks.list();           // never includes secrets
+await tcgpriser.webhooks.delete(webhook.id);
+```
+
+Available events: `price.updated`, `bargain.found`, `product.created`, `card.created`.
 
 ## Types
 
@@ -392,7 +534,19 @@ Runs `examples/rehost-images.ts` — the "Images" section's rehosting pattern ag
 
 ## Scope
 
-Covers the API's full documented surface: public catalog, price and bargain reads, plus the premium endpoints above. Not covered: the admin/scraper/auth surface, which isn't part of any published contract.
+Covers everything on the API's two published documentation pages: the public catalog, price and
+bargain reads at [/docs](https://api.tcgpriser.se/docs), and the premium and business endpoints at
+[/premium-docs](https://api.tcgpriser.se/premium-docs).
+
+Not covered, deliberately:
+
+- **The admin, scraper and ingest surface.** Ours, not a customer's — no API token reaches it, and
+  it isn't part of any published contract.
+- **Account management** (login, subscriptions, API-token minting, referrals). These authenticate
+  with the website's session JWT, which comes from an OAuth flow this client can't drive. Generate
+  your API token from your account page instead.
+- **`/bulk-export`.** Feeds our own static build, answers a non-standard shape, and is not
+  documented for third parties. Page the documented endpoints instead.
 
 ## License
 

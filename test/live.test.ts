@@ -70,6 +70,30 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     const bargains = await client.bargains.list();
     expect(bargains.pagination).toHaveProperty('total');
 
+    // The kind-scoped catalog reads. Their whole point is being narrower than the unscoped
+    // /price-stats equivalents, so assert the scoping actually holds rather than just a 200.
+    const cardSlugs = await client.cards.technicalNames();
+    expect(cardSlugs.data.length).toBeGreaterThan(0);
+    expect(cardSlugs.data[0]).toHaveProperty('updatedAt');
+
+    const productSlugs = await client.products.technicalNames();
+    expect(productSlugs.data.length).toBeGreaterThan(0);
+
+    // `ItemDailyStats.item` is a bare { id, name } ref with no `kind`, which is exactly why these
+    // kind-scoped variants exist: with the unscoped /price-stats/daily you cannot tell from the
+    // response whether a row is a card or a sealed product. So assert the shape here, and let the
+    // scoping itself rest on the route (and on the API's own tests for the shared handler).
+    const cardDaily = await client.cards.dailyStats();
+    expect(Array.isArray(cardDaily.data)).toBe(true);
+    expect(cardDaily.pagination).toHaveProperty('total');
+    if (cardDaily.data[0]) expect(cardDaily.data[0].item).toHaveProperty('id');
+
+    const sealedDaily = await client.products.dailyStats();
+    expect(Array.isArray(sealedDaily.data)).toBe(true);
+
+    const cardValues = await client.cards.estimatedValues({ limit: 1 });
+    expect(Array.isArray(cardValues.data)).toBe(true);
+
     const packRates = await client.packRates.list();
     expect(Array.isArray(packRates)).toBe(true);
 
@@ -84,5 +108,18 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
       code: 'unauthorized',
     });
     await expect(client.bargains.search()).rejects.toMatchObject({ statusCode: 401 });
+
+    // Business tier, unauthenticated. 401 (no token) rather than 403 (wrong tier), and a 404 if
+    // the feature flag is off on this instance — both mean the route resolved, which is what an
+    // unauthenticated smoke test can prove.
+    await expect(client.webhooks.list()).rejects.toMatchObject({
+      statusCode: expect.any(Number),
+    });
+
+    // A timeout short enough that nothing can beat it, to prove the abort path reaches the caller
+    // as our own error rather than a raw AbortError.
+    await expect(client.stats.platform({ timeoutMs: 1 })).rejects.toMatchObject({
+      code: 'timeout',
+    });
   }, 20000);
 });

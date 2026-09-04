@@ -1166,13 +1166,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Success */
+                /** @description Daily price history for cards, in the standard list envelope */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ItemDailyStats"];
+                        "application/json": {
+                            data?: components["schemas"]["ItemDailyStats"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
                     };
                 };
                 /** @description Invalid date format */
@@ -1239,13 +1242,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Success */
+                /** @description Estimated values for cards, in the standard list envelope */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ItemEstimatedValue"];
+                        "application/json": {
+                            data?: components["schemas"]["ItemEstimatedValue"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
                     };
                 };
                 /** @description Server error */
@@ -2007,45 +2013,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Success */
+                /** @description Daily price history, in the standard list envelope */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        /**
-                         * @example {
-                         *       "data": [
-                         *         {
-                         *           "item": {
-                         *             "id": "684aea450554072ffe597b44",
-                         *             "name": "Scarlet & Violet Booster Pack"
-                         *           },
-                         *           "dailyStats": [
-                         *             {
-                         *               "statDate": "2025-05-11",
-                         *               "averagePrice": 50
-                         *             },
-                         *             {
-                         *               "statDate": "2025-05-31",
-                         *               "averagePrice": 45
-                         *             },
-                         *             {
-                         *               "statDate": "2025-06-25",
-                         *               "averagePrice": 45
-                         *             }
-                         *           ]
-                         *         }
-                         *       ],
-                         *       "pagination": {
-                         *         "total": 1,
-                         *         "limit": 1,
-                         *         "skip": 0,
-                         *         "hasMore": false
-                         *       }
-                         *     }
-                         */
-                        "application/json": components["schemas"]["ItemDailyStats"];
+                        "application/json": {
+                            data?: components["schemas"]["ItemDailyStats"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
                     };
                 };
                 /** @description Invalid date format */
@@ -2113,47 +2090,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Success */
+                /** @description Estimated values, in the standard list envelope */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        /**
-                         * @example {
-                         *       "data": [
-                         *         {
-                         *           "item": {
-                         *             "id": "6841dfb7c410f0c69bf724a8",
-                         *             "name": "Scarlet & Violet The Glory of Team Rocket Booster Box"
-                         *           },
-                         *           "estimate": {
-                         *             "estimatedValue": 450,
-                         *             "estimateUpdatedAt": "2025-12-19T00:00:00.000Z",
-                         *             "dataPointCount": 1
-                         *           }
-                         *         },
-                         *         {
-                         *           "item": {
-                         *             "id": "6841e0ac62cf62d1b52de8a4",
-                         *             "name": "Scarlet & Violet Crimson Haze Booster Box"
-                         *           },
-                         *           "estimate": {
-                         *             "estimatedValue": 636,
-                         *             "estimateUpdatedAt": "2026-03-20T00:00:00.000Z",
-                         *             "dataPointCount": 1
-                         *           }
-                         *         }
-                         *       ],
-                         *       "pagination": {
-                         *         "total": 9759,
-                         *         "limit": 2,
-                         *         "skip": 0,
-                         *         "hasMore": true
-                         *       }
-                         *     }
-                         */
-                        "application/json": components["schemas"]["ItemEstimatedValue"];
+                        "application/json": {
+                            data?: components["schemas"]["ItemEstimatedValue"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
                     };
                 };
                 /** @description Server error */
@@ -4285,13 +4231,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Success */
+                /** @description Daily price history for sealed products, in the standard list envelope */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ItemDailyStats"];
+                        "application/json": {
+                            data?: components["schemas"]["ItemDailyStats"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
                     };
                 };
                 /** @description Invalid date format */
@@ -4358,13 +4307,16 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description Success */
+                /** @description Estimated values for sealed products, in the standard list envelope */
                 200: {
                     headers: {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": components["schemas"]["ItemEstimatedValue"];
+                        "application/json": {
+                            data?: components["schemas"]["ItemEstimatedValue"][];
+                            pagination?: components["schemas"]["PageMeta"];
+                        };
                     };
                 };
                 /** @description Server error */
@@ -5530,10 +5482,289 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/webhooks": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List the signed-in user's webhooks
+         * @description **Requires the `business` level.** Never returns the raw signing secret — only the URL, subscribed events, and delivery status.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description The caller's webhooks */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WebhookList"];
+                    };
+                };
+                /** @description Missing or invalid bearer token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Business subscription required */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Business feature disabled */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Register a new outbound webhook
+         * @description **Requires the `business` level.** The signing secret is returned in this response only; it cannot be retrieved again afterward. Gated on `ENABLE_BUSINESS_FEATURE`; when the flag is off this answers 404 rather than 403, so the feature's existence stays hidden.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": {
+                        /**
+                         * Format: uri
+                         * @description Where deliveries are POSTed. Must be `https://` — plaintext is rejected, since a delivery carries the signature that authenticates it.
+                         * @example https://example.com/hooks/tcgpriser
+                         */
+                        url: string;
+                        /** @description At least one event type to subscribe to. */
+                        events: components["schemas"]["WebhookEvent"][];
+                    };
+                };
+            };
+            responses: {
+                /** @description The new webhook, including its signing secret exactly once */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WebhookSecret"];
+                    };
+                };
+                /** @description Invalid url or events */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Missing or invalid bearer token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Business subscription required */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Business feature disabled */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/webhooks/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Revoke one of the signed-in user's webhooks
+         * @description **Requires the `business` level.** Answers 404 both when the webhook doesn't exist and when it belongs to a different user, so ownership can't be probed for.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The webhook's `id`, as returned by `POST /webhooks` or `GET /webhooks`. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Acknowledged */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["Acknowledgement"];
+                    };
+                };
+                /** @description Missing or invalid bearer token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Business subscription required */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Webhook not found, or business feature disabled */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/webhooks/{id}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Send a test delivery to one of the signed-in user's webhooks
+         * @description **Requires the `business` level.** Enqueues a synthetic delivery immediately, signed the same way a real event would be, so the endpoint can be verified before waiting for a real event to fire. Delivery is asynchronous — a 200 here means the delivery was enqueued, not that it succeeded.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    /** @description The webhook's `id`, as returned by `POST /webhooks` or `GET /webhooks`. */
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Test delivery enqueued */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["WebhookTestResult"];
+                    };
+                };
+                /** @description Missing or invalid bearer token */
+                401: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Business subscription required */
+                403: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+                /** @description Webhook not found, or business feature disabled */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ApiError"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        Acknowledgement: {
+            message: string;
+        };
         AlternativeName: {
             name: string;
             shortName: string | undefined;
@@ -6582,6 +6813,70 @@ export interface components {
             variantCount: number;
             looseCount: number;
             gradedCount: number;
+        };
+        Webhook: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            url: string;
+            events: components["schemas"]["WebhookEvent"][];
+            isActive: boolean;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            lastDeliveryAt: string | undefined;
+            /** @enum {string|null} */
+            lastDeliveryStatus: "success" | "failed" | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+        };
+        /** @enum {string} */
+        WebhookEvent: "price.updated" | "bargain.found" | "product.created" | "card.created";
+        WebhookList: {
+            data: components["schemas"]["Webhook"][];
+            pagination: components["schemas"]["PageMeta"];
+        };
+        WebhookSecret: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            url: string;
+            events: components["schemas"]["WebhookEvent"][];
+            isActive: boolean;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            lastDeliveryAt: string | undefined;
+            /** @enum {string|null} */
+            lastDeliveryStatus: "success" | "failed" | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            createdAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            updatedAt: string;
+            secret: string;
+        };
+        WebhookTestResult: {
+            message: string;
         };
     };
     responses: never;

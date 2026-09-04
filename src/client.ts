@@ -10,6 +10,7 @@ import { ShopMatchesResource } from './resources/shopMatches.js';
 import { ShopUrlsResource } from './resources/shopUrls.js';
 import { ShopsResource } from './resources/shops.js';
 import { StatsResource } from './resources/stats.js';
+import { WebhooksResource } from './resources/webhooks.js';
 
 export const DEFAULT_BASE_URL = 'https://api.tcgpriser.se';
 
@@ -21,6 +22,12 @@ export interface TcgPriserAdvancedOptions {
   headers?: Record<string, string>;
   /** Swap in a different `fetch` (older Node, testing, a proxying agent). Defaults to global `fetch`. */
   fetch?: typeof fetch;
+  /**
+   * Default milliseconds before a request is aborted, for every call this client makes. Defaults to
+   * `DEFAULT_TIMEOUT_MS` (60s). `0` disables the timeout entirely. Every method can override it per
+   * call with `timeoutMs`.
+   */
+  timeoutMs?: number;
 }
 
 export interface TcgPriserOptions {
@@ -73,6 +80,10 @@ export class TcgPriser {
   readonly bargains: BargainsResource;
   readonly packRates: PackRatesResource;
   readonly stats: StatsResource;
+  readonly webhooks: WebhooksResource;
+
+  /** Holds the `HttpClient` so `creditsRemaining` can read the running value off it. */
+  private readonly http: HttpClient;
 
   /**
    * @param optionsOrAuthToken A subscriber's API token (`new TcgPriser(myApiToken)`), a full
@@ -90,6 +101,7 @@ export class TcgPriser {
     }
 
     const http = new HttpClient({
+      timeoutMs: advanced.timeoutMs,
       baseUrl: advanced.baseUrl ?? DEFAULT_BASE_URL,
       // Bound to globalThis: both browsers and Node's undici implement fetch as a method that
       // checks its receiver, so an unbound reference throws "Illegal invocation" the moment it's
@@ -111,5 +123,26 @@ export class TcgPriser {
     this.bargains = new BargainsResource(http);
     this.packRates = new PackRatesResource(http);
     this.stats = new StatsResource(http);
+    this.webhooks = new WebhooksResource(http);
+    this.http = http;
+  }
+
+  /**
+   * Credits left in this week's allowance, as of the last charged call this client made.
+   *
+   * The API returns `X-Credits-Remaining` on every response it charges for, so this needs no extra
+   * request — but it is only as current as your last premium call, and it is `undefined` until you
+   * make one. Uncharged calls (every public method, and any call authenticated with something other
+   * than an API token) don't update it, because the API doesn't meter them.
+   *
+   * ```ts
+   * await tcgpriser.cards.livePricing('fezandipiti-ex');
+   * if ((tcgpriser.creditsRemaining ?? Infinity) < 100) scheduleFewerRefreshes();
+   * ```
+   *
+   * Reading it in a browser additionally needs the API to expose the header via CORS, which it does.
+   */
+  get creditsRemaining(): number | undefined {
+    return this.http.creditsRemaining;
   }
 }

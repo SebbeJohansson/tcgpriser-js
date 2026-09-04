@@ -1,9 +1,8 @@
-import type { HttpClient } from '../http.js';
-import { splitAuthToken, toQueryString } from '../http.js';
+import type { HttpClient, RequestOptions } from '../http.js';
+import { splitRequestOptions, toQueryString } from '../http.js';
 import type { ItemPriceComparison, ItemShopPriceHistory, ShopPriceHistoryList } from '../types/index.js';
 
-export interface ShopMatchStatsForProductParams {
-  authToken?: string;
+export interface ShopMatchStatsForProductParams extends RequestOptions {
   /** `YYYY-MM-DD` */
   startDate?: string;
   /** `YYYY-MM-DD` */
@@ -12,8 +11,7 @@ export interface ShopMatchStatsForProductParams {
   shop?: string;
 }
 
-export interface ShopMatchStatsForShopParams {
-  authToken?: string;
+export interface ShopMatchStatsForShopParams extends RequestOptions {
   /** `YYYY-MM-DD` */
   startDate?: string;
   /** `YYYY-MM-DD` */
@@ -22,8 +20,7 @@ export interface ShopMatchStatsForShopParams {
   limit?: number;
 }
 
-export interface CompareShopPricesParams {
-  authToken?: string;
+export interface CompareShopPricesParams extends RequestOptions {
   /** Product/card id or technicalName. */
   productId: string;
   /** `YYYY-MM-DD`: defaults to the latest date with data. */
@@ -40,25 +37,23 @@ export class ShopMatchStatsResource {
     productId: string,
     params: ShopMatchStatsForProductParams = {},
   ): Promise<ItemShopPriceHistory> {
-    const [query, authToken] = splitAuthToken(params);
+    const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
       `/shop-match-stats/product/${encodeURIComponent(productId)}${toQueryString(query)}`,
-      { authToken },
+      requestOptions,
     );
   }
 
   /** `GET /shop-match-stats/shop/{shop}`: one shop's price history, broken out per product. */
   forShop(shop: string, params: ShopMatchStatsForShopParams = {}): Promise<ShopPriceHistoryList> {
-    const [query, authToken] = splitAuthToken(params);
-    return this.http.get(`/shop-match-stats/shop/${encodeURIComponent(shop)}${toQueryString(query)}`, {
-      authToken,
-    });
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/shop-match-stats/shop/${encodeURIComponent(shop)}${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /shop-match-stats/compare`: one product's price at every shop that carries it, as of
    * one date (defaults to the latest). */
   compare(params: CompareShopPricesParams): Promise<ItemPriceComparison> {
-    const [query, authToken] = splitAuthToken(params);
-    return this.http.get(`/shop-match-stats/compare${toQueryString(query)}`, { authToken });
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/shop-match-stats/compare${toQueryString(query)}`, requestOptions);
   }
 }

@@ -1,10 +1,13 @@
-import type { HttpClient, PremiumOptions } from '../http.js';
-import { splitAuthToken, toQueryString } from '../http.js';
+import type { HttpClient, RequestOptions } from '../http.js';
+import { splitRequestOptions, toQueryString } from '../http.js';
 import type {
   CardType,
   CatalogItemPricing,
+  CatalogSlug,
   GradingCompany,
   ItemCondition,
+  ItemDailyStats,
+  ItemEstimatedValue,
   ItemReferencePrices,
   ItemShopMatches,
   ItemSoldPrices,
@@ -29,7 +32,7 @@ export interface ProductMatchesParams extends PaginationParams {
   grade?: number;
 }
 
-export interface ProductReferencePricesParams {
+export interface ProductReferencePricesParams extends RequestOptions {
   authToken?: string;
   /** Rolling window ending today, in days. Ignored when `from`/`to` are supplied. Default 90. */
   days?: number;
@@ -40,8 +43,41 @@ export interface ProductReferencePricesParams {
   provider?: ReferencePriceProvider;
 }
 
-export interface ProductPricesParams extends PaginationParams {
-  authToken?: string;
+export interface ProductPricesParams extends PaginationParams {}
+
+/** Filters for `products.dailyStats()`. Narrow to one product, or to a whole expansion/category. */
+export interface ProductDailyPriceStatsParams extends RequestOptions {
+  /** `YYYY-MM-DD` */
+  startDate?: string;
+  /** `YYYY-MM-DD` */
+  endDate?: string;
+  productName?: string;
+  technicalName?: string;
+  priceChartingId?: string;
+  modelNumber?: string;
+  /** Category technicalName. */
+  category?: string;
+  /** Expansion technicalName. */
+  expansion?: string;
+  /** Category id (ObjectId), an alternative to `category`. */
+  categoryId?: string;
+  /** Expansion id (ObjectId), an alternative to `expansion`. */
+  expansionId?: string;
+}
+
+/** Filters for `products.estimatedValues()`. Note `page`/`limit`, not the `limit`/`skip` the rest
+ * of the API paginates with — this endpoint predates that convention. */
+export interface ProductEstimatedValuesParams extends RequestOptions {
+  page?: number;
+  limit?: number;
+  productName?: string;
+  technicalName?: string;
+  priceChartingId?: string;
+  modelNumber?: string;
+  /** Category technicalName. */
+  category?: string;
+  /** Expansion technicalName. */
+  expansion?: string;
 }
 
 /** Sealed products: booster boxes, ETBs, tins, and the like. Single cards live under
@@ -51,18 +87,21 @@ export class ProductsResource {
 
   /** `GET /product`: search or list sealed products. */
   list(params: ListProductsParams = {}): Promise<ListResponse<SealedProduct>> {
-    return this.http.get(`/product${toQueryString(params)}`);
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/product${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /product/{id}`: fetch one sealed product by its id or technicalName. */
-  get(idOrTechnicalName: string): Promise<SealedProduct> {
-    return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}`);
+  get(idOrTechnicalName: string, options: RequestOptions = {}): Promise<SealedProduct> {
+    return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}`, options);
   }
 
   /** `GET /product/{id}/matches`: current shop listings matched to this product (latest per shop). */
   matches(idOrTechnicalName: string, params: ProductMatchesParams = {}): Promise<ItemShopMatches> {
+    const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
-      `/product/${encodeURIComponent(idOrTechnicalName)}/matches${toQueryString(params)}`,
+      `/product/${encodeURIComponent(idOrTechnicalName)}/matches${toQueryString(query)}`,
+      requestOptions,
     );
   }
 
@@ -71,25 +110,25 @@ export class ProductsResource {
     idOrTechnicalName: string,
     params: ProductReferencePricesParams = {},
   ): Promise<ItemReferencePrices> {
-    const [query, authToken] = splitAuthToken(params);
+    const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
       `/product/${encodeURIComponent(idOrTechnicalName)}/reference-prices${toQueryString(query)}`,
-      { authToken },
+      requestOptions,
     );
   }
 
   /** `GET /product/{id}/prices`: individual marketplace sale records. Premium. */
   prices(idOrTechnicalName: string, params: ProductPricesParams = {}): Promise<ItemSoldPrices> {
-    const [query, authToken] = splitAuthToken(params);
+    const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
       `/product/${encodeURIComponent(idOrTechnicalName)}/prices${toQueryString(query)}`,
-      { authToken },
+      requestOptions,
     );
   }
 
   /** `GET /product/{id}/pricing/live`: computed fresh for this request, not read from the last
    * stats job. Premium. */
-  livePricing(idOrTechnicalName: string, options: PremiumOptions = {}): Promise<LivePricingForItem> {
+  livePricing(idOrTechnicalName: string, options: RequestOptions = {}): Promise<LivePricingForItem> {
     return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}/pricing/live`, options);
   }
 
@@ -97,8 +136,8 @@ export class ProductsResource {
    * `estimatedValue`, `lowestShopOffer`, `referencePriceSnapshotsByProvider` — refreshed once a day
    * by the nightly pricing/scraper jobs. `get()` returns content only; this is the separate,
    * shorter-cached call for the part of a product that actually changes day to day. */
-  pricing(idOrTechnicalName: string): Promise<CatalogItemPricing> {
-    return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}/pricing`);
+  pricing(idOrTechnicalName: string, options: RequestOptions = {}): Promise<CatalogItemPricing> {
+    return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}/pricing`, options);
   }
 
   /** `GET /product/pricing`: pricing for up to 200 sealed products in one request, keyed by `id` —
@@ -106,7 +145,37 @@ export class ProductsResource {
    * contents) that needs pricing for many items at once. Unlike `get()`/`pricing()`, this only
    * accepts `id`s, not technicalNames — pass the `id`s already on the products you fetched. Ids with
    * no match are silently omitted from the result rather than causing an error. */
-  pricingBatch(ids: string[]): Promise<ListResponse<CatalogItemPricing>> {
-    return this.http.get(`/product/pricing?ids=${ids.map(encodeURIComponent).join(',')}`);
+  pricingBatch(
+    ids: string[],
+    options: RequestOptions = {},
+  ): Promise<ListResponse<CatalogItemPricing>> {
+    return this.http.get(`/product/pricing?ids=${ids.map(encodeURIComponent).join(',')}`, options);
+  }
+
+  /** `GET /product/technical-names`: every sealed product's `technicalName` and `updatedAt`,
+   * unpaginated and with no pricing joins. The sealed counterpart to
+   * `client.cards.technicalNames()` — for sitemaps and incremental syncs. */
+  technicalNames(options: RequestOptions = {}): Promise<ListResponse<CatalogSlug>> {
+    return this.http.get('/product/technical-names', options);
+  }
+
+  /** `GET /product/price-stats/daily`: daily average price history, sealed products only. The same
+   * data as `client.priceStats.daily()`, scoped to the sealed catalog so a filter like `expansion`
+   * can't pull in that expansion's single cards too. */
+  dailyStats(params: ProductDailyPriceStatsParams = {}): Promise<ListResponse<ItemDailyStats>> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/product/price-stats/daily${toQueryString(query)}`, requestOptions);
+  }
+
+  /** `GET /product/price-stats/estimated-values`: current estimated market value, sealed products
+   * only. The sealed-scoped counterpart to `client.priceStats.estimatedValues()`. */
+  estimatedValues(
+    params: ProductEstimatedValuesParams = {},
+  ): Promise<ListResponse<ItemEstimatedValue>> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(
+      `/product/price-stats/estimated-values${toQueryString(query)}`,
+      requestOptions,
+    );
   }
 }

@@ -23,6 +23,11 @@ export type CatalogItemPricing = components['schemas']['CatalogItemPricing'];
 
 export type CardVariants = components['schemas']['CardVariants'];
 
+/** One entry from `client.cards.technicalNames()` / `client.products.technicalNames()`: a slug and
+ * when that item last changed. Enough to build a sitemap or decide what to re-fetch, without paying
+ * for the full catalog page. */
+export type CatalogSlug = components['schemas']['CatalogSlug'];
+
 /** The compact item reference used inside flat shop-match rows (`client.shopMatches.list()` /
  * `.forShop()`), enough to render a result list, not the full `CatalogItem`. */
 export type MatchedItemRef = components['schemas']['MatchedItemRef'];

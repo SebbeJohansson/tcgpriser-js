@@ -1,5 +1,12 @@
-export { TcgPriser, DEFAULT_BASE_URL, type TcgPriserOptions } from './client.js';
+export {
+  TcgPriser,
+  DEFAULT_BASE_URL,
+  type TcgPriserOptions,
+  type TcgPriserAdvancedOptions,
+} from './client.js';
 export { TcgPriserError, type TcgPriserErrorCode } from './errors.js';
+export { DEFAULT_TIMEOUT_MS, type RequestOptions } from './http.js';
+/** @deprecated Renamed to `RequestOptions`, which also carries `signal` and `timeoutMs`. */
 export type { PremiumOptions } from './http.js';
 
 export type {
@@ -7,12 +14,16 @@ export type {
   CardMatchesParams,
   CardReferencePricesParams,
   CardPricesParams,
+  CardDailyStatsParams,
+  CardEstimatedValuesParams,
 } from './resources/cards.js';
 export type {
   ListProductsParams,
   ProductMatchesParams,
   ProductReferencePricesParams,
   ProductPricesParams,
+  ProductDailyPriceStatsParams,
+  ProductEstimatedValuesParams,
 } from './resources/products.js';
 export type {
   ListShopMatchesParams,
@@ -35,6 +46,7 @@ export type {
 } from './resources/priceStats.js';
 export type { ListBargainsParams, SearchBargainsParams } from './resources/bargains.js';
 export type { ListShopsParams } from './resources/shops.js';
+export type { CreateWebhookParams } from './resources/webhooks.js';
 
 export * from './types/index.js';
 
