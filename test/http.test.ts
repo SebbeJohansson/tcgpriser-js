@@ -43,9 +43,9 @@ describe('TcgPriser client', () => {
       },
     });
 
-    await client.cards.list({ search: 'pikachu', limit: 5 });
+    await client.cards.search({ search: 'pikachu', limit: 5 });
 
-    expect(capturedUrl).toBe('http://localhost:5000/cards?search=pikachu&limit=5');
+    expect(capturedUrl).toBe('http://localhost:5000/cards/search?search=pikachu&limit=5');
   });
 
   it('strips a trailing slash from a custom baseUrl', async () => {

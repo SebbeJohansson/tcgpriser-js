@@ -17,7 +17,9 @@ import type {
   ReferencePriceProvider,
 } from '../types/index.js';
 
-export interface ListCardsParams extends PaginationParams {
+export interface ListCardsParams extends PaginationParams {}
+
+export interface SearchCardsParams extends PaginationParams {
   /** Free-text search over card and set names. */
   search?: string;
 }
@@ -77,10 +79,16 @@ export interface CardEstimatedValuesParams extends RequestOptions {
 export class CardsResource {
   constructor(private readonly http: HttpClient) {}
 
-  /** `GET /cards`: search or list cards. */
+  /** `GET /cards`: list cards, newest first. No free-text search — use `search()` for that. */
   list(params: ListCardsParams = {}): Promise<ListResponse<Card>> {
     const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(`/cards${toQueryString(query)}`, requestOptions);
+  }
+
+  /** `GET /cards/search`: like `list()`, but with free-text search on card and set names. Premium. */
+  search(params: SearchCardsParams = {}): Promise<ListResponse<Card>> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/cards/search${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /cards/{id}`: fetch one card by its id or technicalName. */

@@ -18,7 +18,9 @@ import type {
   SealedProduct,
 } from '../types/index.js';
 
-export interface ListProductsParams extends PaginationParams {
+export interface ListProductsParams extends PaginationParams {}
+
+export interface SearchProductsParams extends PaginationParams {
   /** Whitespace-separated tokens, each matched against the start of a word. */
   search?: string;
 }
@@ -85,10 +87,17 @@ export interface ProductEstimatedValuesParams extends RequestOptions {
 export class ProductsResource {
   constructor(private readonly http: HttpClient) {}
 
-  /** `GET /product`: search or list sealed products. */
+  /** `GET /product`: list sealed products, newest first. No free-text search — use `search()` for
+   * that. */
   list(params: ListProductsParams = {}): Promise<ListResponse<SealedProduct>> {
     const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(`/product${toQueryString(query)}`, requestOptions);
+  }
+
+  /** `GET /product/search`: like `list()`, but with free-text search on the product name. Premium. */
+  search(params: SearchProductsParams = {}): Promise<ListResponse<SealedProduct>> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/product/search${toQueryString(query)}`, requestOptions);
   }
 
   /** `GET /product/{id}`: fetch one sealed product by its id or technicalName. */

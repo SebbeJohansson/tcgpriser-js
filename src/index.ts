@@ -11,6 +11,7 @@ export type { PremiumOptions } from './http.js';
 
 export type {
   ListCardsParams,
+  SearchCardsParams,
   CardMatchesParams,
   CardReferencePricesParams,
   CardPricesParams,
@@ -19,6 +20,7 @@ export type {
 } from './resources/cards.js';
 export type {
   ListProductsParams,
+  SearchProductsParams,
   ProductMatchesParams,
   ProductReferencePricesParams,
   ProductPricesParams,

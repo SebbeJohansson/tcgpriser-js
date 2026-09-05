@@ -23,11 +23,11 @@ async function main() {
   console.log(`\n${expansions.length} expansions. Newest:`, expansions[0]?.name);
 
   // list()/get() return content only (name, images, expansion, ...) — pricing is a separate,
-  // shorter-cached call. pricingBatch() fetches it for every id in the search results at once.
-  const { data: cards } = await tcgpriser.cards.list({ search: 'pikachu', limit: 3 });
+  // shorter-cached call. pricingBatch() fetches it for every id in the page at once.
+  const { data: cards } = await tcgpriser.cards.list({ limit: 3 });
   const { data: cardPricing } = await tcgpriser.cards.pricingBatch(cards.map((card) => card.id));
   const pricingById = new Map(cardPricing.map((pricing) => [pricing.id, pricing]));
-  console.log(`\nFound ${cards.length} cards matching "pikachu":`);
+  console.log(`\nNewest ${cards.length} cards:`);
   for (const card of cards) {
     const retailPrice = pricingById.get(card.id)?.retailPrice;
     console.log(`  - ${card.name} (${card.expansion?.name ?? 'no set'}): ${retailPrice ?? '?'} SEK`);
@@ -59,6 +59,16 @@ async function main() {
 
   // Premium needs a subscriber's API token, generated from tcgpriser.se/account/api-token. Pass it
   // here, either as the client's default (set above) or per call: cards.livePricing(id, { authToken: ... }).
+  try {
+    const { data: found } = await tcgpriser.cards.search({ search: 'pikachu', limit: 3 });
+    console.log(`\nSearch found ${found.length} cards matching "pikachu":`, found.map((c) => c.name));
+  } catch (error) {
+    console.log(
+      '\nPremium call failed (expected without TCGPRISER_AUTH_TOKEN set):',
+      error instanceof Error ? error.message : error,
+    );
+  }
+
   if (firstCard) {
     try {
       const live = await tcgpriser.cards.livePricing(firstCard.technicalName);

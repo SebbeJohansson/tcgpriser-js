@@ -52,7 +52,8 @@ Public methods need no token. A handful of premium methods do, see [Authenticati
 ### Cards
 
 ```typescript
-await tcgpriser.cards.list({ search: 'pikachu', limit: 10 });
+await tcgpriser.cards.list({ limit: 10 }); // newest first, no free-text search
+await tcgpriser.cards.search({ search: 'pikachu' }); // premium
 await tcgpriser.cards.get('mega-evolution-ascended-heroes-fezandipiti-ex'); // id or technicalName
 await tcgpriser.cards.matches('fezandipiti-ex', { inStock: true });
 ```
@@ -62,7 +63,8 @@ await tcgpriser.cards.matches('fezandipiti-ex', { inStock: true });
 Booster boxes, ETBs, tins and the like. Single cards live under `cards`, not here.
 
 ```typescript
-await tcgpriser.products.list({ search: 'booster box' });
+await tcgpriser.products.list({ limit: 10 }); // newest first, no free-text search
+await tcgpriser.products.search({ search: 'booster box' }); // premium
 await tcgpriser.products.get('scarlet-violet-booster-pack');
 await tcgpriser.products.matches('scarlet-violet-booster-pack');
 ```
@@ -91,7 +93,7 @@ await tcgpriser.cards.pricing('fezandipiti-ex'); // id or technicalName
 await tcgpriser.products.pricing('scarlet-violet-booster-pack');
 
 // Batch form, up to 200 ids at once — ids only, not technicalNames.
-const { data: cards } = await tcgpriser.cards.list({ search: 'pikachu' });
+const { data: cards } = await tcgpriser.cards.list({ limit: 20 });
 await tcgpriser.cards.pricingBatch(cards.map((card) => card.id));
 ```
 
@@ -147,7 +149,8 @@ Credits column applies only to calls that draw from your weekly allowance; see [
 
 | Method | Description | Credits |
 |---|---|---|
-| `list(params)` | Search or list cards | — |
+| `list(params)` | List cards, newest first | — |
+| `search(params)` 🔒 | Free-text search on card and set names | 5 |
 | `get(id)` | Fetch one card by id or technicalName | — |
 | `matches(id, params)` | Current shop listings matched to this card | — |
 | `pricing(id)` | This card's current pricing snapshot | — |
@@ -165,7 +168,8 @@ Sealed products only. Single cards live under `cards`.
 
 | Method | Description | Credits |
 |---|---|---|
-| `list(params)` | Search or list sealed products | — |
+| `list(params)` | List sealed products, newest first | — |
+| `search(params)` 🔒 | Free-text search on the product name | 5 |
 | `get(id)` | Fetch one product by id or technicalName | — |
 | `matches(id, params)` | Current shop listings matched to this product | — |
 | `pricing(id)` | This product's current pricing snapshot | — |
@@ -368,7 +372,7 @@ params:
 
 ```typescript
 await tcgpriser.cards.get('fezandipiti-ex', { timeoutMs: 5000 });
-await tcgpriser.cards.list({ search: 'pikachu', timeoutMs: 5000 });
+await tcgpriser.cards.list({ limit: 10, timeoutMs: 5000 });
 ```
 
 Requests time out after 60 seconds by default. A timeout rejects with a `TcgPriserError` whose
@@ -395,7 +399,7 @@ than a `TcgPriserError`, since that's you getting what you asked for:
 ```typescript
 const controller = new AbortController();
 setTimeout(() => controller.abort(), 1000);
-await tcgpriser.cards.list({ search: 'pikachu', signal: controller.signal });
+await tcgpriser.cards.list({ limit: 10, signal: controller.signal });
 ```
 
 ## Rate limits
