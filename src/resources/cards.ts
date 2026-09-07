@@ -13,11 +13,23 @@ import type {
   ListResponse,
   LivePricingForItem,
   PaginationParams,
+  ProductLine,
   ReferencePriceCardVariant,
   ReferencePriceProvider,
 } from '../types/index.js';
 
-export interface ListCardsParams extends PaginationParams {}
+export interface ListCardsParams extends PaginationParams {
+  /** Brand `id` or technicalName, e.g. `'pokemon'`. Scopes the listing to one game/universe. An
+   * unrecognized value is a 400, not an empty page. */
+  brand?: string;
+  productLine?: ProductLine;
+}
+
+export interface GetCardParams extends RequestOptions {
+  /** Brand `id` or technicalName. Disambiguates a `technicalName` two brands both happen to use —
+   * irrelevant while the catalogue carries only one brand, and unused for an `id` lookup. */
+  brand?: string;
+}
 
 export interface SearchCardsParams extends PaginationParams {
   /** Free-text search over card and set names. */
@@ -61,6 +73,11 @@ export interface CardDailyStatsParams extends RequestOptions {
   categoryId?: string;
   /** Expansion id (ObjectId), an alternative to `expansion`. */
   expansionId?: string;
+  /** Brand technicalName. */
+  brand?: string;
+  /** Brand id (ObjectId), an alternative to `brand`. */
+  brandId?: string;
+  productLine?: ProductLine;
 }
 
 /** Filters for `cards.estimatedValues()`. Note `page`/`limit`, not the `limit`/`skip` the rest of
@@ -74,6 +91,11 @@ export interface CardEstimatedValuesParams extends RequestOptions {
   category?: string;
   /** Expansion technicalName. */
   expansion?: string;
+  /** Brand technicalName. */
+  brand?: string;
+  /** Brand id (ObjectId), an alternative to `brand`. */
+  brandId?: string;
+  productLine?: ProductLine;
 }
 
 export class CardsResource {
@@ -91,9 +113,14 @@ export class CardsResource {
     return this.http.get(`/cards/search${toQueryString(query)}`, requestOptions);
   }
 
-  /** `GET /cards/{id}`: fetch one card by its id or technicalName. */
-  get(idOrTechnicalName: string, options: RequestOptions = {}): Promise<Card> {
-    return this.http.get(`/cards/${encodeURIComponent(idOrTechnicalName)}`, options);
+  /** `GET /cards/{id}`: fetch one card by its id or technicalName. Pass `brand` if two brands
+   * might share the same technicalName — see `GetCardParams`. */
+  get(idOrTechnicalName: string, params: GetCardParams = {}): Promise<Card> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(
+      `/cards/${encodeURIComponent(idOrTechnicalName)}${toQueryString(query)}`,
+      requestOptions,
+    );
   }
 
   /** `GET /cards/{id}/matches`: current shop listings matched to this card (latest per shop). */

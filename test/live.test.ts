@@ -39,13 +39,51 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     const expansions = await client.expansions.list();
     expect(expansions.length).toBeGreaterThan(0);
 
+    // Multi-brand foundation: exactly one brand row exists today (Pokémon), but the filter must
+    // already behave correctly — a match, not a fluke of there being nothing to filter out.
+    const brands = await client.brands.list();
+    expect(brands.length).toBeGreaterThan(0);
+    expect(brands[0]).toHaveProperty('technicalName');
+    const pokemon = brands.find((b) => b.technicalName === 'pokemon');
+    expect(pokemon).toBeDefined();
+
+    const brand = await client.brands.get('pokemon');
+    expect(brand.id).toBe(pokemon!.id);
+    await expect(client.brands.get('this-brand-does-not-exist')).rejects.toMatchObject({
+      statusCode: 404,
+    });
+
+    const brandFilteredExpansions = await client.expansions.list({ brand: 'pokemon' });
+    expect(brandFilteredExpansions.length).toBe(expansions.length);
+    await expect(client.expansions.list({ brand: 'this-brand-does-not-exist' })).rejects.toMatchObject({
+      statusCode: 400,
+    });
+
     const cards = await client.cards.list({ limit: 1 });
     expect(cards.data.length).toBe(1);
     expect(cards.data[0]?.kind).toBe('card');
+    expect(cards.data[0]).toHaveProperty('productLine');
+
+    // brand/productLine list filters: unfiltered vs. filtered totals must match exactly (one
+    // brand, all TCG), and an unknown brand must 400 rather than come back empty.
+    const cardsUnfiltered = await client.cards.list({ limit: 1 });
+    const cardsByBrand = await client.cards.list({ brand: 'pokemon', limit: 1 });
+    expect(cardsByBrand.pagination.total).toBe(cardsUnfiltered.pagination.total);
+    const cardsByProductLine = await client.cards.list({ productLine: 'tcg', limit: 1 });
+    expect(cardsByProductLine.pagination.total).toBe(cardsUnfiltered.pagination.total);
+    const cardsByWrongProductLine = await client.cards.list({ productLine: 'accessory', limit: 1 });
+    expect(cardsByWrongProductLine.pagination.total).toBe(0);
+    await expect(client.cards.list({ brand: 'this-brand-does-not-exist' })).rejects.toMatchObject({
+      statusCode: 400,
+    });
 
     const card = await client.cards.get(cards.data[0]!.technicalName);
     expect(card.id).toBe(cards.data[0]!.id);
     expect(card).not.toHaveProperty('retailPrice');
+
+    // Flat vs. brand-scoped ("subfolder mode") lookup of the same slug must resolve identically.
+    const cardByBrandSlug = await client.cards.get(cards.data[0]!.technicalName, { brand: 'pokemon' });
+    expect(cardByBrandSlug.id).toBe(card.id);
 
     const cardPricing = await client.cards.pricing(card.id);
     expect(cardPricing.id).toBe(card.id);
@@ -57,6 +95,10 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     const products = await client.products.list({ limit: 1 });
     expect(products.data[0]?.kind).toBe('sealed');
     expect(products.data[0]).not.toHaveProperty('retailPrice');
+    expect(products.data[0]).toHaveProperty('productLine');
+
+    const productsByBrand = await client.products.list({ brand: 'pokemon', limit: 1 });
+    expect(productsByBrand.pagination.total).toBe(products.pagination.total);
 
     const product = products.data[0];
     if (product) {
@@ -65,6 +107,10 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
 
       const { data: productPricingBatch } = await client.products.pricingBatch([product.id]);
       expect(productPricingBatch[0]?.id).toBe(product.id);
+
+      // Flat vs. brand-scoped ("subfolder mode") lookup of the same slug must resolve identically.
+      const productByBrandSlug = await client.products.get(product.technicalName, { brand: 'pokemon' });
+      expect(productByBrandSlug.id).toBe(product.id);
     }
 
     const bargains = await client.bargains.list();

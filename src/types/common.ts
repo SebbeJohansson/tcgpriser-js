@@ -27,6 +27,13 @@ export type Timestamp = string;
 
 export type PrintingLanguage = NonNullable<CardSchema['language']>;
 
+/** What universe of product an item is — `'tcg'` for every card and sealed product today, plus
+ * `'accessory'`/`'collectible'`/`'boardGame'`/`'videoGame'`/`'other'` for non-TCG catalogue items.
+ * Orthogonal to `kind` (which endpoint returned it: `cards` vs `products`) and to `category` (the
+ * specific group within a product line, e.g. "Booster Box"). The value `productLine` filters on
+ * `cards.list()`/`products.list()` accept. */
+export type ProductLine = CardSchema['productLine'];
+
 export type PageMeta = components['schemas']['PageMeta'];
 
 /** The standard paginated list envelope every `list`/`search` method returns. Hand-declared, not

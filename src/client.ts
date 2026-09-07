@@ -1,5 +1,6 @@
 import { HttpClient } from './http.js';
 import { BargainsResource } from './resources/bargains.js';
+import { BrandsResource } from './resources/brands.js';
 import { CardsResource } from './resources/cards.js';
 import { ExpansionsResource } from './resources/expansions.js';
 import { PackRatesResource } from './resources/packRates.js';
@@ -72,6 +73,7 @@ export class TcgPriser {
   readonly cards: CardsResource;
   readonly products: ProductsResource;
   readonly expansions: ExpansionsResource;
+  readonly brands: BrandsResource;
   readonly shops: ShopsResource;
   readonly shopMatches: ShopMatchesResource;
   readonly shopMatchStats: ShopMatchStatsResource;
@@ -115,6 +117,7 @@ export class TcgPriser {
     this.cards = new CardsResource(http);
     this.products = new ProductsResource(http);
     this.expansions = new ExpansionsResource(http);
+    this.brands = new BrandsResource(http);
     this.shops = new ShopsResource(http);
     this.shopMatches = new ShopMatchesResource(http);
     this.shopMatchStats = new ShopMatchStatsResource(http);

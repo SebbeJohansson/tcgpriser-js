@@ -80,6 +80,31 @@ await tcgpriser.expansions.cards('eng-scarlet-violet-journey-together'); // cont
 await tcgpriser.expansions.sealedProducts('eng-scarlet-violet-journey-together'); // content only
 ```
 
+### Brands
+
+The franchises and makers the catalogue carries — today just Pokémon, but `cards`/`products`/
+`expansions` all accept a `brand` filter (an `id` or `technicalName`) in preparation for more.
+
+```typescript
+await tcgpriser.brands.list();
+await tcgpriser.brands.get('pokemon');
+
+// Scope any list to one brand. An unrecognized value is a 400, not a silently empty page.
+await tcgpriser.cards.list({ brand: 'pokemon' });
+await tcgpriser.expansions.list({ brand: 'pokemon' });
+
+// Disambiguate a technicalName two brands might both use, on a single-item lookup.
+await tcgpriser.products.get('booster-box', { brand: 'pokemon' });
+```
+
+`productLine` narrows further, to what kind of catalogue item something is — `'tcg'` for every
+card and sealed product today, plus `'accessory'` / `'collectible'` / `'boardGame'` /
+`'videoGame'` / `'other'` for non-TCG items as the catalogue grows to carry them:
+
+```typescript
+await tcgpriser.cards.list({ productLine: 'tcg' });
+```
+
 ### Pricing
 
 `list()`/`get()`/`expansions.cards()`/`expansions.sealedProducts()` all return catalog content
@@ -147,11 +172,14 @@ Credits column applies only to calls that draw from your weekly allowance; see [
 
 ### `cards`
 
+`list()`/`dailyStats()`/`estimatedValues()` all take `brand`/`productLine` filters — see
+[Brands](#brands). `get()` takes `brand` too, to disambiguate a technicalName two brands share.
+
 | Method | Description | Credits |
 |---|---|---|
 | `list(params)` | List cards, newest first | — |
 | `search(params)` 🔒 | Free-text search on card and set names | 5 |
-| `get(id)` | Fetch one card by id or technicalName | — |
+| `get(id, params)` | Fetch one card by id or technicalName | — |
 | `matches(id, params)` | Current shop listings matched to this card | — |
 | `pricing(id)` | This card's current pricing snapshot | — |
 | `pricingBatch(ids)` | Pricing for up to 200 cards at once, by id | — |
@@ -164,13 +192,14 @@ Credits column applies only to calls that draw from your weekly allowance; see [
 
 ### `products`
 
-Sealed products only. Single cards live under `cards`.
+Sealed products only. Single cards live under `cards`. `list()`/`dailyStats()`/`estimatedValues()`
+take `brand`/`productLine` filters, and `get()` takes `brand` — see [Brands](#brands).
 
 | Method | Description | Credits |
 |---|---|---|
 | `list(params)` | List sealed products, newest first | — |
 | `search(params)` 🔒 | Free-text search on the product name | 5 |
-| `get(id)` | Fetch one product by id or technicalName | — |
+| `get(id, params)` | Fetch one product by id or technicalName | — |
 | `matches(id, params)` | Current shop listings matched to this product | — |
 | `pricing(id)` | This product's current pricing snapshot | — |
 | `pricingBatch(ids)` | Pricing for up to 200 products at once, by id | — |
@@ -183,16 +212,24 @@ Sealed products only. Single cards live under `cards`.
 
 ### `expansions`
 
-Cards and sealed products are always separate calls — nothing here merges them.
+Cards and sealed products are always separate calls — nothing here merges them. `list()` takes a
+`brand` filter — see [Brands](#brands).
 
 | Method | Description | Credits |
 |---|---|---|
-| `list()` | Every expansion, with counts | — |
+| `list(params)` | Every expansion, with counts | — |
 | `get(technicalName)` | One expansion's metadata (no contents) | — |
 | `cards(technicalName)` | Every card in the expansion, content only | — |
 | `sealedProducts(technicalName)` | Every sealed product in the expansion, content only | — |
 | `cardsLivePricing(technicalName)` 🔒 | Fresh pricing for every card in the expansion | 8 |
 | `productsLivePricing(technicalName)` 🔒 | Fresh pricing for every sealed product in it | 8 |
+
+### `brands`
+
+| Method | Description |
+|---|---|
+| `list()` | Every brand the catalogue carries |
+| `get(id)` | Fetch one brand by id or technicalName |
 
 ### `shops`
 

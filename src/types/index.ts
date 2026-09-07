@@ -1,4 +1,5 @@
 export * from './common.js';
+export * from './brand.js';
 export * from './catalog.js';
 export * from './expansion.js';
 export * from './shop.js';

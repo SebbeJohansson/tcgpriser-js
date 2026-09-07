@@ -1,4 +1,5 @@
 import type { HttpClient, RequestOptions } from '../http.js';
+import { splitRequestOptions, toQueryString } from '../http.js';
 import type {
   Card,
   Expansion,
@@ -8,12 +9,22 @@ import type {
   SealedProduct,
 } from '../types/index.js';
 
+export interface ListExpansionsParams extends RequestOptions {
+  /** Brand `id` or technicalName, e.g. `'pokemon'`. An unrecognized value is a 400, not an empty
+   * list. */
+  brand?: string;
+}
+
 export class ExpansionsResource {
   constructor(private readonly http: HttpClient) {}
 
   /** `GET /expansions`: every expansion. Unwrapped to a plain array, nothing to paginate here. */
-  async list(options: RequestOptions = {}): Promise<Expansion[]> {
-    const res = await this.http.get<{ data: Expansion[] }>('/expansions', options);
+  async list(params: ListExpansionsParams = {}): Promise<Expansion[]> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    const res = await this.http.get<{ data: Expansion[] }>(
+      `/expansions${toQueryString(query)}`,
+      requestOptions,
+    );
     return res.data;
   }
 

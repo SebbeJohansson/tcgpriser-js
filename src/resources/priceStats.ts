@@ -11,6 +11,7 @@ import type {
   ItemVariantDailyStats,
   ItemVariantStats,
   ListResponse,
+  ProductLine,
   TopItem,
 } from '../types/index.js';
 
@@ -25,6 +26,11 @@ export interface ProductFilterParams extends RequestOptions {
   category?: string;
   /** Expansion technicalName. */
   expansion?: string;
+  /** Brand technicalName. */
+  brand?: string;
+  /** Brand id (ObjectId), an alternative to `brand`. */
+  brandId?: string;
+  productLine?: ProductLine;
 }
 
 export interface DailyPriceStatsParams extends ProductFilterParams {

@@ -14,11 +14,23 @@ import type {
   ListResponse,
   LivePricingForItem,
   PaginationParams,
+  ProductLine,
   ReferencePriceProvider,
   SealedProduct,
 } from '../types/index.js';
 
-export interface ListProductsParams extends PaginationParams {}
+export interface ListProductsParams extends PaginationParams {
+  /** Brand `id` or technicalName, e.g. `'pokemon'`. Scopes the listing to one game/universe. An
+   * unrecognized value is a 400, not an empty page. */
+  brand?: string;
+  productLine?: ProductLine;
+}
+
+export interface GetProductParams extends RequestOptions {
+  /** Brand `id` or technicalName. Disambiguates a `technicalName` two brands both happen to use —
+   * irrelevant while the catalogue carries only one brand, and unused for an `id` lookup. */
+  brand?: string;
+}
 
 export interface SearchProductsParams extends PaginationParams {
   /** Whitespace-separated tokens, each matched against the start of a word. */
@@ -65,6 +77,11 @@ export interface ProductDailyPriceStatsParams extends RequestOptions {
   categoryId?: string;
   /** Expansion id (ObjectId), an alternative to `expansion`. */
   expansionId?: string;
+  /** Brand technicalName. */
+  brand?: string;
+  /** Brand id (ObjectId), an alternative to `brand`. */
+  brandId?: string;
+  productLine?: ProductLine;
 }
 
 /** Filters for `products.estimatedValues()`. Note `page`/`limit`, not the `limit`/`skip` the rest
@@ -80,6 +97,11 @@ export interface ProductEstimatedValuesParams extends RequestOptions {
   category?: string;
   /** Expansion technicalName. */
   expansion?: string;
+  /** Brand technicalName. */
+  brand?: string;
+  /** Brand id (ObjectId), an alternative to `brand`. */
+  brandId?: string;
+  productLine?: ProductLine;
 }
 
 /** Sealed products: booster boxes, ETBs, tins, and the like. Single cards live under
@@ -100,9 +122,14 @@ export class ProductsResource {
     return this.http.get(`/product/search${toQueryString(query)}`, requestOptions);
   }
 
-  /** `GET /product/{id}`: fetch one sealed product by its id or technicalName. */
-  get(idOrTechnicalName: string, options: RequestOptions = {}): Promise<SealedProduct> {
-    return this.http.get(`/product/${encodeURIComponent(idOrTechnicalName)}`, options);
+  /** `GET /product/{id}`: fetch one sealed product by its id or technicalName. Pass `brand` if two
+   * brands might share the same technicalName — see `GetProductParams`. */
+  get(idOrTechnicalName: string, params: GetProductParams = {}): Promise<SealedProduct> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(
+      `/product/${encodeURIComponent(idOrTechnicalName)}${toQueryString(query)}`,
+      requestOptions,
+    );
   }
 
   /** `GET /product/{id}/matches`: current shop listings matched to this product (latest per shop). */

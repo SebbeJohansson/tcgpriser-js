@@ -48,6 +48,28 @@ describe('TcgPriser client', () => {
     expect(capturedUrl).toBe('http://localhost:5000/cards/search?search=pikachu&limit=5');
   });
 
+  it('puts brand and productLine in the query string, on list() and get() alike', async () => {
+    let capturedUrl = '';
+    const client = new TcgPriser({
+      advanced: {
+        baseUrl: 'http://localhost:5000',
+        fetch: fakeFetch((url) => {
+          capturedUrl = url;
+          return jsonResponse({ data: [], pagination: { total: 0, limit: 10, skip: 0, hasMore: false } });
+        }),
+      },
+    });
+
+    await client.cards.list({ brand: 'pokemon', productLine: 'tcg' });
+    expect(capturedUrl).toBe('http://localhost:5000/cards?brand=pokemon&productLine=tcg');
+
+    await client.products.get('booster-box-x', { brand: 'pokemon' });
+    expect(capturedUrl).toBe('http://localhost:5000/product/booster-box-x?brand=pokemon');
+
+    await client.expansions.list({ brand: 'pokemon' });
+    expect(capturedUrl).toBe('http://localhost:5000/expansions?brand=pokemon');
+  });
+
   it('strips a trailing slash from a custom baseUrl', async () => {
     let capturedUrl = '';
     const client = new TcgPriser({
@@ -107,13 +129,16 @@ describe('TcgPriser client', () => {
     });
   });
 
-  it('unwraps the list envelope for expansions, shops and pack-rates', async () => {
+  it('unwraps the list envelope for expansions, shops, brands and pack-rates', async () => {
     const client = new TcgPriser({
       advanced: { fetch: fakeFetch(() => jsonResponse({ data: [{ id: '1' }], pagination: {} })) },
     });
 
     const expansions = await client.expansions.list();
     expect(expansions).toEqual([{ id: '1' }]);
+
+    const brands = await client.brands.list();
+    expect(brands).toEqual([{ id: '1' }]);
   });
 
   it('throws a TcgPriserError with the parsed code and message on a non-2xx response', async () => {
