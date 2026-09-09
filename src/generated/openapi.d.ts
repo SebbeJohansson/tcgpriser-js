@@ -1314,6 +1314,10 @@ export interface components {
             /** @example pokemon */
             technicalName: string;
             /**
+             * @description Absolute asset URL, or undefined when absent.
+             */
+            imageUrl: string | undefined;
+            /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
              */
