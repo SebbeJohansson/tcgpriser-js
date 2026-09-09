@@ -60,8 +60,9 @@ export type AlternativeName = components['schemas']['AlternativeName'];
 export type BrandRef = components['schemas']['Brand'];
 export type CategoryRef = components['schemas']['CategoryRef'];
 
-/** The expansion shape embedded on cards, products and pack rates. Not the full `Expansion`
- * returned by `client.expansions.list()`, which additionally carries counts and a `brand`. */
+/** The expansion shape embedded on cards, products and pack rates, and returned by
+ * `client.expansions.get()`. It includes the owning `brand`, but not the aggregation counts that
+ * only `client.expansions.list()` computes. */
 export type ExpansionRef = components['schemas']['ExpansionRef'];
 
 /** The minimal shop identity embedded on offers and matches. */

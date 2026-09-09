@@ -1543,6 +1543,10 @@ export interface components {
             /** @example jpn-mega-evolution-30th-celebration */
             technicalName: string;
             /**
+             * @description The expansion's owning brand. Undefined only for legacy diagnostic responses that cannot populate it.
+             */
+            brand: components["schemas"]["Brand"] | undefined;
+            /**
              * @description Printing language of the item
              * @example JPN
              * @enum {string}
