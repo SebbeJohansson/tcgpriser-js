@@ -39,8 +39,9 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     const expansions = await client.expansions.list();
     expect(expansions.length).toBeGreaterThan(0);
 
-    // Multi-brand foundation: exactly one brand row exists today (Pokémon), but the filter must
-    // already behave correctly — a match, not a fluke of there being nothing to filter out.
+    // Multi-brand: more than one brand row exists today (Pokémon, Magic, ...), so the brand filter
+    // must actually narrow results — a non-empty, brand-pure subset of the unfiltered list, not
+    // necessarily equal to it.
     const brands = await client.brands.list();
     expect(brands.length).toBeGreaterThan(0);
     expect(brands[0]).toHaveProperty('technicalName');
@@ -54,7 +55,9 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     });
 
     const brandFilteredExpansions = await client.expansions.list({ brand: 'pokemon' });
-    expect(brandFilteredExpansions.length).toBe(expansions.length);
+    expect(brandFilteredExpansions.length).toBeGreaterThan(0);
+    expect(brandFilteredExpansions.length).toBeLessThanOrEqual(expansions.length);
+    expect(brandFilteredExpansions.every((e) => e.brand.technicalName === 'pokemon')).toBe(true);
     await expect(client.expansions.list({ brand: 'this-brand-does-not-exist' })).rejects.toMatchObject({
       statusCode: 400,
     });
@@ -64,11 +67,13 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     expect(cards.data[0]?.kind).toBe('card');
     expect(cards.data[0]).toHaveProperty('productLine');
 
-    // brand/productLine list filters: unfiltered vs. filtered totals must match exactly (one
-    // brand, all TCG), and an unknown brand must 400 rather than come back empty.
+    // brand/productLine list filters: a brand filter must narrow the total (multiple brands exist),
+    // a productLine filter matching every card must not (every card today is 'tcg', no brand has
+    // accessory-type cards), and an unknown brand must 400 rather than come back empty.
     const cardsUnfiltered = await client.cards.list({ limit: 1 });
     const cardsByBrand = await client.cards.list({ brand: 'pokemon', limit: 1 });
-    expect(cardsByBrand.pagination.total).toBe(cardsUnfiltered.pagination.total);
+    expect(cardsByBrand.pagination.total).toBeGreaterThan(0);
+    expect(cardsByBrand.pagination.total).toBeLessThanOrEqual(cardsUnfiltered.pagination.total);
     const cardsByProductLine = await client.cards.list({ productLine: 'tcg', limit: 1 });
     expect(cardsByProductLine.pagination.total).toBe(cardsUnfiltered.pagination.total);
     const cardsByWrongProductLine = await client.cards.list({ productLine: 'accessory', limit: 1 });
@@ -81,8 +86,11 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     expect(card.id).toBe(cards.data[0]!.id);
     expect(card).not.toHaveProperty('retailPrice');
 
-    // Flat vs. brand-scoped ("subfolder mode") lookup of the same slug must resolve identically.
-    const cardByBrandSlug = await client.cards.get(cards.data[0]!.technicalName, { brand: 'pokemon' });
+    // Flat vs. brand-scoped ("subfolder mode") lookup of the same slug must resolve identically —
+    // scoped to whichever brand this card actually belongs to, not assumed.
+    const cardByBrandSlug = await client.cards.get(cards.data[0]!.technicalName, {
+      brand: card.brand.technicalName,
+    });
     expect(cardByBrandSlug.id).toBe(card.id);
 
     const cardPricing = await client.cards.pricing(card.id);
@@ -98,7 +106,8 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
     expect(products.data[0]).toHaveProperty('productLine');
 
     const productsByBrand = await client.products.list({ brand: 'pokemon', limit: 1 });
-    expect(productsByBrand.pagination.total).toBe(products.pagination.total);
+    expect(productsByBrand.pagination.total).toBeGreaterThan(0);
+    expect(productsByBrand.pagination.total).toBeLessThanOrEqual(products.pagination.total);
 
     const product = products.data[0];
     if (product) {
@@ -108,8 +117,11 @@ describe.runIf(process.env.CI !== 'true')('live API smoke test', () => {
       const { data: productPricingBatch } = await client.products.pricingBatch([product.id]);
       expect(productPricingBatch[0]?.id).toBe(product.id);
 
-      // Flat vs. brand-scoped ("subfolder mode") lookup of the same slug must resolve identically.
-      const productByBrandSlug = await client.products.get(product.technicalName, { brand: 'pokemon' });
+      // Flat vs. brand-scoped ("subfolder mode") lookup of the same slug must resolve identically —
+      // scoped to whichever brand this product actually belongs to, not assumed.
+      const productByBrandSlug = await client.products.get(product.technicalName, {
+        brand: product.brand.technicalName,
+      });
       expect(productByBrandSlug.id).toBe(product.id);
     }
 
