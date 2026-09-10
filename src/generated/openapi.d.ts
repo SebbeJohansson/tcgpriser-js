@@ -369,6 +369,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/expansions/{technicalName}/release-group": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Expansion Release Group
+         * @description The other expansions in this expansion's release group (e.g. a core set's variant drops), excluding the requested expansion itself. Empty `expansions` and null `releaseGroupName` when the expansion isn't part of a release group.
+         */
+        get: operations["getExpansionReleaseGroup"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/expansions/{technicalName}/cards": {
         parameters: {
             query?: never;
@@ -1314,7 +1334,8 @@ export interface components {
             /** @example pokemon */
             technicalName: string;
             /**
-             * @description Absolute asset URL, or undefined when absent.
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
             /**
@@ -1476,6 +1497,7 @@ export interface components {
             shortName: string;
             /** @example jpn-mega-evolution-30th-celebration */
             technicalName: string;
+            brand: components["schemas"]["Brand"];
             /**
              * @description Printing language of the item
              * @example JPN
@@ -1488,6 +1510,19 @@ export interface components {
             cardCode: string | undefined;
             /** @example Mega Evolution */
             seriesName: string | undefined;
+            /** @example The Lord of the Rings: Tales of Middle-earth */
+            releaseGroupName: string | undefined;
+            releaseGroup: {
+                /**
+                 * @description Resource identifier
+                 * @example 6a577711abc1ce71383d3e10
+                 */
+                id: string;
+                /** @example The Lord of the Rings: Tales of Middle-earth */
+                name: string;
+                /** @example eng-the-lord-of-the-rings-tales-of-middle-earth */
+                technicalName: string;
+            } | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -1509,7 +1544,6 @@ export interface components {
              */
             imageUrl: string | undefined;
             year: number | undefined;
-            brand: components["schemas"]["Brand"];
             alternativeNames: components["schemas"]["AlternativeName"][];
             /** @description Sealed products in this expansion */
             sealedCount: number;
@@ -1546,9 +1580,6 @@ export interface components {
             shortName: string;
             /** @example jpn-mega-evolution-30th-celebration */
             technicalName: string;
-            /**
-             * @description The expansion's owning brand. Undefined only for legacy diagnostic responses that cannot populate it.
-             */
             brand: components["schemas"]["Brand"] | undefined;
             /**
              * @description Printing language of the item
@@ -1562,6 +1593,19 @@ export interface components {
             cardCode: string | undefined;
             /** @example Mega Evolution */
             seriesName: string | undefined;
+            /** @example The Lord of the Rings: Tales of Middle-earth */
+            releaseGroupName: string | undefined;
+            releaseGroup: {
+                /**
+                 * @description Resource identifier
+                 * @example 6a577711abc1ce71383d3e10
+                 */
+                id: string;
+                /** @example The Lord of the Rings: Tales of Middle-earth */
+                name: string;
+                /** @example eng-the-lord-of-the-rings-tales-of-middle-earth */
+                technicalName: string;
+            } | undefined;
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -1582,6 +1626,10 @@ export interface components {
              * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
              */
             imageUrl: string | undefined;
+        };
+        ExpansionReleaseGroup: {
+            releaseGroupName: string | undefined;
+            expansions: components["schemas"]["Expansion"][];
         };
         ItemDailyStats: {
             item: components["schemas"]["CatalogItemRef"];
@@ -1860,11 +1908,11 @@ export interface components {
         };
         ReferencePriceSeries: {
             /** @enum {string} */
-            source: "tcgdex" | "cmapi" | "tradera" | "pokemonpricetracker";
+            source: "tcgdex" | "cmapi" | "tradera" | "pokemonpricetracker" | "scryfall";
             /** @enum {string} */
             provider: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
             /** @enum {string|null} */
-            variant: "normal" | "holo" | "reverse" | undefined;
+            variant: "normal" | "holo" | "reverse" | "foil" | undefined;
             /** @enum {string|null} */
             cardType: "loose" | "graded" | undefined;
             /** @enum {string|null} */
@@ -2599,6 +2647,7 @@ export interface operations {
                      *           "id": "6841cfd656b8f021ecb0483b",
                      *           "name": "Pokémon",
                      *           "technicalName": "pokemon",
+                     *           "imageUrl": null,
                      *           "createdAt": "2025-06-05T17:11:50.316Z",
                      *           "updatedAt": "2025-06-05T17:11:50.316Z"
                      *         }
@@ -2651,6 +2700,7 @@ export interface operations {
                      *       "id": "6841cfd656b8f021ecb0483b",
                      *       "name": "Pokémon",
                      *       "technicalName": "pokemon",
+                     *       "imageUrl": null,
                      *       "createdAt": "2025-06-05T17:11:50.316Z",
                      *       "updatedAt": "2025-06-05T17:11:50.316Z"
                      *     }
@@ -3689,6 +3739,43 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Expansion not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    getExpansionReleaseGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Expansion `_id` or technicalName. */
+                technicalName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The release group */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpansionReleaseGroup"];
+                };
             };
             /** @description Expansion not found */
             404: {

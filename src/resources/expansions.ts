@@ -5,6 +5,7 @@ import type {
   Expansion,
   ExpansionLivePricing,
   ExpansionRef,
+  ExpansionReleaseGroup,
   ListResponse,
   SealedProduct,
 } from '../types/index.js';
@@ -42,6 +43,15 @@ export class ExpansionsResource {
    * this one. */
   cards(technicalName: string, options: RequestOptions = {}): Promise<ListResponse<Card>> {
     return this.http.get(`/expansions/${encodeURIComponent(technicalName)}/cards`, options);
+  }
+
+  /** `GET /expansions/{technicalName}/release-group`: the other expansions in this expansion's
+   * release group (e.g. a core set's variant drops), excluding the requested expansion itself. */
+  releaseGroup(
+    technicalName: string,
+    options: RequestOptions = {},
+  ): Promise<ExpansionReleaseGroup> {
+    return this.http.get(`/expansions/${encodeURIComponent(technicalName)}/release-group`, options);
   }
 
   /** `GET /expansions/{technicalName}/products`: every sealed product in this expansion. Content
