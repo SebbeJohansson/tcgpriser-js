@@ -1425,6 +1425,12 @@ export interface components {
              * @example 149.5
              */
             estimatedValue: number | undefined;
+            /**
+             * Format: date-time
+             * @description Date of the newest sale the estimate rests on. Usually within the last 30 days, but when nothing sold in that window the estimate falls back to the most recent sale of any age — compare this against today before presenting the figure as a 30-day average.
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            estimatedValueObservedAt: string | undefined;
             /** @description Active shops currently tracking this item */
             shopCount: number;
             /** @description Observations the estimate rests on */
@@ -1711,6 +1717,11 @@ export interface components {
             retailPrice: number | undefined;
             /** @example 149.5 */
             estimatedValue: number | undefined;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            estimatedValueObservedAt: string | undefined;
             shopCount: number;
             pricingDataPoints: number;
             /**
