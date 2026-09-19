@@ -49,6 +49,14 @@ export type {
 export type { ListBargainsParams, SearchBargainsParams } from './resources/bargains.js';
 export type { ListShopsParams } from './resources/shops.js';
 export type { CreateWebhookParams } from './resources/webhooks.js';
+export {
+  verifyWebhookSignature,
+  signWebhookPayload,
+  parseWebhookDelivery,
+  type VerifyWebhookSignatureParams,
+  type SignWebhookPayloadParams,
+  type ParseWebhookDeliveryParams,
+} from './webhookSignature.js';
 
 export * from './types/index.js';
 

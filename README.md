@@ -472,7 +472,122 @@ await tcgpriser.webhooks.list();           // never includes secrets
 await tcgpriser.webhooks.delete(webhook.id);
 ```
 
-Available events: `price.updated`, `bargain.found`, `product.created`, `card.created`.
+### Events
+
+| Event | Fires when |
+|---|---|
+| `price.updated` | A pricing run changed one or more items' prices |
+| `bargain.found` | A shop listing came in below its item's reference price |
+| `product.created` / `card.created` | A sealed product or card was added to the catalog |
+| `product.updated` / `card.updated` | A sealed product or card was edited (fields, expansion, image) |
+| `expansion.created` / `expansion.updated` | An expansion was added or edited |
+| `shop.created` / `shop.updated` / `shop.deleted` | A shop was added, edited, or removed |
+
+`product.deleted`, `card.deleted` and `expansion.deleted` are deliberately absent: those removals
+run as offline maintenance jobs, not as API calls, so there is nothing that could honestly fire
+them. Do not subscribe against the assumption that a missing item will announce itself.
+
+### Receiving a delivery
+
+Every delivery is a `POST` carrying `X-Webhook-Event`, `X-Webhook-Delivery-Id`, and
+`X-Webhook-Signature: sha256=<hmac>` — an HMAC-SHA256 of the raw body keyed with your webhook's
+secret. Checking that signature is the only thing separating a real delivery from anyone who
+guessed your URL, so `parseWebhookDelivery()` verifies it for you and hands back a typed,
+discriminated payload:
+
+```typescript
+import express from 'express';
+import { parseWebhookDelivery } from 'tcgpriser';
+
+// Raw body, not express.json() — see the note below.
+app.post('/hooks/tcgpriser', express.raw({ type: 'application/json' }), async (req, res) => {
+  let delivery;
+  try {
+    delivery = await parseWebhookDelivery({
+      body: req.body,                                // Buffer of the raw bytes
+      signature: req.header('X-Webhook-Signature'),
+      event: req.header('X-Webhook-Event'),
+      deliveryId: req.header('X-Webhook-Delivery-Id'),
+      secret: process.env.TCGPRISER_WEBHOOK_SECRET!,
+    });
+  } catch {
+    return res.status(401).end();
+  }
+
+  res.status(202).end(); // ack first, process after — delivery times out at 10s
+
+  switch (delivery.event) {
+    case 'price.updated':
+      for (const change of delivery.payload) await reprice(change.productId);
+      break;
+    case 'shop.updated':
+      await refreshShop(delivery.payload.technicalName); // narrowed to WebhookCatalogChange
+      break;
+  }
+});
+```
+
+**Verify against the raw bytes.** Re-serialising a parsed object will not reproduce the signature —
+key order, whitespace and number formatting all have to match exactly. If your framework parses
+JSON by default, turn that off for this route.
+
+Prefer to do the parsing yourself? `verifyWebhookSignature()` returns a boolean and nothing else,
+and `signWebhookPayload()` produces a valid signature so you can build realistic fixtures in your
+own tests:
+
+```typescript
+import { verifyWebhookSignature, signWebhookPayload } from 'tcgpriser';
+
+const ok = await verifyWebhookSignature({ body: rawBody, signature, secret });
+const header = await signWebhookPayload({ body: JSON.stringify(fixture), secret });
+```
+
+Both run on Web Crypto, so the same code works in Node 18+, Cloudflare Workers, Deno and Bun.
+
+### Payload shapes
+
+Payloads are typed, and the types are generated from the API's own spec like everything else here:
+
+```typescript
+import type {
+  WebhookCatalogChange, WebhookPriceChange, WebhookBargain,
+  WebhookProductCreated, WebhookCardCreated, WebhookTestPayload,
+  WebhookPayload, WebhookDelivery,
+} from 'tcgpriser';
+
+type ShopChange = WebhookPayload<'shop.updated'>; // WebhookCatalogChange
+```
+
+Most events carry a `WebhookCatalogChange`:
+
+```typescript
+{
+  entity: 'product' | 'card' | 'expansion' | 'shop',
+  action: 'created' | 'updated' | 'deleted',
+  id: string,
+  technicalName?: string,  // URL slug
+  brand?: string,          // brand slug, e.g. 'pokemon' — absent for shops
+  expansion?: string,      // owning expansion's slug, for products and cards
+  occurredAt: string,      // ISO 8601
+}
+```
+
+Four predate that shape and are kept as-is so existing integrations keep working:
+
+| Event | Payload |
+|---|---|
+| `product.created` | `WebhookProductCreated` — `{ productId, name, technicalName }` |
+| `card.created` | `WebhookCardCreated` — `{ cardId, name, technicalName }` |
+| `price.updated` | `WebhookPriceChange[]` — `{ productId, retailValue, estimatedValue }` |
+| `bargain.found` | `WebhookBargain[]` — `{ productId, url, discountPercent, referenceSource }` |
+
+The `test` event that `webhooks.test()` sends carries `WebhookTestPayload`.
+
+Two things worth designing for. Deliveries are **batched and coalesced**, not one-per-record — a
+single pricing run can touch thousands of items — so treat a payload as "these things changed"
+rather than as one notification per object. And a non-2xx response is **retried with backoff**
+(five attempts, then abandoned; ten consecutive failures disables the webhook), so handlers must be
+idempotent: `deliveryId` is stable across retries if you want to deduplicate on it.
 
 ## Types
 

@@ -2387,11 +2387,67 @@ export interface components {
              */
             updatedAt: string;
         };
+        WebhookBargain: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            productId: string;
+            url: string;
+            discountPercent: number;
+            referenceSource: string;
+        };
+        WebhookCardCreated: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            cardId: string;
+            name: string;
+            technicalName: string;
+        };
+        WebhookCatalogChange: {
+            /** @enum {string} */
+            entity: "shop" | "expansion" | "product" | "card";
+            /** @enum {string} */
+            action: "created" | "updated" | "deleted";
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            technicalName?: string;
+            brand?: string;
+            expansion?: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            occurredAt: string;
+        };
         /** @enum {string} */
-        WebhookEvent: "price.updated" | "bargain.found" | "product.created" | "card.created";
+        WebhookEvent: "price.updated" | "bargain.found" | "product.created" | "product.updated" | "card.created" | "card.updated" | "expansion.created" | "expansion.updated" | "shop.created" | "shop.updated" | "shop.deleted";
         WebhookList: {
             data: components["schemas"]["Webhook"][];
             pagination: components["schemas"]["PageMeta"];
+        };
+        WebhookPriceChange: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            productId: string;
+            retailValue: number | undefined;
+            estimatedValue: number | undefined;
+        };
+        WebhookProductCreated: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            productId: string;
+            name: string;
+            technicalName: string;
         };
         WebhookSecret: {
             /**
@@ -2420,6 +2476,14 @@ export interface components {
              */
             updatedAt: string;
             secret: string;
+        };
+        WebhookTestPayload: {
+            message: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            timestamp: string;
         };
         WebhookTestResult: {
             message: string;
