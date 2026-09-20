@@ -1864,6 +1864,7 @@ export interface components {
         };
         PlatformStats: {
             shopCount: number;
+            brandCount: number;
             categoryCount: number;
             expansionCount: number;
             productCount: number;
