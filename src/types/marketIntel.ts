@@ -33,6 +33,10 @@ export type PackExpectedValue = components['schemas']['PackExpectedValue'];
  * carries a premium over its contents, which is the market's normal state rather than a signal. */
 export type SealedUnitValue = components['schemas']['SealedUnitValue'];
 
+/** One thing the expected-value figure takes for granted. Switch on `code` to say it in your own
+ * language; `message` is the English fallback. */
+export type ExpectedValueAssumption = components['schemas']['ExpectedValueAssumption'];
+
 /** The full expected-value answer for one expansion, as returned by
  * `expansions.expectedValue()`. Render `assumptions` alongside the figure — it states what the
  * number takes for granted, and the number is only honest with it. */

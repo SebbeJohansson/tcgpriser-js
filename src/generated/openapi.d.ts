@@ -1670,8 +1670,8 @@ export interface components {
             expansion: components["schemas"]["ExpansionRef"];
             pack: components["schemas"]["PackExpectedValue"];
             sealedUnits: components["schemas"]["SealedUnitValue"][];
-            /** @description Plain-language statement of what the figure takes for granted. Render these with it. */
-            assumptions: string[];
+            /** @description What the figure takes for granted. Render these with it. */
+            assumptions: components["schemas"]["ExpectedValueAssumption"][];
             /**
              * Format: date-time
              * @example 2026-07-15T12:03:29.322Z
@@ -1746,6 +1746,12 @@ export interface components {
         ExpansionReleaseGroup: {
             releaseGroupName: string | undefined;
             expansions: components["schemas"]["Expansion"][];
+        };
+        ExpectedValueAssumption: {
+            /** @enum {string} */
+            code: "packLayout" | "reverseSlotUsesBasePrice" | "unpricedCountAsZero" | "fallbackRates" | "approximateRates" | "lowPriceCoverage";
+            /** @description English prose, for clients with no wording of their own */
+            message: string;
         };
         GradedOutcome: {
             /** @enum {string} */

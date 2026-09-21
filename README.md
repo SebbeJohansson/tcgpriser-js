@@ -192,11 +192,13 @@ const ev = await tcgpriser.expansions.expectedValue('eng-scarlet-violet-journey-
 
 console.log(ev.pack.expectedValue);            // kr per pack, opened
 console.log(ev.sealedUnits[0]?.valueRatio);    // 0.78 = 78 öre of cards per krona spent
-ev.assumptions.forEach((line) => console.log(line));
+ev.assumptions.forEach((a) => console.log(a.code, a.message));
 ```
 
-Show `assumptions` with the figure. It states what the number takes for granted, generated from the
-computation's own state — whether the set has its own pull rates or falls back to era averages, and
+Show `assumptions` with the figure. Each one carries a stable `code` as well as English `message`,
+so a non-English UI can switch on the code and write its own sentence rather than pasting an English
+disclaimer beside a translated number. It states what the figure takes for granted, generated from
+the computation's own state — whether the set has its own pull rates or falls back to era averages, and
 how much of the set has a price at all. A ratio below 1 is the normal state of sealed product, not a
 signal: it is the size of the premium people pay for the sealed article, made visible.
 
