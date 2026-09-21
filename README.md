@@ -165,6 +165,68 @@ await tcgpriser.packRates.list();
 await tcgpriser.packRates.get(expansionId);
 ```
 
+### Market movers
+
+What the market did this week, rather than what things are worth today. Ranked over a window
+against the equally long window before it, from daily averages of realised sales — not shop asking
+prices.
+
+```typescript
+const { data, window } = await tcgpriser.cards.marketMovers({ mover: 'topGainersPercent', days: 7 });
+await tcgpriser.products.marketMovers({ mover: 'newLows', days: 30 });
+```
+
+An item has to have sold in *both* windows to appear: a first-ever sale is new data, not a gain.
+`window` tells you exactly which days were compared, so a cached response explains its own numbers.
+
+Cards and sealed products are ranked separately and there is no combined call — same rule as every
+other listing in this client.
+
+### Expected value
+
+What a booster pack of a set is worth if you open it, and how each sealed unit compares to the
+cheapest price a buyer could pay today.
+
+```typescript
+const ev = await tcgpriser.expansions.expectedValue('eng-scarlet-violet-journey-together');
+
+console.log(ev.pack.expectedValue);            // kr per pack, opened
+console.log(ev.sealedUnits[0]?.valueRatio);    // 0.78 = 78 öre of cards per krona spent
+ev.assumptions.forEach((line) => console.log(line));
+```
+
+Show `assumptions` with the figure. It states what the number takes for granted, generated from the
+computation's own state — whether the set has its own pull rates or falls back to era averages, and
+how much of the set has a price at all. A ratio below 1 is the normal state of sealed product, not a
+signal: it is the size of the premium people pay for the sealed article, made visible.
+
+`sealedUnits` is empty until a pack count has been curated for the set's boxes and bundles. A
+display is 36 packs in English and 30 in Japanese and the product name says "Booster Box" either
+way, so the API records the number rather than guessing it.
+
+### Grading ROI
+
+```typescript
+// What the market pays for the slab over the raw card.
+const roi = await tcgpriser.cards.gradingRoi('charizard-ex');
+roi.outcomes.forEach((o) => console.log(o.gradingCompany, o.grade, o.gradedMultiple));
+
+// Add your own costs to get profit, ROI and the break-even sale price.
+const withCosts = await tcgpriser.cards.gradingRoi('charizard-ex', {
+  gradingCostSek: 250,
+  shippingCostSek: 50,
+  salesFeePercent: 10,
+});
+```
+
+The API ships no fee table on purpose: what grading costs depends on service level, declared value,
+bulk rate, the exchange rate on the day and which reshipper you use, so a built-in figure would be
+wrong for most submitters in a direction they would act on. `gradedMultiple` is always returned;
+everything from `netProceeds` down stays `undefined` until you state your costs.
+
+The window defaults to 365 days rather than the 30 the other price endpoints use. Graded sales are
+sparse enough that a 30-day window describes the window and not the market.
+
 ## Available Methods
 
 🔒 = premium, 🏢 = business. Both need an API token — see [Authentication](#authentication). The
@@ -189,6 +251,8 @@ Credits column applies only to calls that draw from your weekly allowance; see [
 | `prices(id, params)` 🔒 | Individual marketplace sale records | 2 |
 | `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / eBay / Tradera price history | 2 |
 | `livePricing(id)` 🔒 | Pricing computed fresh for this request | 3 |
+| `marketMovers(params)` | Cards ranked by how their price moved over a window | — |
+| `gradingRoi(id, params)` 🔒 | What graded copies fetch over a raw one, and whether that pays | 3 |
 
 ### `products`
 
@@ -209,6 +273,7 @@ take `brand`/`productLine` filters, and `get()` takes `brand` — see [Brands](#
 | `prices(id, params)` 🔒 | Individual marketplace sale records | 2 |
 | `referencePrices(id, params)` 🔒 | Cardmarket / TCGplayer / Tradera price history | 2 |
 | `livePricing(id)` 🔒 | Pricing computed fresh for this request | 3 |
+| `marketMovers(params)` | Sealed products ranked by how their price moved over a window | — |
 
 ### `expansions`
 
@@ -223,6 +288,7 @@ Cards and sealed products are always separate calls — nothing here merges them
 | `sealedProducts(technicalName)` | Every sealed product in the expansion, content only | — |
 | `cardsLivePricing(technicalName)` 🔒 | Fresh pricing for every card in the expansion | 8 |
 | `productsLivePricing(technicalName)` 🔒 | Fresh pricing for every sealed product in it | 8 |
+| `expectedValue(technicalName)` | What a pack is worth opened, and how sealed units compare | — |
 
 ### `brands`
 

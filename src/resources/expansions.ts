@@ -3,6 +3,7 @@ import { splitRequestOptions, toQueryString } from '../http.js';
 import type {
   Card,
   Expansion,
+  ExpansionExpectedValue,
   ExpansionLivePricing,
   ExpansionRef,
   ExpansionReleaseGroup,
@@ -85,6 +86,27 @@ export class ExpansionsResource {
   ): Promise<ExpansionLivePricing> {
     return this.http.get(
       `/expansions/${encodeURIComponent(technicalName)}/products/live-pricing`,
+      options,
+    );
+  }
+
+  /** `GET /expansions/{technicalName}/expected-value`: what one booster pack of this expansion is
+   * worth opened, and how each sealed unit compares to the cheapest price a buyer could pay today.
+   *
+   * The pack is modelled exactly as the site's pack simulator draws it, and the expected value is
+   * that draw solved in closed form rather than sampled, so repeated calls agree.
+   *
+   * Read `assumptions` and show it with the figure. It states what the number takes for granted —
+   * including whether this set has its own pull rates or falls back to era averages, and how much of
+   * the set has a price at all. `sealedUnits` is empty until a pack count has been curated for the
+   * set's boxes and bundles: a display is 36 packs in English and 30 in Japanese, and the product
+   * name does not say which. */
+  expectedValue(
+    technicalName: string,
+    options: RequestOptions = {},
+  ): Promise<ExpansionExpectedValue> {
+    return this.http.get(
+      `/expansions/${encodeURIComponent(technicalName)}/expected-value`,
       options,
     );
   }

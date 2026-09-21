@@ -37,7 +37,9 @@ export type {
   CompareShopPricesParams,
 } from './resources/shopMatchStats.js';
 export type { SubmitShopUrlParams, AssignShopUrlProductParams } from './resources/shopUrls.js';
+export type { GradingRoiParams } from './resources/cards.js';
 export type {
+  MarketMoversParams,
   ProductFilterParams,
   DailyPriceStatsParams,
   EstimatedValuesParams,

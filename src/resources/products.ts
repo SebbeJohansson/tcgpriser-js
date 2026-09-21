@@ -1,4 +1,5 @@
 import type { HttpClient, RequestOptions } from '../http.js';
+import type { MarketMoversParams } from './priceStats.js';
 import { splitRequestOptions, toQueryString } from '../http.js';
 import type {
   CardType,
@@ -13,6 +14,7 @@ import type {
   ItemSoldPrices,
   ListResponse,
   LivePricingForItem,
+  MarketMovers,
   PaginationParams,
   ProductLine,
   ReferencePriceProvider,
@@ -213,5 +215,17 @@ export class ProductsResource {
       `/product/price-stats/estimated-values${toQueryString(query)}`,
       requestOptions,
     );
+  }
+
+  /** `GET /product/price-stats/market-movers`: sealed products ranked by how their price has moved
+   * over a window, against the equally long window before it — which boxes, bundles and ETBs are
+   * climbing or sliding.
+   *
+   * Every figure is a daily average of realised sales, not a shop asking price. A product must have
+   * sold in BOTH windows to appear. The card counterpart is `client.cards.marketMovers()`; there is
+   * no combined call. */
+  marketMovers(params: MarketMoversParams = {}): Promise<MarketMovers> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/product/price-stats/market-movers${toQueryString(query)}`, requestOptions);
   }
 }

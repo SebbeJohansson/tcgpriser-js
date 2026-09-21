@@ -14,6 +14,10 @@
  * Defaults to the local dev server's premium spec (the broadest one; every schema the public tier
  * needs is a subset of it). Pass a URL to check against production instead:
  *   yarn generate:types https://api.tcgpriser.se/premium-openapi.json
+ *
+ * A `file://` URL works too, which is the offline route: `yarn dump-premium-spec <path>` in
+ * pris-tabell-api writes the same document the server publishes without booting it, so the types
+ * can be regenerated against an unreleased API branch with no server and no database.
  */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -41,6 +45,17 @@ function nullToUndefined(context) {
   return (node) => ts.visitNode(node, visit);
 }
 
+/**
+ * What to record as the provenance line.
+ *
+ * A `file://` source is a local dump, and its absolute path is specific to whoever ran it — pasting
+ * someone's home directory (or a sandbox's temp dir) into a committed file says nothing useful to
+ * the next reader. Name the dump instead of the machine it happened to sit on.
+ */
+const sourceLabel = specUrl.startsWith('file://')
+  ? `${path.basename(new URL(specUrl).pathname)} (offline dump — pris-tabell-api \`yarn dump-premium-spec\`)`
+  : specUrl;
+
 const { transformed, dispose } = ts.transform(ast, [nullToUndefined]);
 const contents = astToString(transformed);
 dispose();
@@ -48,7 +63,7 @@ dispose();
 await mkdir(outDir, { recursive: true });
 await writeFile(
   outFile,
-  `// GENERATED FILE - do not edit by hand.\n// Run \`yarn generate:types\` to regenerate from a live API instance.\n// Source: ${specUrl}\n\n${contents}`,
+  `// GENERATED FILE - do not edit by hand.\n// Run \`yarn generate:types\` to regenerate from a live API instance.\n// Source: ${sourceLabel}\n\n${contents}`,
 );
 
-console.log(`Wrote ${outFile} from ${specUrl}`);
+console.log(`Wrote ${outFile} from ${sourceLabel}`);

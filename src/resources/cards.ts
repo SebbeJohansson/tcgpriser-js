@@ -1,17 +1,20 @@
 import type { HttpClient, RequestOptions } from '../http.js';
+import type { MarketMoversParams } from './priceStats.js';
 import { splitRequestOptions, toQueryString } from '../http.js';
 import type {
   Card,
   CardType,
   CatalogItemPricing,
   CatalogSlug,
+  GradingRoi,
+  ItemDailyStats,
+  ItemEstimatedValue,
   ItemReferencePrices,
   ItemShopMatches,
   ItemSoldPrices,
-  ItemDailyStats,
-  ItemEstimatedValue,
   ListResponse,
   LivePricingForItem,
+  MarketMovers,
   PaginationParams,
   ProductLine,
   ReferencePriceCardVariant,
@@ -96,6 +99,25 @@ export interface CardEstimatedValuesParams extends RequestOptions {
   /** Brand id (ObjectId), an alternative to `brand`. */
   brandId?: string;
   productLine?: ProductLine;
+}
+
+/**
+ * Grading-ROI parameters.
+ *
+ * `gradingCostSek` is what opts a request into the profit fields. Passing the other two without it
+ * has no effect: a profit built from a stated sales fee and an unstated grading fee is not a partial
+ * answer, it is a wrong one, so the API requires the grading fee before computing any of them.
+ */
+export interface GradingRoiParams extends RequestOptions {
+  /** Window length in days, 30-1095. Default 365. */
+  days?: number;
+  /** Your grading fee per card, in SEK. Supplying this unlocks `netProfit`, `roiPercent` and
+   * `breakEvenGradedPrice`. */
+  gradingCostSek?: number;
+  /** Postage, insurance and reshipping per card, in SEK. Default 0. */
+  shippingCostSek?: number;
+  /** The marketplace cut on the eventual sale, as a percentage. Default 0. */
+  salesFeePercent?: number;
 }
 
 export class CardsResource {
@@ -200,6 +222,36 @@ export class CardsResource {
     const [query, requestOptions] = splitRequestOptions(params);
     return this.http.get(
       `/cards/price-stats/estimated-values${toQueryString(query)}`,
+      requestOptions,
+    );
+  }
+
+  /** `GET /cards/price-stats/market-movers`: single cards ranked by how their price has moved over
+   * a window, against the equally long window before it — gainers and droppers by percent and by
+   * kronor, most active, new highs and lows, volatility leaders.
+   *
+   * Every figure is a daily average of realised sales, not a shop asking price. A card must have
+   * sold in BOTH windows to appear: a first-ever sale is new data, not a gain. The sealed
+   * counterpart is `client.products.marketMovers()`; there is no combined call. */
+  marketMovers(params: MarketMoversParams = {}): Promise<MarketMovers> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(`/cards/price-stats/market-movers${toQueryString(query)}`, requestOptions);
+  }
+
+  /** `GET /cards/{id}/grading-roi`: what graded copies of this card have been selling for, per
+   * company and grade, against what a raw copy fetches. Premium.
+   *
+   * `gradedMultiple` is always populated. Profit, ROI and the break-even price appear only when you
+   * pass `gradingCostSek`: the API ships no fee table, because what grading costs depends on service
+   * level, declared value, bulk rate, the exchange rate and the reshipper, and a built-in figure
+   * would be wrong for most submitters in a direction they would act on.
+   *
+   * The window defaults to 365 days rather than the 30 the other price endpoints use — graded sales
+   * are sparse enough that a 30-day window describes the window and not the market. */
+  gradingRoi(idOrTechnicalName: string, params: GradingRoiParams = {}): Promise<GradingRoi> {
+    const [query, requestOptions] = splitRequestOptions(params);
+    return this.http.get(
+      `/cards/${encodeURIComponent(idOrTechnicalName)}/grading-roi${toQueryString(query)}`,
       requestOptions,
     );
   }

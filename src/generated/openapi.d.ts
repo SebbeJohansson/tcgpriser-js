@@ -1,6 +1,6 @@
 // GENERATED FILE - do not edit by hand.
 // Run `yarn generate:types` to regenerate from a live API instance.
-// Source: http://localhost:5000/premium-openapi.json
+// Source: premium-openapi.json (offline dump — pris-tabell-api `yarn dump-premium-spec`)
 
 export interface paths {
     "/bargains": {
@@ -329,6 +329,56 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/cards/price-stats/market-movers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card Market Movers
+         * @description Single cards ranked by how their price has moved, so a reader can see what the market did this week without opening a hundred card pages.
+         *
+         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain.
+         *
+         *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
+         */
+        get: operations["listCardMarketMovers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/{id}/grading-roi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card Grading ROI
+         * @description What graded copies of this card have actually been selling for, per grading company and grade, against what a raw copy fetches — so a seller can see whether slabbing it pays.
+         *
+         *     `gradedMultiple` — the ratio of the slab price to the raw price — is always returned, since that much is ours to know. Profit, ROI and the break-even price appear **only** when the request states its own costs, because we deliberately ship no fee table. What grading costs depends on service level, declared value, bulk rate, the exchange rate on the day and which reshipper is used; a built-in figure would be wrong for most submitters, in a direction they would act on.
+         *
+         *     The window defaults to 365 days rather than the 30 the other price endpoints use. Graded sales are sparse — a 30-day window would report "no PSA 9 data" for most of the catalogue, which is a statement about the window and not about the market.
+         *
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription.
+         */
+        get: operations["getCardGradingRoi"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/expansions": {
         parameters: {
             query?: never;
@@ -361,6 +411,30 @@ export interface paths {
          * @description Metadata only — no cards or sealed products, and no `sealedCount`/`cardCount` (those come from the aggregation `GET /expansions` runs; a plain lookup by technicalName does not recompute them, so this returns an `ExpansionRef` rather than a full `Expansion`). See `GET /expansions/{technicalName}/cards` and `GET /expansions/{technicalName}/products` for its contents.
          */
         get: operations["getExpansion"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/expansions/{technicalName}/expected-value": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Expansion Expected Value
+         * @description What a booster pack of this expansion is worth if you open it, and how that compares to what the sealed product costs in the shops we track.
+         *
+         *     The pack is modelled exactly as the pack simulator draws it — 4 commons, 3 uncommons, one reverse holo and one rare-or-better hit, with the hit drawn per card and weighted by its rarity's pull rate. The expected value is that draw solved in closed form, not sampled, so two calls a second apart return the same number.
+         *
+         *     Read `assumptions` and render it with the figure. It states what the number takes for granted, including whether this set has its own pull rates or falls back to era averages, and how much of the set we actually hold prices for. `sealedUnits` is empty until a pack count has been curated for the set's boxes and bundles — a display is 36 packs in English and 30 in Japanese, and the product name does not say which, so we record it rather than guess it.
+         */
+        get: operations["getExpansionExpectedValue"];
         put?: never;
         post?: never;
         delete?: never;
@@ -956,6 +1030,30 @@ export interface paths {
          * @description Sealed products only — the card equivalent is `GET /cards/price-stats/estimated-values`. Same filters and shape as `GET /price-stats/estimated-values`, scoped to the `Product` collection. Values are computed from recent sales data.
          */
         get: operations["listProductEstimatedValues"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/price-stats/market-movers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sealed Product Market Movers
+         * @description Sealed products ranked by how their price has moved — which boxes, bundles and ETBs are climbing or sliding.
+         *
+         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain.
+         *
+         *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
+         */
+        get: operations["listProductMarketMovers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1568,6 +1666,18 @@ export interface components {
              */
             updatedAt: string;
         };
+        ExpansionExpectedValue: {
+            expansion: components["schemas"]["ExpansionRef"];
+            pack: components["schemas"]["PackExpectedValue"];
+            sealedUnits: components["schemas"]["SealedUnitValue"][];
+            /** @description Plain-language statement of what the figure takes for granted. Render these with it. */
+            assumptions: string[];
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            calculatedAt: string;
+        };
         ExpansionLivePricing: {
             expansion: {
                 technicalName: string;
@@ -1636,6 +1746,92 @@ export interface components {
         ExpansionReleaseGroup: {
             releaseGroupName: string | undefined;
             expansions: components["schemas"]["Expansion"][];
+        };
+        GradedOutcome: {
+            /** @enum {string} */
+            gradingCompany: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA";
+            /** @example 10 */
+            grade: number;
+            /**
+             * @description Average realised price for this slab, in SEK
+             * @example 149.5
+             */
+            gradedPrice: number;
+            dataPointCount: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            lastSaleAt: string;
+            /**
+             * @description gradedPrice ÷ the raw price — 8.4 means the slab fetches 8.4× the card
+             * @example 8.4
+             */
+            gradedMultiple: number;
+            /**
+             * @description gradedPrice after the sales fee
+             * @example 149.5
+             */
+            netProceeds: number | undefined;
+            /**
+             * @description netProceeds minus the card, the grading and the shipping
+             * @example 149.5
+             */
+            netProfit: number | undefined;
+            /** @description netProfit as a percentage of the total outlay */
+            roiPercent: number | undefined;
+            /**
+             * @description What the slab must fetch for the submission to break even at the stated costs
+             * @example 149.5
+             */
+            breakEvenGradedPrice: number | undefined;
+        };
+        GradingCosts: {
+            /** @example 149.5 */
+            gradingCostSek: number;
+            /** @example 149.5 */
+            shippingCostSek: number;
+            /**
+             * @description Marketplace cut, as a percentage of the sale price
+             * @example 10
+             */
+            salesFeePercent: number;
+        };
+        GradingRawPrice: {
+            /**
+             * @description Raw (ungraded) price the premium is measured against, in SEK
+             * @example 149.5
+             */
+            price: number;
+            /** @enum {string} */
+            basis: "looseNearMint" | "estimatedValue";
+            /** @description Sales behind it; 0 when the basis is the stored estimate */
+            dataPointCount: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            lastSaleAt: string | undefined;
+        };
+        GradingRoi: {
+            item: components["schemas"]["CatalogItemRef"];
+            raw: components["schemas"]["GradingRawPrice"];
+            outcomes: components["schemas"]["GradedOutcome"][];
+            costs: components["schemas"]["GradingCosts"] | undefined;
+            window: {
+                /** @description Window length. Defaults to 365 — graded sales are sparse. */
+                days: number;
+                /**
+                 * Format: date-time
+                 * @example 2026-07-15T12:03:29.322Z
+                 */
+                since: string;
+            };
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            calculatedAt: string;
         };
         ItemDailyStats: {
             item: components["schemas"]["CatalogItemRef"];
@@ -1770,6 +1966,68 @@ export interface components {
                 referenceSource: "retail" | "tradera" | "cardmarket";
             } | undefined;
         };
+        MarketMover: {
+            item: components["schemas"]["RankedItem"];
+            /** @example 149.5 */
+            currentPrice: number;
+            /** @example 149.5 */
+            previousPrice: number;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            currentObservedAt: string;
+            /**
+             * Format: date-time
+             * @example 2026-07-15T12:03:29.322Z
+             */
+            previousObservedAt: string;
+            /**
+             * @description currentPrice − previousPrice, in SEK
+             * @example 149.5
+             */
+            changeAmount: number;
+            /**
+             * @description Change as a percentage of previousPrice
+             * @example 12.4
+             */
+            changePercent: number;
+            saleCount: number;
+            /**
+             * @description Highest daily average across both windows
+             * @example 149.5
+             */
+            periodHigh: number;
+            /**
+             * @description Lowest daily average across both windows
+             * @example 149.5
+             */
+            periodLow: number;
+            volatility: number | undefined;
+        };
+        MarketMovers: {
+            data: components["schemas"]["MarketMover"][];
+            pagination: components["schemas"]["PageMeta"];
+            window: {
+                /**
+                 * @description Length of each window, in days
+                 * @example 7
+                 */
+                days: number;
+                /**
+                 * Format: date-time
+                 * @description Start of the current window (midnight UTC)
+                 * @example 2026-07-15T12:03:29.322Z
+                 */
+                windowStart: string;
+                /**
+                 * Format: date-time
+                 * @description Start of the prior window it is compared against
+                 * @example 2026-07-15T12:03:29.322Z
+                 */
+                baselineStart: string;
+            };
+        };
         MatchShop: {
             /** @example cardlevels */
             technicalName: string;
@@ -1797,6 +2055,25 @@ export interface components {
             language: string | undefined;
             priceChartingId: string | undefined;
         };
+        PackExpectedValue: {
+            /**
+             * @description Mean value of one opened pack, in SEK
+             * @example 71.4
+             */
+            expectedValue: number;
+            slots: {
+                common: components["schemas"]["PackSlotValue"];
+                uncommon: components["schemas"]["PackSlotValue"];
+                reverse: components["schemas"]["PackSlotValue"];
+                hit: components["schemas"]["PackSlotValue"];
+            };
+            /** @enum {string} */
+            ratesSource: "packRate" | "defaults";
+            /** @example pullrates.gg */
+            ratesSourceName: string | undefined;
+            cardCount: number;
+            pricedCardCount: number;
+        };
         PackRate: {
             /**
              * @description Resource identifier
@@ -1821,6 +2098,7 @@ export interface components {
              *     ]
              */
             slotOrder: ("common" | "uncommon" | "reverse" | "hit" | "energy" | "code")[] | undefined;
+            packsPerUnit: components["schemas"]["PackRatePacksPerUnit"][];
             source: {
                 /** @example pullrates.gg */
                 name: string;
@@ -1854,6 +2132,30 @@ export interface components {
              * @example 24
              */
             weight: number;
+        };
+        PackRatePacksPerUnit: {
+            category: components["schemas"]["CategoryRef"];
+            /**
+             * @description Booster packs inside one sealed unit
+             * @example 36
+             */
+            packCount: number;
+        };
+        PackSlotValue: {
+            /**
+             * @description How many of this slot one pack holds
+             * @example 4
+             */
+            slotCount: number;
+            /**
+             * @description Mean value of one draw into this slot, in SEK
+             * @example 149.5
+             */
+            expectedValue: number;
+            /** @description Cards this slot can draw */
+            poolSize: number;
+            /** @description How many of those we hold an estimated value for */
+            pricedCount: number;
         };
         PageMeta: {
             /** @description Total matching records, ignoring pagination */
@@ -1918,6 +2220,20 @@ export interface components {
             priceChartingId: string | undefined;
             prisjaktId: string | undefined;
         };
+        RankedItem: {
+            /**
+             * @description Resource identifier
+             * @example 6a577711abc1ce71383d3e10
+             */
+            id: string;
+            name: string;
+            technicalName: string;
+            /**
+             * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
+             * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+             */
+            imageUrl: string | undefined;
+        };
         ReferencePriceSeries: {
             /** @enum {string} */
             source: "tcgdex" | "cmapi" | "tradera" | "pokemonpricetracker" | "scryfall";
@@ -1962,6 +2278,40 @@ export interface components {
              * @example 2026-07-15T12:03:29.322Z
              */
             snapshotDate: string;
+        };
+        SealedUnitValue: {
+            item: {
+                /**
+                 * @description Resource identifier
+                 * @example 6a577711abc1ce71383d3e10
+                 */
+                id: string;
+                name: string;
+                technicalName: string;
+                /**
+                 * @description Absolute asset URL, or null when absent. For best performance, please rehost this image on your own storage/CDN and cache it there rather than hotlinking it — see the API description's "Image hosting" section.
+                 * @example https://ik.imagekit.io/xgtytqdnv/expansions/example-image.webp
+                 */
+                imageUrl: string | undefined;
+            };
+            /** @example Booster Box */
+            categoryName: string | undefined;
+            /**
+             * @description Curated pack count for this unit
+             * @example 36
+             */
+            packsPerUnit: number;
+            /**
+             * @description packsPerUnit × the pack expected value, in SEK
+             * @example 149.5
+             */
+            expectedValue: number;
+            lowestOffer: components["schemas"]["LowestShopOffer"] | undefined;
+            /**
+             * @description expectedValue ÷ the cheapest price, or null when nobody stocks it
+             * @example 0.78
+             */
+            valueRatio: number | undefined;
         };
         Shop: {
             /**
@@ -3673,6 +4023,141 @@ export interface operations {
             };
         };
     };
+    listCardMarketMovers: {
+        parameters: {
+            query?: {
+                /** @description Which cut to rank. `topGainersPercent`/`topDroppersPercent` rank by relative move, `topGainersAmount`/`topDroppersAmount` by kronor, `mostActive` by number of sales, `newHighs`/`newLows` list items trading at the extreme of the period, and `volatilityLeaders` ranks by how much the price swung around its own average. */
+                mover?: "topGainersPercent" | "topDroppersPercent" | "topGainersAmount" | "topDroppersAmount" | "mostActive" | "newHighs" | "newLows" | "volatilityLeaders";
+                /** @description Window length in days, 1-30. The UI offers 1, 7 and 30. */
+                days?: number;
+                /** @description Floor on the current price, in SEK. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
+                minPrice?: number;
+                /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
+                expansion?: string;
+                limit?: number;
+                skip?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The ranked leaderboard, with the windows it was computed over */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketMovers"];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getCardGradingRoi: {
+        parameters: {
+            query?: {
+                /** @description Window length in days, 30-1095. */
+                days?: number;
+                /** @description Your grading fee per card, in SEK. Supplying this unlocks the profit fields. */
+                gradingCostSek?: number;
+                /** @description Postage, insurance and reshipping per card, in SEK. Defaults to 0. */
+                shippingCostSek?: number;
+                /** @description The marketplace cut on the eventual sale, as a percentage. Defaults to 0. */
+                salesFeePercent?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Card `_id` or technicalName */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Graded outcomes for the card, best grade first */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GradingRoi"];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Valid token but no active Premium subscription */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Card not found, or no raw price to measure a premium against */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     listExpansions: {
         parameters: {
             query?: {
@@ -3829,6 +4314,47 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    getExpansionExpectedValue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Expansion `_id` or technicalName. */
+                technicalName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The expected value of a pack, and of each sealed unit we can value */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpansionExpectedValue"];
+                };
+            };
+            /** @description Expansion not found, or no cards recorded for it to value */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -6281,6 +6807,55 @@ export interface operations {
             };
         };
     };
+    listProductMarketMovers: {
+        parameters: {
+            query?: {
+                /** @description Which cut to rank. `topGainersPercent`/`topDroppersPercent` rank by relative move, `topGainersAmount`/`topDroppersAmount` by kronor, `mostActive` by number of sales, `newHighs`/`newLows` list items trading at the extreme of the period, and `volatilityLeaders` ranks by how much the price swung around its own average. */
+                mover?: "topGainersPercent" | "topDroppersPercent" | "topGainersAmount" | "topDroppersAmount" | "mostActive" | "newHighs" | "newLows" | "volatilityLeaders";
+                /** @description Window length in days, 1-30. The UI offers 1, 7 and 30. */
+                days?: number;
+                /** @description Floor on the current price, in SEK. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
+                minPrice?: number;
+                /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
+                expansion?: string;
+                limit?: number;
+                skip?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The ranked leaderboard, with the windows it was computed over */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketMovers"];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     getProductShopPriceHistory: {
         parameters: {
             query?: {
@@ -7209,6 +7784,7 @@ export interface operations {
                     /**
                      * @example {
                      *       "shopCount": 20,
+                     *       "brandCount": 2,
                      *       "categoryCount": 377,
                      *       "expansionCount": 524,
                      *       "productCount": 9759,

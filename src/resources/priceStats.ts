@@ -11,6 +11,7 @@ import type {
   ItemVariantDailyStats,
   ItemVariantStats,
   ListResponse,
+  MoverKind,
   ProductLine,
   TopItem,
 } from '../types/index.js';
@@ -73,6 +74,29 @@ export interface ProductDailyByVariantParams extends RequestOptions {
   grade?: number;
   /** Number of days to retrieve. Default 30. */
   days?: number;
+}
+
+/**
+ * Movers-leaderboard parameters.
+ *
+ * Shared by `client.cards.marketMovers()` and `client.products.marketMovers()` rather than declared
+ * twice: the two endpoints take identical options and differ only in which half of the catalog they
+ * rank, which is the URL, not an argument. There is no combined call — cards and sealed products
+ * are never returned in one list.
+ */
+export interface MarketMoversParams extends RequestOptions {
+  /** Which cut to rank. Default `'topGainersPercent'`. */
+  mover?: MoverKind;
+  /** Window length in days, 1-30. Default 7. The site's own UI offers 1, 7 and 30. */
+  days?: number;
+  /** Floor on the current price, in SEK. Default 50 — below that a daily average rests on a
+   * handful of auctions and swings on its own. Pass 0 if you want the noise. */
+  minPrice?: number;
+  /** Restrict to one or more expansions, by technicalName, comma-separated. */
+  expansion?: string;
+  /** Default 25, max 50. */
+  limit?: number;
+  skip?: number;
 }
 
 export class PriceStatsResource {
