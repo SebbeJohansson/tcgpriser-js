@@ -340,7 +340,9 @@ export interface paths {
          * Card Market Movers
          * @description Single cards ranked by how their price has moved, so a reader can see what the market did this week without opening a hundred card pages.
          *
-         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain.
+         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain. Both prices must clear `minPrice` and both windows must carry at least `minSales` recorded sales.
+         *
+         *     **Read this before ranking by percentage.** One undimensioned row per item per day averages whatever sold that day, so where a raw copy and a slabbed copy both sold under the same catalogue item the change is partly a change in *which* copy sold rather than in what the item is worth. Measured against production over 30 days, the median absolute change is ~50% and the maximum ~27000%, and neither excluding graded items nor demanding 8+ sales in both windows brings that tail down. `mostActive` ranks by how much sold and involves no ratio, which makes it the cut to lead with; the percentage cuts are honest about what the rows say but the rows are noisier than a leaderboard flatters. `saleCount` is on every row so you can judge for yourself.
          *
          *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
          */
@@ -1049,7 +1051,9 @@ export interface paths {
          * Sealed Product Market Movers
          * @description Sealed products ranked by how their price has moved — which boxes, bundles and ETBs are climbing or sliding.
          *
-         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain.
+         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain. Both prices must clear `minPrice` and both windows must carry at least `minSales` recorded sales.
+         *
+         *     **Read this before ranking by percentage.** One undimensioned row per item per day averages whatever sold that day, so where a raw copy and a slabbed copy both sold under the same catalogue item the change is partly a change in *which* copy sold rather than in what the item is worth. Measured against production over 30 days, the median absolute change is ~50% and the maximum ~27000%, and neither excluding graded items nor demanding 8+ sales in both windows brings that tail down. `mostActive` ranks by how much sold and involves no ratio, which makes it the cut to lead with; the percentage cuts are honest about what the rows say but the rows are noisier than a leaderboard flatters. `saleCount` is on every row so you can judge for yourself.
          *
          *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
          */
@@ -1749,7 +1753,7 @@ export interface components {
         };
         ExpectedValueAssumption: {
             /** @enum {string} */
-            code: "packLayout" | "reverseSlotUsesBasePrice" | "unpricedCountAsZero" | "fallbackRates" | "approximateRates" | "lowPriceCoverage";
+            code: "packLayout" | "reverseSlotUsesBasePrice" | "unpricedCountAsZero" | "fallbackRates" | "approximateRates" | "lowPriceCoverage" | "estimatesIncludeGradedSales";
             /** @description English prose, for clients with no wording of their own */
             message: string;
         };
@@ -4038,6 +4042,8 @@ export interface operations {
                 days?: number;
                 /** @description Floor on the current price, in SEK. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
                 minPrice?: number;
+                /** @description Least recorded sales behind each window. Defaults to 2, so a day's average resting on a single auction cannot head the list. Rows predating the sale counter count as 0 and are excluded at any value above 0. */
+                minSales?: number;
                 /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
                 expansion?: string;
                 limit?: number;
@@ -6822,6 +6828,8 @@ export interface operations {
                 days?: number;
                 /** @description Floor on the current price, in SEK. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
                 minPrice?: number;
+                /** @description Least recorded sales behind each window. Defaults to 2, so a day's average resting on a single auction cannot head the list. Rows predating the sale counter count as 0 and are excluded at any value above 0. */
+                minSales?: number;
                 /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
                 expansion?: string;
                 limit?: number;

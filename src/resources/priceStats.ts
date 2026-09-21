@@ -83,15 +83,24 @@ export interface ProductDailyByVariantParams extends RequestOptions {
  * twice: the two endpoints take identical options and differ only in which half of the catalog they
  * rank, which is the URL, not an argument. There is no combined call — cards and sealed products
  * are never returned in one list.
+ *
+ * On `mover`: prefer `mostActive` for anything you present as a headline. The API's daily average
+ * covers every sale of an item, graded copies and bulk lots included, so a large percentage move
+ * often means a different copy sold rather than a price change — measured over production, the
+ * median absolute 30-day change is ~50% and the tail reaches ~27000%. `mostActive` ranks by volume
+ * and involves no ratio. `saleCount` is on every row so you can judge the rest.
  */
 export interface MarketMoversParams extends RequestOptions {
   /** Which cut to rank. Default `'topGainersPercent'`. */
   mover?: MoverKind;
   /** Window length in days, 1-30. Default 7. The site's own UI offers 1, 7 and 30. */
   days?: number;
-  /** Floor on the current price, in SEK. Default 50 — below that a daily average rests on a
-   * handful of auctions and swings on its own. Pass 0 if you want the noise. */
+  /** Floor on BOTH the current and the previous price, in SEK. Default 50 — below that a daily
+   * average rests on a handful of auctions and swings on its own. Pass 0 if you want the noise. */
   minPrice?: number;
+  /** Least recorded sales behind each window. Default 2, so a day's average resting on a single
+   * auction cannot head the list. Rows predating the sale counter count as 0. */
+  minSales?: number;
   /** Restrict to one or more expansions, by technicalName, comma-separated. */
   expansion?: string;
   /** Default 25, max 50. */

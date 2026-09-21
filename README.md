@@ -172,9 +172,16 @@ against the equally long window before it, from daily averages of realised sales
 prices.
 
 ```typescript
-const { data, window } = await tcgpriser.cards.marketMovers({ mover: 'topGainersPercent', days: 7 });
-await tcgpriser.products.marketMovers({ mover: 'newLows', days: 30 });
+const { data, window } = await tcgpriser.cards.marketMovers({ mover: 'mostActive', days: 7 });
+await tcgpriser.products.marketMovers({ mover: 'topGainersPercent', days: 30 });
 ```
+
+**Lead with `mostActive`.** The daily average behind these figures covers every sale of an item —
+graded copies and bulk lots included — so a large percentage move often means a *different copy*
+sold rather than a price change. Over production data the median absolute 30-day change is ~50% and
+the tail reaches ~27 000%, and that survives filtering. `mostActive` ranks by volume and involves no
+ratio at all. The percentage cuts are honest about what the rows say; the rows are just noisier than
+a leaderboard flatters, and `saleCount` on every row is there so you can tell.
 
 An item has to have sold in *both* windows to appear: a first-ever sale is new data, not a gain.
 `window` tells you exactly which days were compared, so a cached response explains its own numbers.
