@@ -2083,6 +2083,8 @@ export interface components {
             ratesSourceName: string | undefined;
             cardCount: number;
             pricedCardCount: number;
+            rawPricedCardCount: number;
+            blendedPricedCardCount: number;
         };
         PackRate: {
             /**

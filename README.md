@@ -202,6 +202,12 @@ console.log(ev.sealedUnits[0]?.valueRatio);    // 0.78 = 78 öre of cards per kr
 ev.assumptions.forEach((a) => console.log(a.code, a.message));
 ```
 
+Check `pack.rawPricedCardCount` against `pack.pricedCardCount` before you present the number. Cards
+are valued from their ungraded sales where we have any and fall back to a blended estimate — which
+averages graded copies and bulk lots into what should be a raw single — where we do not. A figure
+resting mostly on the fallback reads high by an order of magnitude, not by a rounding, and the
+`estimatesIncludeGradedSales` assumption names how many cards it applies to.
+
 Show `assumptions` with the figure. Each one carries a stable `code` as well as English `message`,
 so a non-English UI can switch on the code and write its own sentence rather than pasting an English
 disclaimer beside a translated number. It states what the figure takes for granted, generated from

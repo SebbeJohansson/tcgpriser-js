@@ -26,7 +26,11 @@ export type MoverKind =
  * `poolSize`: unpriced cards count as 0 kr, so thin coverage understates the slot. */
 export type PackSlotValue = components['schemas']['PackSlotValue'];
 
-/** What one booster pack of an expansion is worth opened, and what that rests on. */
+/** What one booster pack of an expansion is worth opened, and what that rests on.
+ *
+ * `rawPricedCardCount` vs `blendedPricedCardCount` is the field to check before presenting the
+ * figure: the blended estimate averages graded copies and bulk lots into what should be a raw
+ * single, so a pack valued mostly from those runs high by an order of magnitude. */
 export type PackExpectedValue = components['schemas']['PackExpectedValue'];
 
 /** One sealed unit valued against the pack figure. `valueRatio` below 1 means the sealed article
