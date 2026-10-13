@@ -1,6 +1,6 @@
 // GENERATED FILE - do not edit by hand.
-// Run `yarn generate:types` to regenerate from a live API instance.
-// Source: premium-openapi.json (offline dump — pris-tabell-api `yarn dump-premium-spec`)
+// Run `yarn generate:types` to regenerate from the released delivery contract (or an explicit URL).
+// Source: ../pris-tabell-contract/versions/5.1.0/delivery-openapi.json
 
 export interface paths {
     "/bargains": {
@@ -104,7 +104,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cards/{id}/matches": {
+    "/cards/price-stats/daily": {
         parameters: {
             query?: never;
             header?: never;
@@ -112,10 +112,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Card Shop Matches
-         * @description The latest match per shop for this card — the current shop price. History across time is the `/shop-match-stats` surface.
+         * Card Daily Price Stats
+         * @description Cards only — the sealed-product equivalent is `GET /product/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Card` collection.
          */
-        get: operations["listCardShopMatches"];
+        get: operations["listCardDailyPriceStats"];
         put?: never;
         post?: never;
         delete?: never;
@@ -124,7 +124,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cards/technical-names": {
+    "/cards/price-stats/estimated-values": {
         parameters: {
             query?: never;
             header?: never;
@@ -132,10 +132,50 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Card Technical Names
-         * @description An unpaginated projection with no pricing lookups, for callers that need to enumerate the whole catalog's slugs and freshness — the sitemap, most notably — without paying for the pricing-joined page that `GET /cards` builds per item.
+         * Card Estimated Values
+         * @description Cards only — the sealed-product equivalent is `GET /product/price-stats/estimated-values`. Same filters and shape as `GET /price-stats/estimated-values`, scoped to the `Card` collection. Values are computed from recent sales data.
+         *
+         *     **How the filters combine.** The identifier, `category` and `expansion` criteria are **unioned,
+         *     not intersected**. `?technicalName=x&expansion=y` answers with item x *and* every item in
+         *     expansion y — not with x only if it is in y. `brand` and `productLine` are the exception: they
+         *     narrow every other criterion rather than adding to it.
+         *
+         *     **A filter that matches nothing returns everything.** If a criterion is supplied and resolves to no
+         *     items — an unknown brand, a category slug that does not exist — the filter is discarded and the
+         *     response covers the whole catalogue. It does **not** return an empty list. Check `pagination.total`
+         *     before assuming a filter was applied.
+         *
+         *     **Items with no price history are omitted from the page.** `pagination.total` counts the items the
+         *     filter selected, including ones with no estimate, so a page can be shorter than its `limit` while
+         *     `hasMore` is still true. Page until `hasMore` is false rather than until a short page.
          */
-        get: operations["listCardTechnicalNames"];
+        get: operations["listCardEstimatedValues"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/price-stats/market-movers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card Market Movers
+         * @description Single cards ranked by how their price has moved, so a reader can see what the market did this week without opening a hundred card pages.
+         *
+         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain. Both prices must clear `minPrice` and both windows must carry at least `minSales` recorded sales.
+         *
+         *     **Read this before ranking by percentage.** One undimensioned row per item per day averages whatever sold that day, so where a raw copy and a slabbed copy both sold under the same catalogue item the change is partly a change in *which* copy sold rather than in what the item is worth. Measured against production over 30 days, the median absolute change is ~50% and the maximum ~27000%, and neither excluding graded items nor demanding 8+ sales in both windows brings that tail down. `mostActive` ranks by how much sold and involves no ratio, which makes it the cut to lead with; the percentage cuts are honest about what the rows say but the rows are noisier than a leaderboard flatters. `saleCount` is on every row so you can judge for yourself.
+         *
+         *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
+         */
+        get: operations["listCardMarketMovers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -185,7 +225,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cards/{id}/reference-prices": {
+    "/cards/technical-names": {
         parameters: {
             query?: never;
             header?: never;
@@ -193,11 +233,76 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Card Reference Prices
-         * @description Daily reference prices ingested from cmapi, grouped into one series per price dimension (provider, graded/non-graded, grading company + grade). Prices are in each provider's native currency — no SEK conversion is applied — so `currency` is per series.
-         *     **Requires the `premium` level.**
+         * Card Technical Names
+         * @description An unpaginated projection with no pricing lookups, for callers that need to enumerate the whole catalog's slugs and freshness — the sitemap, most notably — without paying for the pricing-joined page that `GET /cards` builds per item.
          */
-        get: operations["getCardReferencePrices"];
+        get: operations["listCardTechnicalNames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card Details
+         * @description Content only — no pricing. See `GET /cards/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
+         */
+        get: operations["getCard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/{id}/grading-roi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card Grading ROI
+         * @description What graded copies of this card have actually been selling for, per grading company and grade, against what a raw copy fetches — so a seller can see whether slabbing it pays.
+         *
+         *     `gradedMultiple` — the ratio of the slab price to the raw price — is always returned, since that much is ours to know. Profit, ROI and the break-even price appear **only** when the request states its own costs, because we deliberately ship no fee table. What grading costs depends on service level, declared value, bulk rate, the exchange rate on the day and which reshipper is used; a built-in figure would be wrong for most submitters, in a direction they would act on.
+         *
+         *     The window defaults to 365 days rather than the 30 the other price endpoints use. Graded sales are sparse — a 30-day window would report "no PSA 9 data" for most of the catalogue, which is a statement about the window and not about the market.
+         *
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription.
+         */
+        get: operations["getCardGradingRoi"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cards/{id}/matches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Card Shop Matches
+         * @description The latest match per shop for this card — the current shop price. History across time is the `/shop-match-stats` surface.
+         */
+        get: operations["listCardShopMatches"];
         put?: never;
         post?: never;
         delete?: never;
@@ -219,26 +324,6 @@ export interface paths {
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: operations["listCardAuctionPrices"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/cards/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Card Details
-         * @description Content only — no pricing. See `GET /cards/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
-         */
-        get: operations["getCard"];
         put?: never;
         post?: never;
         delete?: never;
@@ -289,7 +374,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/cards/price-stats/daily": {
+    "/cards/{id}/reference-prices": {
         parameters: {
             query?: never;
             header?: never;
@@ -297,82 +382,11 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Card Daily Price Stats
-         * @description Cards only — the sealed-product equivalent is `GET /product/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Card` collection.
+         * Card Reference Prices
+         * @description Daily reference prices ingested from cmapi, grouped into one series per price dimension (provider, graded/non-graded, grading company + grade). Prices are in each provider's native currency — no SEK conversion is applied — so `currency` is per series.
+         *     **Requires the `premium` level.**
          */
-        get: operations["listCardDailyPriceStats"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/cards/price-stats/estimated-values": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Card Estimated Values
-         * @description Cards only — the sealed-product equivalent is `GET /product/price-stats/estimated-values`. Same filters and shape as `GET /price-stats/estimated-values`, scoped to the `Card` collection. Values are computed from recent sales data.
-         */
-        get: operations["listCardEstimatedValues"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/cards/price-stats/market-movers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Card Market Movers
-         * @description Single cards ranked by how their price has moved, so a reader can see what the market did this week without opening a hundred card pages.
-         *
-         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain. Both prices must clear `minPrice` and both windows must carry at least `minSales` recorded sales.
-         *
-         *     **Read this before ranking by percentage.** One undimensioned row per item per day averages whatever sold that day, so where a raw copy and a slabbed copy both sold under the same catalogue item the change is partly a change in *which* copy sold rather than in what the item is worth. Measured against production over 30 days, the median absolute change is ~50% and the maximum ~27000%, and neither excluding graded items nor demanding 8+ sales in both windows brings that tail down. `mostActive` ranks by how much sold and involves no ratio, which makes it the cut to lead with; the percentage cuts are honest about what the rows say but the rows are noisier than a leaderboard flatters. `saleCount` is on every row so you can judge for yourself.
-         *
-         *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
-         */
-        get: operations["listCardMarketMovers"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/cards/{id}/grading-roi": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Card Grading ROI
-         * @description What graded copies of this card have actually been selling for, per grading company and grade, against what a raw copy fetches — so a seller can see whether slabbing it pays.
-         *
-         *     `gradedMultiple` — the ratio of the slab price to the raw price — is always returned, since that much is ours to know. Profit, ROI and the break-even price appear **only** when the request states its own costs, because we deliberately ship no fee table. What grading costs depends on service level, declared value, bulk rate, the exchange rate on the day and which reshipper is used; a built-in figure would be wrong for most submitters, in a direction they would act on.
-         *
-         *     The window defaults to 365 days rather than the 30 the other price endpoints use. Graded sales are sparse — a 30-day window would report "no PSA 9 data" for most of the catalogue, which is a statement about the window and not about the market.
-         *
-         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription.
-         */
-        get: operations["getCardGradingRoi"];
+        get: operations["getCardReferencePrices"];
         put?: never;
         post?: never;
         delete?: never;
@@ -421,50 +435,6 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/expansions/{technicalName}/expected-value": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Expansion Expected Value
-         * @description What a booster pack of this expansion is worth if you open it, and how that compares to what the sealed product costs in the shops we track.
-         *
-         *     The pack is modelled exactly as the pack simulator draws it — 4 commons, 3 uncommons, one reverse holo and one rare-or-better hit, with the hit drawn per card and weighted by its rarity's pull rate. The expected value is that draw solved in closed form, not sampled, so two calls a second apart return the same number.
-         *
-         *     Read `assumptions` and render it with the figure. It states what the number takes for granted, including whether this set has its own pull rates or falls back to era averages, and how much of the set we actually hold prices for. `sealedUnits` is empty until a pack count has been curated for the set's boxes and bundles — a display is 36 packs in English and 30 in Japanese, and the product name does not say which, so we record it rather than guess it.
-         */
-        get: operations["getExpansionExpectedValue"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/expansions/{technicalName}/release-group": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Expansion Release Group
-         * @description The other expansions in this expansion's release group (e.g. a core set's variant drops), excluding the requested expansion itself. Empty `expansions` and null `releaseGroupName` when the expansion isn't part of a release group.
-         */
-        get: operations["getExpansionReleaseGroup"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/expansions/{technicalName}/cards": {
         parameters: {
             query?: never;
@@ -477,26 +447,6 @@ export interface paths {
          * @description Individual cards only. Sealed products (booster boxes, ETBs, tins, ...) are a separate resource — see `GET /expansions/{technicalName}/products`.
          */
         get: operations["listExpansionCards"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/expansions/{technicalName}/products": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Expansion Products
-         * @description Sealed products only. Individual cards are a separate resource — see `GET /expansions/{technicalName}/cards`.
-         */
-        get: operations["listExpansionProducts"];
         put?: never;
         post?: never;
         delete?: never;
@@ -526,6 +476,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/expansions/{technicalName}/expected-value": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Expansion Expected Value
+         * @description What a booster pack of this expansion is worth if you open it, and how that compares to what the sealed product costs in the shops we track.
+         *
+         *     The pack is modelled exactly as the pack simulator draws it — 4 commons, 3 uncommons, one reverse holo and one rare-or-better hit, with the hit drawn per card and weighted by its rarity's pull rate. The expected value is that draw solved in closed form, not sampled, so two calls a second apart return the same number.
+         *
+         *     Read `assumptions` and render it with the figure. It states what the number takes for granted, including whether this set has its own pull rates or falls back to era averages, and how much of the set we actually hold prices for. `sealedUnits` is empty until a pack count has been curated for the set's boxes and bundles — a display is 36 packs in English and 30 in Japanese, and the product name does not say which, so we record it rather than guess it.
+         */
+        get: operations["getExpansionExpectedValue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/expansions/{technicalName}/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Expansion Products
+         * @description Sealed products only. Individual cards are a separate resource — see `GET /expansions/{technicalName}/cards`.
+         */
+        get: operations["listExpansionProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/expansions/{technicalName}/products/live-pricing": {
         parameters: {
             query?: never;
@@ -539,6 +533,26 @@ export interface paths {
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: operations["getExpansionProductsLivePricing"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/expansions/{technicalName}/release-group": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Expansion Release Group
+         * @description The other expansions in this expansion's release group (e.g. a core set's variant drops), excluding the requested expansion itself. Empty `expansions` and null `releaseGroupName` when the expansion isn't part of a release group.
+         */
+        get: operations["getExpansionReleaseGroup"];
         put?: never;
         post?: never;
         delete?: never;
@@ -617,6 +631,20 @@ export interface paths {
         /**
          * Estimated Values
          * @description Estimated values across products, computed from recent sales data. Cards and sealed products each have a scoped equivalent — `GET /cards/price-stats/estimated-values` and `GET /product/price-stats/estimated-values`.
+         *
+         *     **How the filters combine.** The identifier, `category` and `expansion` criteria are **unioned,
+         *     not intersected**. `?technicalName=x&expansion=y` answers with item x *and* every item in
+         *     expansion y — not with x only if it is in y. `brand` and `productLine` are the exception: they
+         *     narrow every other criterion rather than adding to it.
+         *
+         *     **A filter that matches nothing returns everything.** If a criterion is supplied and resolves to no
+         *     items — an unknown brand, a category slug that does not exist — the filter is discarded and the
+         *     response covers the whole catalogue. It does **not** return an empty list. Check `pagination.total`
+         *     before assuming a filter was applied.
+         *
+         *     **Items with no price history are omitted from the page.** `pagination.total` counts the items the
+         *     filter selected, including ones with no estimate, so a page can be shorter than its `limit` while
+         *     `hasMore` is still true. Page until `hasMore` is false rather than until a short page.
          */
         get: operations["listEstimatedValues"];
         put?: never;
@@ -648,7 +676,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/price-stats/product/{id}/full": {
+    "/price-stats/product/{id}/by-variant": {
         parameters: {
             query?: never;
             header?: never;
@@ -656,12 +684,11 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product Price Stats (Full)
-         * @description Combined endpoint that returns all product data in a single request for SSG optimization.
-         *
+         * Price Stats by Variant
+         * @description Price statistics split by card type, condition and grading, so a graded copy and a raw one are reported separately rather than averaged together. `days` sets the window.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
-        get: operations["getProductPriceStatsFull"];
+        get: operations["getProductPriceStatsByVariant"];
         put?: never;
         post?: never;
         delete?: never;
@@ -683,6 +710,27 @@ export interface paths {
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: operations["getProductDailyPriceStats"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/price-stats/product/{id}/daily-by-variant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Daily Price Stats by Variant
+         * @description One price point per date for a single variant, selected with `cardType`, `condition`, `gradingCompany` and `grade`. `days` sets the window.
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         */
+        get: operations["getProductDailyPriceStatsByVariant"];
         put?: never;
         post?: never;
         delete?: never;
@@ -733,7 +781,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/price-stats/product/{id}/by-variant": {
+    "/price-stats/product/{id}/full": {
         parameters: {
             query?: never;
             header?: never;
@@ -741,32 +789,12 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Price Stats by Variant
-         * @description Price statistics split by card type, condition and grading, so a graded copy and a raw one are reported separately rather than averaged together. `days` sets the window.
+         * Product Price Stats (Full)
+         * @description Combined endpoint that returns all product data in a single request for SSG optimization.
+         *
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
-        get: operations["getProductPriceStatsByVariant"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/price-stats/product/{id}/daily-by-variant": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Daily Price Stats by Variant
-         * @description One price point per date for a single variant, selected with `cardType`, `condition`, `gradingCompany` and `grade`. `days` sets the window.
-         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
-         */
-        get: operations["getProductDailyPriceStatsByVariant"];
+        get: operations["getProductPriceStatsFull"];
         put?: never;
         post?: never;
         delete?: never;
@@ -815,7 +843,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/product/{id}/matches": {
+    "/product/price-stats/daily": {
         parameters: {
             query?: never;
             header?: never;
@@ -823,10 +851,10 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product Shop Matches
-         * @description The latest match per shop for this product — the current shop price. History across time is the `/shop-match-stats` surface.
+         * Sealed Product Daily Price Stats
+         * @description Sealed products only — the card equivalent is `GET /cards/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Product` collection.
          */
-        get: operations["listProductShopMatches"];
+        get: operations["listProductDailyPriceStats"];
         put?: never;
         post?: never;
         delete?: never;
@@ -835,7 +863,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/product/technical-names": {
+    "/product/price-stats/estimated-values": {
         parameters: {
             query?: never;
             header?: never;
@@ -843,10 +871,50 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product Technical Names
-         * @description An unpaginated projection with no pricing lookups, for callers that need to enumerate the whole catalog's slugs and freshness — the sitemap, most notably — without paying for the pricing-joined page that `GET /product` builds per item.
+         * Sealed Product Estimated Values
+         * @description Sealed products only — the card equivalent is `GET /cards/price-stats/estimated-values`. Same filters and shape as `GET /price-stats/estimated-values`, scoped to the `Product` collection. Values are computed from recent sales data.
+         *
+         *     **How the filters combine.** The identifier, `category` and `expansion` criteria are **unioned,
+         *     not intersected**. `?technicalName=x&expansion=y` answers with item x *and* every item in
+         *     expansion y — not with x only if it is in y. `brand` and `productLine` are the exception: they
+         *     narrow every other criterion rather than adding to it.
+         *
+         *     **A filter that matches nothing returns everything.** If a criterion is supplied and resolves to no
+         *     items — an unknown brand, a category slug that does not exist — the filter is discarded and the
+         *     response covers the whole catalogue. It does **not** return an empty list. Check `pagination.total`
+         *     before assuming a filter was applied.
+         *
+         *     **Items with no price history are omitted from the page.** `pagination.total` counts the items the
+         *     filter selected, including ones with no estimate, so a page can be shorter than its `limit` while
+         *     `hasMore` is still true. Page until `hasMore` is false rather than until a short page.
          */
-        get: operations["listProductTechnicalNames"];
+        get: operations["listProductEstimatedValues"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/price-stats/market-movers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sealed Product Market Movers
+         * @description Sealed products ranked by how their price has moved — which boxes, bundles and ETBs are climbing or sliding.
+         *
+         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain. Both prices must clear `minPrice` and both windows must carry at least `minSales` recorded sales.
+         *
+         *     **Read this before ranking by percentage.** One undimensioned row per item per day averages whatever sold that day, so where a raw copy and a slabbed copy both sold under the same catalogue item the change is partly a change in *which* copy sold rather than in what the item is worth. Measured against production over 30 days, the median absolute change is ~50% and the maximum ~27000%, and neither excluding graded items nor demanding 8+ sales in both windows brings that tail down. `mostActive` ranks by how much sold and involves no ratio, which makes it the cut to lead with; the percentage cuts are honest about what the rows say but the rows are noisier than a leaderboard flatters. `saleCount` is on every row so you can judge for yourself.
+         *
+         *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
+         */
+        get: operations["listProductMarketMovers"];
         put?: never;
         post?: never;
         delete?: never;
@@ -896,7 +964,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/product/{id}/reference-prices": {
+    "/product/technical-names": {
         parameters: {
             query?: never;
             header?: never;
@@ -904,11 +972,50 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Product Reference Prices
-         * @description Daily reference prices ingested from cmapi, grouped into one series per price dimension. Sealed products have no graded/non-graded split, so `cardType` is null on every series. Prices are in each provider's native currency — no SEK conversion is applied.
-         *     **Requires the `premium` level.**
+         * Product Technical Names
+         * @description An unpaginated projection with no pricing lookups, for callers that need to enumerate the whole catalog's slugs and freshness — the sitemap, most notably — without paying for the pricing-joined page that `GET /product` builds per item.
          */
-        get: operations["getProductReferencePrices"];
+        get: operations["listProductTechnicalNames"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product Details
+         * @description Content only — no pricing. See `GET /product/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
+         */
+        get: operations["getProduct"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/product/{id}/matches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Product Shop Matches
+         * @description The latest match per shop for this product — the current shop price. History across time is the `/shop-match-stats` surface.
+         */
+        get: operations["listProductShopMatches"];
         put?: never;
         post?: never;
         delete?: never;
@@ -930,26 +1037,6 @@ export interface paths {
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: operations["listProductAuctionPrices"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/product/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Product Details
-         * @description Content only — no pricing. See `GET /product/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
-         */
-        get: operations["getProduct"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1000,7 +1087,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/product/price-stats/daily": {
+    "/product/{id}/reference-prices": {
         parameters: {
             query?: never;
             header?: never;
@@ -1008,10 +1095,11 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Sealed Product Daily Price Stats
-         * @description Sealed products only — the card equivalent is `GET /cards/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Product` collection.
+         * Product Reference Prices
+         * @description Daily reference prices ingested from cmapi, grouped into one series per price dimension. Sealed products have no graded/non-graded split, so `cardType` is null on every series. Prices are in each provider's native currency — no SEK conversion is applied.
+         *     **Requires the `premium` level.**
          */
-        get: operations["listProductDailyPriceStats"];
+        get: operations["getProductReferencePrices"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1020,7 +1108,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/product/price-stats/estimated-values": {
+    "/shop-match-stats/compare": {
         parameters: {
             query?: never;
             header?: never;
@@ -1028,36 +1116,11 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Sealed Product Estimated Values
-         * @description Sealed products only — the card equivalent is `GET /cards/price-stats/estimated-values`. Same filters and shape as `GET /price-stats/estimated-values`, scoped to the `Product` collection. Values are computed from recent sales data.
+         * Shop Price Comparison
+         * @description What each shop charged for one product on a given `date`, side by side.
+         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
-        get: operations["listProductEstimatedValues"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/product/price-stats/market-movers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Sealed Product Market Movers
-         * @description Sealed products ranked by how their price has moved — which boxes, bundles and ETBs are climbing or sliding.
-         *
-         *     Every figure is a daily average of realised sales, not a shop asking price. The window is the last `days` days; the baseline it is measured against is the newest sale in the `days` immediately before that. An item that did not sell in **both** windows is not listed — a first-ever sale is new data, not a gain. Both prices must clear `minPrice` and both windows must carry at least `minSales` recorded sales.
-         *
-         *     **Read this before ranking by percentage.** One undimensioned row per item per day averages whatever sold that day, so where a raw copy and a slabbed copy both sold under the same catalogue item the change is partly a change in *which* copy sold rather than in what the item is worth. Measured against production over 30 days, the median absolute change is ~50% and the maximum ~27000%, and neither excluding graded items nor demanding 8+ sales in both windows brings that tail down. `mostActive` ranks by how much sold and involves no ratio, which makes it the cut to lead with; the percentage cuts are honest about what the rows say but the rows are noisier than a leaderboard flatters. `saleCount` is on every row so you can judge for yourself.
-         *
-         *     Cards and sealed products are ranked separately and never in one list. The sealed equivalent of this endpoint is `GET /product/price-stats/market-movers`; the card one is `GET /cards/price-stats/market-movers`.
-         */
-        get: operations["listProductMarketMovers"];
+        get: operations["compareShopPrices"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1100,27 +1163,6 @@ export interface paths {
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
          */
         get: operations["getShopPriceHistory"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/shop-match-stats/compare": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Shop Price Comparison
-         * @description What each shop charged for one product on a given `date`, side by side.
-         *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
-         */
-        get: operations["compareShopPrices"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1576,8 +1618,9 @@ export interface components {
         };
         DailyPricePoint: {
             /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
+             * Format: date
+             * @description The calendar day, UTC, as YYYY-MM-DD. Declared `date-time` until 4.0.0, which no response ever matched: every producer has always sent the date alone.
+             * @example 2026-07-15
              */
             statDate: string;
             /** @example 149.5 */
@@ -2853,9 +2896,87 @@ export interface components {
         };
     };
     responses: never;
-    parameters: never;
+    parameters: {
+        /**
+         * @description Either the resource's `id` or its `technicalName`.
+         *
+         *     **Resolution rule, in full:**
+         *
+         *     1. If the value is 24 hexadecimal characters, it matches a resource whose `id` **or** whose
+         *        `technicalName` equals it. It is not an id-only lookup: a `technicalName` that happens to
+         *        look like an id must still resolve.
+         *     2. Otherwise it matches on `technicalName` only.
+         *     3. No match is `404`. The value is never rejected as malformed — any string is a valid
+         *        `technicalName` to look for, so there is no `400` on this parameter.
+         *
+         *     Matching is exact and case-sensitive in both cases.
+         * @example pokemon
+         */
+        CatalogRef: string;
+    };
     requestBodies: never;
-    headers: never;
+    headers: {
+        /**
+         * @description Cacheable for a day, by shared caches included. For reference data that changes rarely — brands,
+         *     categories, expansions. Mirrors `setCacheLong` in the Node API on a route with no caller identity.
+         *
+         *     Absent from error responses on purpose: a `404` may stop being true a minute later, and a `501`
+         *     is a statement about one implementation's progress, so caching either at the edge would pin a
+         *     transient answer.
+         */
+        CacheControlLong: "public, max-age=86400, s-maxage=86400";
+        /**
+         * @description A day's freshness, but never in a shared cache for a paying caller. See the header of this file:
+         *     a `public` response on a paywalled route is served from the edge to callers who never
+         *     authenticated.
+         *
+         *     Business gets a fifth of the lifetime on top of `private`, floored at 30 seconds.
+         */
+        CacheControlLongTiered: "public, max-age=86400, s-maxage=86400" | "private, max-age=86400" | "private, max-age=17280";
+        /**
+         * @description Cacheable for an hour, by shared caches included. For data that changes on a scraper's schedule
+         *     rather than an editor's. Mirrors `setCacheMedium` on a route with no caller identity.
+         */
+        CacheControlMedium: "public, max-age=3600, s-maxage=3600";
+        /** @description An hour's freshness, never shared for a paying caller. See `CacheControlLongTiered`. */
+        CacheControlMediumTiered: "public, max-age=3600, s-maxage=3600" | "private, max-age=3600" | "private, max-age=720";
+        /**
+         * @description Not to be stored by any cache. For the endpoints that compute their answer fresh on every call —
+         *     the `/pricing/live` family. Caching those would defeat the only reason to call them.
+         *
+         *     `no-store` rather than simply omitting the header: these happen to be safe under Cloudflare's
+         *     default cache level, but that safety depends on zone configuration no route controls.
+         */
+        CacheControlNone: "no-store";
+        /**
+         * @description Cacheable for five minutes, by shared caches included. For reads whose answer moves with the
+         *     scrapers. Mirrors `setCacheShort` on a route with no caller identity.
+         */
+        CacheControlShort: "public, max-age=300, s-maxage=300";
+        /**
+         * @description Five minutes' freshness, never shared for a paying caller. See `CacheControlLongTiered`.
+         *
+         *     The Business lifetime is 60 seconds rather than 300/5 = 60 by coincidence; the floor of 30
+         *     seconds does not bind here.
+         */
+        CacheControlShortTiered: "public, max-age=300, s-maxage=300" | "private, max-age=300" | "private, max-age=60";
+        /**
+         * @description Cloudflare purge tags: unique, non-empty tags joined by commas. Catalogue lists use
+         *     cards, products or expansions; details use card:<slug>, product:<slug> or expansion:<slug>.
+         *     Expansion contents and expected value use the resolved expansion tag. Release groups use
+         *     their members' expansion tags; an empty release group uses the requested expansion tag.
+         *     Cloudflare may strip this header before forwarding a response to a consumer.
+         */
+        CacheTag: string;
+        /**
+         * @description Which request headers the cached representation depends on.
+         *
+         *     Always `Accept-Encoding`: responses are served compressed or not depending on what the client
+         *     asked for, and a shared cache that ignored that would hand a gzip body to a client that cannot
+         *     read one.
+         */
+        Vary: "Accept-Encoding";
+    };
     pathItems: never;
 }
 export type $defs = Record<string, never>;
@@ -2874,6 +2995,8 @@ export interface operations {
             /** @description Up to 3 bargain listings */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3003,6 +3126,8 @@ export interface operations {
             /** @description Paginated bargain listings */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlShortTiered"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3052,6 +3177,15 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Premium subscription required */
             403: {
                 headers: {
@@ -3075,6 +3209,8 @@ export interface operations {
             /** @description Every brand, in the standard list envelope */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3120,8 +3256,22 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                /** @description Brand `_id` or technicalName */
-                id: string;
+                /**
+                 * @description Either the resource's `id` or its `technicalName`.
+                 *
+                 *     **Resolution rule, in full:**
+                 *
+                 *     1. If the value is 24 hexadecimal characters, it matches a resource whose `id` **or** whose
+                 *        `technicalName` equals it. It is not an id-only lookup: a `technicalName` that happens to
+                 *        look like an id must still resolve.
+                 *     2. Otherwise it matches on `technicalName` only.
+                 *     3. No match is `404`. The value is never rejected as malformed — any string is a valid
+                 *        `technicalName` to look for, so there is no `400` on this parameter.
+                 *
+                 *     Matching is exact and case-sensitive in both cases.
+                 * @example pokemon
+                 */
+                id: components["parameters"]["CatalogRef"];
             };
             cookie?: never;
         };
@@ -3130,6 +3280,8 @@ export interface operations {
             /** @description The brand */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3184,6 +3336,9 @@ export interface operations {
             /** @description Cards in the standard list envelope */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3315,89 +3470,67 @@ export interface operations {
             };
         };
     };
-    listCardShopMatches: {
+    listCardDailyPriceStats: {
         parameters: {
             query?: {
-                /** @description Filter by stock status */
-                inStock?: boolean;
+                /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
                 skip?: number;
+                /** @description Start date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                startDate?: string;
+                /** @description End date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                endDate?: string;
+                /** @description Card name */
+                productName?: string;
+                /** @description Technical name */
+                technicalName?: string;
+                /** @description Category technical name */
+                category?: string;
+                /** @description Expansion technical name */
+                expansion?: string;
+                /** @description Category ID (ObjectId) */
+                categoryId?: string;
+                /** @description Expansion ID (ObjectId) */
+                expansionId?: string;
             };
             header?: never;
-            path: {
-                /** @description Card _id or technicalName */
-                id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description List of shop matches for the card */
+            /** @description Daily price history for cards, in the standard list envelope */
             200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["ItemDailyStats"][];
+                        pagination?: components["schemas"]["PageMeta"];
+                    };
+                };
+            };
+            /** @description Invalid date format */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "69808864100d0aea4dc3f7f4",
-                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
-                     *       },
-                     *       "data": [
-                     *         {
-                     *           "id": "6a757f013f38ef493c70c063",
-                     *           "shop": {
-                     *             "technicalName": "samlarhobby",
-                     *             "name": "Samlarhobby",
-                     *             "delivery": {
-                     *               "cost": null,
-                     *               "currency": null,
-                     *               "daysMin": null,
-                     *               "daysMax": null,
-                     *               "freeShippingThreshold": 2000,
-                     *               "supportsLocalPickup": null,
-                     *               "note": null
-                     *             }
-                     *           },
-                     *           "url": "https://www.samlarhobby.se/products/fezandipiti-ex-asc-288-ascended-heroes",
-                     *           "shopUrlId": "6a3f717581e84af694733f39",
-                     *           "price": 800,
-                     *           "currency": "SEK",
-                     *           "inStock": true,
-                     *           "inPreorder": false,
-                     *           "inMonitor": false,
-                     *           "isFullyBooked": false,
-                     *           "scrapedName": "Fezandipiti ex (ASC 288) Ascended Heroes",
-                     *           "scrapedType": "Pokemon TCG",
-                     *           "matchScore": 90,
-                     *           "hasCategoryMismatch": false,
-                     *           "cardType": null,
-                     *           "itemCondition": null,
-                     *           "gradingCompany": null,
-                     *           "grade": null,
-                     *           "matchedAt": "2026-08-07T06:45:11.000Z",
-                     *           "updatedAt": "2026-08-12T14:18:16.455Z",
-                     *           "bargain": null
-                     *         }
-                     *       ],
-                     *       "pagination": {
-                     *         "total": 1,
-                     *         "limit": 2,
-                     *         "skip": 0,
-                     *         "hasMore": false
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemShopMatches"];
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
-            /** @description Card not found */
+            /** @description No cards found */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Server error */
             500: {
@@ -3410,25 +3543,93 @@ export interface operations {
             };
         };
     };
-    listCardTechnicalNames: {
+    listCardEstimatedValues: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description How many records to skip before the page. Zero-based; there is no `page` parameter. */
+                skip?: number;
+                /** @description Items per page, 1-50. */
+                limit?: number;
+                /** @description Card name */
+                productName?: string;
+                /** @description Technical name */
+                technicalName?: string;
+                /** @description Category technical name */
+                category?: string;
+                /** @description Expansion technical name */
+                expansion?: string;
+            };
             header?: never;
             path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Every card's technicalName and updatedAt */
+            /** @description Estimated values for cards, in the standard list envelope */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        data?: components["schemas"]["CatalogSlug"][];
+                        data?: components["schemas"]["ItemEstimatedValue"][];
                         pagination?: components["schemas"]["PageMeta"];
                     };
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    listCardMarketMovers: {
+        parameters: {
+            query?: {
+                /** @description Which cut to rank. `topGainersPercent`/`topDroppersPercent` rank by relative move, `topGainersAmount`/`topDroppersAmount` by kronor, `mostActive` by number of sales, `newHighs`/`newLows` list items trading at the extreme of the period, and `volatilityLeaders` ranks by how much the price swung around its own average. */
+                mover?: "topGainersPercent" | "topDroppersPercent" | "topGainersAmount" | "topDroppersAmount" | "mostActive" | "newHighs" | "newLows" | "volatilityLeaders";
+                /** @description Window length in days, 1-30. The UI offers 1, 7 and 30. */
+                days?: number;
+                /** @description Floor on both the current and the previous price, in SEK. Both, because a percentage measured from a baseline that was never a credible price is an artefact, not a move. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
+                minPrice?: number;
+                /** @description Least recorded sales behind each window. Defaults to 2, so a day's average resting on a single auction cannot head the list. Rows predating the sale counter count as 0 and are excluded at any value above 0. */
+                minSales?: number;
+                /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
+                expansion?: string;
+                limit?: number;
+                skip?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The ranked leaderboard, with the windows it was computed over */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketMovers"];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             /** @description Server error */
@@ -3460,6 +3661,8 @@ export interface operations {
             /** @description Pricing for the requested cards. Ids that don't exist are silently omitted. */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3505,6 +3708,9 @@ export interface operations {
             /** @description Cards in the standard list envelope */
             200: {
                 headers: {
+                    "Cache-Tag": components["headers"]["CacheTag"];
+                    "Cache-Control": components["headers"]["CacheControlLongTiered"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3523,6 +3729,15 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Premium subscription required */
             403: {
                 headers: {
@@ -3534,188 +3749,28 @@ export interface operations {
             };
         };
     };
-    getCardReferencePrices: {
+    listCardTechnicalNames: {
         parameters: {
-            query?: {
-                /** @description Rolling window ending today. Ignored when from/to are supplied. */
-                days?: number;
-                from?: string;
-                to?: string;
-                provider?: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
-                cardType?: "loose" | "graded";
-            };
+            query?: never;
             header?: never;
-            path: {
-                /** @description Card _id or technicalName */
-                id: string;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description Grouped daily reference price series for the card */
+            /** @description Every card's technicalName and updatedAt */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "69808864100d0aea4dc3f7f4",
-                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
-                     *       },
-                     *       "fromDate": "2026-05-15",
-                     *       "toDate": "2026-08-12",
-                     *       "metric": "price",
-                     *       "currencyMode": "native",
-                     *       "series": [
-                     *         {
-                     *           "source": "tcgdex",
-                     *           "provider": "cardmarket",
-                     *           "variant": "holo",
-                     *           "cardType": "loose",
-                     *           "gradingCompany": null,
-                     *           "grade": null,
-                     *           "currency": "EUR",
-                     *           "sampleSize": null,
-                     *           "points": [
-                     *             {
-                     *               "snapshotDate": "2026-07-29T00:00:00.000Z",
-                     *               "price": 3.4
-                     *             },
-                     *             {
-                     *               "snapshotDate": "2026-07-30T00:00:00.000Z",
-                     *               "price": 3.4
-                     *             },
-                     *             {
-                     *               "snapshotDate": "2026-07-31T00:00:00.000Z",
-                     *               "price": 3.4
-                     *             }
-                     *           ]
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemReferencePrices"];
-                };
-            };
-            /** @description Invalid query parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Card not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    listCardAuctionPrices: {
-        parameters: {
-            query?: {
-                limit?: number;
-                skip?: number;
-            };
-            header?: never;
-            path: {
-                /** @description Card _id or technicalName */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description List of marketplace auction prices for the card */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "69808864100d0aea4dc3f7f4",
-                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
-                     *       },
-                     *       "data": [
-                     *         {
-                     *           "id": "6a7ab56965c48e8508841825",
-                     *           "url": "https://www.tradera.com/item/743412041",
-                     *           "price": 35,
-                     *           "currency": "SEK",
-                     *           "soldAt": "2026-08-10T16:49:57.000Z",
-                     *           "itemId": "743412041",
-                     *           "source": "tradera"
-                     *         },
-                     *         {
-                     *           "id": "6a741d901d1c8cf12b3e36de",
-                     *           "url": "https://www.tradera.com/item/743391838",
-                     *           "price": 10,
-                     *           "currency": "SEK",
-                     *           "soldAt": "2026-08-05T21:10:17.000Z",
-                     *           "itemId": "743391838",
-                     *           "source": "tradera"
-                     *         }
-                     *       ],
-                     *       "pagination": {
-                     *         "total": 4,
-                     *         "limit": 2,
-                     *         "skip": 0,
-                     *         "hasMore": true
-                     *       },
-                     *       "premiumRequired": true
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemSoldPrices"];
-                };
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Valid token but no active Premium subscription */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Card not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
+                    "application/json": {
+                        data?: components["schemas"]["CatalogSlug"][];
+                        pagination?: components["schemas"]["PageMeta"];
+                    };
                 };
             };
             /** @description Server error */
@@ -3746,6 +3801,9 @@ export interface operations {
             /** @description The card */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -3813,273 +3871,6 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
-            };
-        };
-    };
-    getCardPricing: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Card _id or technicalName */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The card's current pricing */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["CatalogItemPricing"];
-                };
-            };
-            /** @description Card not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getCardPricingLive: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Card _id or technicalName */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Live pricing for the item */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "id": "69808864100d0aea4dc3f7f4",
-                     *       "name": "Mega Evolution Ascended Heroes Fezandipiti ex",
-                     *       "technicalName": "mega-evolution-ascended-heroes-fezandipiti-ex",
-                     *       "pricing": {
-                     *         "retailPrice": 800,
-                     *         "estimatedValue": 22.5,
-                     *         "shopCount": 2,
-                     *         "pricingDataPoints": 2,
-                     *         "calculatedAt": "2026-08-12T16:33:08.025Z"
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["LivePricingForItem"];
-                };
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Card not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    listCardDailyPriceStats: {
-        parameters: {
-            query?: {
-                /** @description Start date (YYYY-MM-DD) */
-                startDate?: string;
-                /** @description End date (YYYY-MM-DD) */
-                endDate?: string;
-                /** @description Card name */
-                productName?: string;
-                /** @description Technical name */
-                technicalName?: string;
-                /** @description Category technical name */
-                category?: string;
-                /** @description Expansion technical name */
-                expansion?: string;
-                /** @description Category ID (ObjectId) */
-                categoryId?: string;
-                /** @description Expansion ID (ObjectId) */
-                expansionId?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Daily price history for cards, in the standard list envelope */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data?: components["schemas"]["ItemDailyStats"][];
-                        pagination?: components["schemas"]["PageMeta"];
-                    };
-                };
-            };
-            /** @description Invalid date format */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No cards found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    listCardEstimatedValues: {
-        parameters: {
-            query?: {
-                /** @description Page number for pagination */
-                page?: number;
-                /** @description Number of cards per page (max 50) */
-                limit?: number;
-                /** @description Card name */
-                productName?: string;
-                /** @description Technical name */
-                technicalName?: string;
-                /** @description Category technical name */
-                category?: string;
-                /** @description Expansion technical name */
-                expansion?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Estimated values for cards, in the standard list envelope */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data?: components["schemas"]["ItemEstimatedValue"][];
-                        pagination?: components["schemas"]["PageMeta"];
-                    };
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    listCardMarketMovers: {
-        parameters: {
-            query?: {
-                /** @description Which cut to rank. `topGainersPercent`/`topDroppersPercent` rank by relative move, `topGainersAmount`/`topDroppersAmount` by kronor, `mostActive` by number of sales, `newHighs`/`newLows` list items trading at the extreme of the period, and `volatilityLeaders` ranks by how much the price swung around its own average. */
-                mover?: "topGainersPercent" | "topDroppersPercent" | "topGainersAmount" | "topDroppersAmount" | "mostActive" | "newHighs" | "newLows" | "volatilityLeaders";
-                /** @description Window length in days, 1-30. The UI offers 1, 7 and 30. */
-                days?: number;
-                /** @description Floor on the current price, in SEK. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
-                minPrice?: number;
-                /** @description Least recorded sales behind each window. Defaults to 2, so a day's average resting on a single auction cannot head the list. Rows predating the sale counter count as 0 and are excluded at any value above 0. */
-                minSales?: number;
-                /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
-                expansion?: string;
-                limit?: number;
-                skip?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The ranked leaderboard, with the windows it was computed over */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MarketMovers"];
-                };
-            };
-            /** @description Invalid query parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
                 };
@@ -4095,7 +3886,7 @@ export interface operations {
                 gradingCostSek?: number;
                 /** @description Postage, insurance and reshipping per card, in SEK. Defaults to 0. */
                 shippingCostSek?: number;
-                /** @description The marketplace cut on the eventual sale, as a percentage. Defaults to 0. */
+                /** @description The marketplace cut on the eventual sale, as a percentage. Defaults to 0. At most 99, because at 100% the sale nets nothing and the break-even price has no solution. */
                 salesFeePercent?: number;
             };
             header?: never;
@@ -4110,6 +3901,8 @@ export interface operations {
             /** @description Graded outcomes for the card, best grade first */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMediumTiered"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4172,6 +3965,460 @@ export interface operations {
             };
         };
     };
+    listCardShopMatches: {
+        parameters: {
+            query?: {
+                /** @description Filter by stock status */
+                inStock?: boolean;
+                /** @description Items per page. Not validated: a value above 100 is treated as 100, a negative one as 1, and a missing, zero or non-numeric one as 100. A number that is not a whole number (2.5) is refused with 400. */
+                limit?: number;
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
+                skip?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Card _id or technicalName */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of shop matches for the card */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "69808864100d0aea4dc3f7f4",
+                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
+                     *       },
+                     *       "data": [
+                     *         {
+                     *           "id": "6a757f013f38ef493c70c063",
+                     *           "shop": {
+                     *             "technicalName": "samlarhobby",
+                     *             "name": "Samlarhobby",
+                     *             "delivery": {
+                     *               "cost": null,
+                     *               "currency": null,
+                     *               "daysMin": null,
+                     *               "daysMax": null,
+                     *               "freeShippingThreshold": 2000,
+                     *               "supportsLocalPickup": null,
+                     *               "note": null
+                     *             }
+                     *           },
+                     *           "url": "https://www.samlarhobby.se/products/fezandipiti-ex-asc-288-ascended-heroes",
+                     *           "shopUrlId": "6a3f717581e84af694733f39",
+                     *           "price": 800,
+                     *           "currency": "SEK",
+                     *           "inStock": true,
+                     *           "inPreorder": false,
+                     *           "inMonitor": false,
+                     *           "isFullyBooked": false,
+                     *           "scrapedName": "Fezandipiti ex (ASC 288) Ascended Heroes",
+                     *           "scrapedType": "Pokemon TCG",
+                     *           "matchScore": 90,
+                     *           "hasCategoryMismatch": false,
+                     *           "cardType": null,
+                     *           "itemCondition": null,
+                     *           "gradingCompany": null,
+                     *           "grade": null,
+                     *           "matchedAt": "2026-08-07T06:45:11.000Z",
+                     *           "updatedAt": "2026-08-12T14:18:16.455Z",
+                     *           "bargain": null
+                     *         }
+                     *       ],
+                     *       "pagination": {
+                     *         "total": 1,
+                     *         "limit": 2,
+                     *         "skip": 0,
+                     *         "hasMore": false
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemShopMatches"];
+                };
+            };
+            /** @description Card not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    listCardAuctionPrices: {
+        parameters: {
+            query?: {
+                /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
+                limit?: number;
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
+                skip?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Card _id or technicalName */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of marketplace auction prices for the card */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlShortTiered"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "69808864100d0aea4dc3f7f4",
+                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
+                     *       },
+                     *       "data": [
+                     *         {
+                     *           "id": "6a7ab56965c48e8508841825",
+                     *           "url": "https://www.tradera.com/item/743412041",
+                     *           "price": 35,
+                     *           "currency": "SEK",
+                     *           "soldAt": "2026-08-10T16:49:57.000Z",
+                     *           "itemId": "743412041",
+                     *           "source": "tradera"
+                     *         },
+                     *         {
+                     *           "id": "6a741d901d1c8cf12b3e36de",
+                     *           "url": "https://www.tradera.com/item/743391838",
+                     *           "price": 10,
+                     *           "currency": "SEK",
+                     *           "soldAt": "2026-08-05T21:10:17.000Z",
+                     *           "itemId": "743391838",
+                     *           "source": "tradera"
+                     *         }
+                     *       ],
+                     *       "pagination": {
+                     *         "total": 4,
+                     *         "limit": 2,
+                     *         "skip": 0,
+                     *         "hasMore": true
+                     *       },
+                     *       "premiumRequired": true
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemSoldPrices"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Valid token but no active Premium subscription */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Card not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getCardPricing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Card _id or technicalName */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The card's current pricing */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CatalogItemPricing"];
+                };
+            };
+            /** @description Card not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getCardPricingLive: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Card _id or technicalName */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Live pricing for the item */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlNone"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "69808864100d0aea4dc3f7f4",
+                     *       "name": "Mega Evolution Ascended Heroes Fezandipiti ex",
+                     *       "technicalName": "mega-evolution-ascended-heroes-fezandipiti-ex",
+                     *       "pricing": {
+                     *         "retailPrice": 800,
+                     *         "estimatedValue": 22.5,
+                     *         "shopCount": 2,
+                     *         "pricingDataPoints": 2,
+                     *         "calculatedAt": "2026-08-12T16:33:08.025Z"
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["LivePricingForItem"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Authenticated, but the account has no active or trialing subscription (`premiumRequired`). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Card not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getCardReferencePrices: {
+        parameters: {
+            query?: {
+                /** @description Rolling window ending today. Ignored when from/to are supplied. */
+                days?: number;
+                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                from?: string;
+                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                to?: string;
+                provider?: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
+                cardType?: "loose" | "graded";
+            };
+            header?: never;
+            path: {
+                /** @description Card _id or technicalName */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Grouped daily reference price series for the card */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlShortTiered"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "69808864100d0aea4dc3f7f4",
+                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
+                     *       },
+                     *       "fromDate": "2026-05-15",
+                     *       "toDate": "2026-08-12",
+                     *       "metric": "price",
+                     *       "currencyMode": "native",
+                     *       "series": [
+                     *         {
+                     *           "source": "tcgdex",
+                     *           "provider": "cardmarket",
+                     *           "variant": "holo",
+                     *           "cardType": "loose",
+                     *           "gradingCompany": null,
+                     *           "grade": null,
+                     *           "currency": "EUR",
+                     *           "sampleSize": null,
+                     *           "points": [
+                     *             {
+                     *               "snapshotDate": "2026-07-29T00:00:00.000Z",
+                     *               "price": 3.4
+                     *             },
+                     *             {
+                     *               "snapshotDate": "2026-07-30T00:00:00.000Z",
+                     *               "price": 3.4
+                     *             },
+                     *             {
+                     *               "snapshotDate": "2026-07-31T00:00:00.000Z",
+                     *               "price": 3.4
+                     *             }
+                     *           ]
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemReferencePrices"];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Authenticated, but the account has no active or trialing subscription (`premiumRequired`). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Card not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     listExpansions: {
         parameters: {
             query?: {
@@ -4187,6 +4434,9 @@ export interface operations {
             /** @description Every expansion, in the standard list envelope. Deliberately not paginated — the set is small and bounded, and the scraper caches it wholesale. */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4295,6 +4545,9 @@ export interface operations {
             /** @description The expansion */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4320,43 +4573,6 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getExpansionExpectedValue: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Expansion `_id` or technicalName. */
-                technicalName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The expected value of a pack, and of each sealed unit we can value */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpansionExpectedValue"];
-                };
-            };
-            /** @description Expansion not found, or no cards recorded for it to value */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
                 };
@@ -4369,43 +4585,6 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ApiError"];
                 };
-            };
-        };
-    };
-    getExpansionReleaseGroup: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Expansion `_id` or technicalName. */
-                technicalName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The release group */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpansionReleaseGroup"];
-                };
-            };
-            /** @description Expansion not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
         };
     };
@@ -4424,6 +4603,9 @@ export interface operations {
             /** @description Cards for the expansion, sorted by card number ascending */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4451,14 +4633,151 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Server error */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getExpansionCardsLivePricing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Expansion `_id` or technicalName */
+                technicalName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Live pricing for the expansion's cards */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlNone"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpansionLivePricing"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Active Premium subscription required */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Expansion not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getExpansionExpectedValue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Expansion `_id` or technicalName. */
+                technicalName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The expected value of a pack, and of each sealed unit we can value */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpansionExpectedValue"];
+                };
+            };
+            /** @description Several language-prefixed expansions match the legacy slug. Error details contain options with name, language, technicalName and expected-value URL. */
+            300: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description One language-prefixed expansion matches a legacy slug. Redirect to its expected-value route. */
+            301: {
+                headers: {
+                    Location: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                    "text/html": string;
+                };
+            };
+            /** @description Expansion not found, or no cards recorded for it to value */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -4477,6 +4796,9 @@ export interface operations {
             /** @description Sealed products for the expansion, sorted by shop count descending */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4562,70 +4884,6 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    getExpansionCardsLivePricing: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Expansion `_id` or technicalName */
-                technicalName: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Live pricing for the expansion's cards */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ExpansionLivePricing"];
-                };
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Active Premium subscription required */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Expansion not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
                 };
@@ -4656,6 +4914,7 @@ export interface operations {
             /** @description Live pricing for the expansion's sealed products */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlNone"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4730,6 +4989,50 @@ export interface operations {
             };
         };
     };
+    getExpansionReleaseGroup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Expansion `_id` or technicalName. */
+                technicalName: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The release group */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExpansionReleaseGroup"];
+                };
+            };
+            /** @description Expansion not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     listPackRates: {
         parameters: {
             query?: never;
@@ -4742,6 +5045,8 @@ export interface operations {
             /** @description All pack rate documents */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4777,6 +5082,8 @@ export interface operations {
             /** @description The pack rate document */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4806,9 +5113,9 @@ export interface operations {
     listDailyPriceStats: {
         parameters: {
             query?: {
-                /** @description Start date (YYYY-MM-DD) */
+                /** @description Start date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 startDate?: string;
-                /** @description End date (YYYY-MM-DD) */
+                /** @description End date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 endDate?: string;
                 /** @description Product name */
                 productName?: string;
@@ -4826,9 +5133,9 @@ export interface operations {
                 categoryId?: string;
                 /** @description Expansion ID (ObjectId) */
                 expansionId?: string;
-                /** @description Max products to return (page over the matching set with `skip`) */
+                /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
-                /** @description Number of matching products to skip */
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
                 skip?: number;
             };
             header?: never;
@@ -4840,6 +5147,8 @@ export interface operations {
             /** @description Daily price history, in the standard list envelope */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4854,30 +5163,36 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description No products found */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Server error */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
     listEstimatedValues: {
         parameters: {
             query?: {
-                /** @description Page number for pagination */
-                page?: number;
-                /** @description Number of products per page (max 100) */
+                /** @description How many records to skip before the page. Zero-based; there is no `page` parameter. */
+                skip?: number;
+                /** @description Items per page, 1-50. */
                 limit?: number;
                 /** @description Product name */
                 productName?: string;
@@ -4901,6 +5216,8 @@ export interface operations {
             /** @description Estimated values, in the standard list envelope */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -4915,7 +5232,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -4934,6 +5253,8 @@ export interface operations {
             /** @description Product info with price stats */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMediumTiered"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -5047,7 +5368,456 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getProductPriceStatsByVariant: {
+        parameters: {
+            query?: {
+                /** @description Number of days to include in average calculation */
+                days?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Product ID (MongoDB ObjectId or technicalName) */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Price stats grouped by variant */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "69808864100d0aea4dc3f7f4",
+                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
+                     *       },
+                     *       "variants": {
+                     *         "loose": {},
+                     *         "graded": {}
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemVariantStats"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Valid token but no active Premium subscription */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getProductDailyPriceStats: {
+        parameters: {
+            query?: {
+                /** @description Number of days to retrieve (from today backwards) */
+                days?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Product ID (MongoDB ObjectId or technicalName) */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Daily price stats for the product */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMediumTiered"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "684aea450554072ffe597b44",
+                     *         "name": "Scarlet & Violet Booster Pack"
+                     *       },
+                     *       "dailyStats": [
+                     *         {
+                     *           "statDate": "2026-07-21",
+                     *           "averagePrice": 150
+                     *         },
+                     *         {
+                     *           "statDate": "2026-07-26",
+                     *           "averagePrice": 200
+                     *         },
+                     *         {
+                     *           "statDate": "2026-07-28",
+                     *           "averagePrice": 65
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemDailyStats"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Valid token but no active Premium subscription */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getProductDailyPriceStatsByVariant: {
+        parameters: {
+            query: {
+                /** @description Type of card (loose or graded) */
+                cardType: "loose" | "graded";
+                /** @description Card condition (required for loose cards) */
+                condition?: "NM" | "LP" | "MP" | "HP" | "DMG";
+                /** @description Grading company (required for graded cards) */
+                gradingCompany?: "PSA" | "BGS" | "CGC" | "SGC" | "ACE";
+                /** @description Grade number (required for graded cards) */
+                grade?: number;
+                /** @description Number of days to retrieve */
+                days?: number;
+            };
+            header?: never;
+            path: {
+                /** @description Product ID (MongoDB ObjectId or technicalName) */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Daily price history for the variant */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "69808864100d0aea4dc3f7f4",
+                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
+                     *       },
+                     *       "variant": {
+                     *         "cardType": "loose",
+                     *         "condition": "NM",
+                     *         "gradingCompany": null,
+                     *         "grade": null
+                     *       },
+                     *       "dailyStats": []
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemVariantDailyStats"];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Valid token but no active Premium subscription */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getProductDailyPriceStatsLast30: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Product ID (MongoDB ObjectId or technicalName) */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Daily price stats for the last 30 days */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMediumTiered"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "684aea450554072ffe597b44",
+                     *         "name": "Scarlet & Violet Booster Pack"
+                     *       },
+                     *       "dailyStats": [
+                     *         {
+                     *           "statDate": "2026-07-21",
+                     *           "averagePrice": 150
+                     *         },
+                     *         {
+                     *           "statDate": "2026-07-26",
+                     *           "averagePrice": 200
+                     *         },
+                     *         {
+                     *           "statDate": "2026-07-28",
+                     *           "averagePrice": 65
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemDailyStats"];
+                };
+            };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Authenticated, but the account has no active or trialing subscription (`premiumRequired`). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getProductEstimatedValue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description Product ID (MongoDB ObjectId or technicalName) */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Estimated value for the product */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMediumTiered"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "684aea450554072ffe597b44",
+                     *         "name": "Scarlet & Violet Booster Pack"
+                     *       },
+                     *       "estimate": {
+                     *         "estimatedValue": 138.75,
+                     *         "estimateUpdatedAt": "2026-08-02T00:00:00.000Z",
+                     *         "dataPointCount": 4
+                     *       }
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemEstimatedValue"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Valid token but no active Premium subscription */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Rate limit exceeded */
             429: {
@@ -5084,6 +5854,8 @@ export interface operations {
             /** @description Complete stats for the item */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMediumTiered"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -5314,418 +6086,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
                 };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProductDailyPriceStats: {
-        parameters: {
-            query?: {
-                /** @description Number of days to retrieve (from today backwards) */
-                days?: number;
-            };
-            header?: never;
-            path: {
-                /** @description Product ID (MongoDB ObjectId or technicalName) */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Daily price stats for the product */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "684aea450554072ffe597b44",
-                     *         "name": "Scarlet & Violet Booster Pack"
-                     *       },
-                     *       "dailyStats": [
-                     *         {
-                     *           "statDate": "2026-07-21",
-                     *           "averagePrice": 150
-                     *         },
-                     *         {
-                     *           "statDate": "2026-07-26",
-                     *           "averagePrice": 200
-                     *         },
-                     *         {
-                     *           "statDate": "2026-07-28",
-                     *           "averagePrice": 65
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemDailyStats"];
-                };
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Valid token but no active Premium subscription */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Product not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProductDailyPriceStatsLast30: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Product ID (MongoDB ObjectId or technicalName) */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Daily price stats for the last 30 days */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "684aea450554072ffe597b44",
-                     *         "name": "Scarlet & Violet Booster Pack"
-                     *       },
-                     *       "dailyStats": [
-                     *         {
-                     *           "statDate": "2026-07-21",
-                     *           "averagePrice": 150
-                     *         },
-                     *         {
-                     *           "statDate": "2026-07-26",
-                     *           "averagePrice": 200
-                     *         },
-                     *         {
-                     *           "statDate": "2026-07-28",
-                     *           "averagePrice": 65
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemDailyStats"];
-                };
-            };
-            /** @description Product not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProductEstimatedValue: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description Product ID (MongoDB ObjectId or technicalName) */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Estimated value for the product */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "684aea450554072ffe597b44",
-                     *         "name": "Scarlet & Violet Booster Pack"
-                     *       },
-                     *       "estimate": {
-                     *         "estimatedValue": 138.75,
-                     *         "estimateUpdatedAt": "2026-08-02T00:00:00.000Z",
-                     *         "dataPointCount": 4
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemEstimatedValue"];
-                };
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Valid token but no active Premium subscription */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Product not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProductPriceStatsByVariant: {
-        parameters: {
-            query?: {
-                /** @description Number of days to include in average calculation */
-                days?: number;
-            };
-            header?: never;
-            path: {
-                /** @description Product ID (MongoDB ObjectId or technicalName) */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Price stats grouped by variant */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "69808864100d0aea4dc3f7f4",
-                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
-                     *       },
-                     *       "variants": {
-                     *         "loose": {},
-                     *         "graded": {}
-                     *       }
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemVariantStats"];
-                };
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Valid token but no active Premium subscription */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Product not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProductDailyPriceStatsByVariant: {
-        parameters: {
-            query: {
-                /** @description Type of card (loose or graded) */
-                cardType: "loose" | "graded";
-                /** @description Card condition (required for loose cards) */
-                condition?: "NM" | "LP" | "MP" | "HP" | "DMG";
-                /** @description Grading company (required for graded cards) */
-                gradingCompany?: "PSA" | "BGS" | "CGC" | "SGC" | "ACE";
-                /** @description Grade number (required for graded cards) */
-                grade?: number;
-                /** @description Number of days to retrieve */
-                days?: number;
-            };
-            header?: never;
-            path: {
-                /** @description Product ID (MongoDB ObjectId or technicalName) */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Daily price history for the variant */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "69808864100d0aea4dc3f7f4",
-                     *         "name": "Mega Evolution Ascended Heroes Fezandipiti ex"
-                     *       },
-                     *       "variant": {
-                     *         "cardType": "loose",
-                     *         "condition": "NM",
-                     *         "gradingCompany": null,
-                     *         "grade": null
-                     *       },
-                     *       "dailyStats": []
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemVariantDailyStats"];
-                };
-            };
-            /** @description Invalid query parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Valid token but no active Premium subscription */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Product not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
             };
             /** @description Rate limit exceeded */
             429: {
@@ -5762,6 +6125,8 @@ export interface operations {
             /** @description List of top products */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -5787,7 +6152,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -5809,6 +6176,9 @@ export interface operations {
             /** @description Products in the standard list envelope */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -6003,12 +6373,433 @@ export interface operations {
             };
         };
     };
+    listProductDailyPriceStats: {
+        parameters: {
+            query?: {
+                /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
+                limit?: number;
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
+                skip?: number;
+                /** @description Start date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                startDate?: string;
+                /** @description End date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                endDate?: string;
+                /** @description Product name */
+                productName?: string;
+                /** @description Technical name */
+                technicalName?: string;
+                /** @description PriceCharting ID */
+                priceChartingId?: string;
+                /** @description Model number */
+                modelNumber?: string;
+                /** @description Category technical name */
+                category?: string;
+                /** @description Expansion technical name */
+                expansion?: string;
+                /** @description Category ID (ObjectId) */
+                categoryId?: string;
+                /** @description Expansion ID (ObjectId) */
+                expansionId?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Daily price history for sealed products, in the standard list envelope */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["ItemDailyStats"][];
+                        pagination?: components["schemas"]["PageMeta"];
+                    };
+                };
+            };
+            /** @description Invalid date format */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description No products found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    listProductEstimatedValues: {
+        parameters: {
+            query?: {
+                /** @description How many records to skip before the page. Zero-based; there is no `page` parameter. */
+                skip?: number;
+                /** @description Items per page, 1-50. */
+                limit?: number;
+                /** @description Product name */
+                productName?: string;
+                /** @description Technical name */
+                technicalName?: string;
+                /** @description Category technical name */
+                category?: string;
+                /** @description Expansion technical name */
+                expansion?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Estimated values for sealed products, in the standard list envelope */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["ItemEstimatedValue"][];
+                        pagination?: components["schemas"]["PageMeta"];
+                    };
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    listProductMarketMovers: {
+        parameters: {
+            query?: {
+                /** @description Which cut to rank. `topGainersPercent`/`topDroppersPercent` rank by relative move, `topGainersAmount`/`topDroppersAmount` by kronor, `mostActive` by number of sales, `newHighs`/`newLows` list items trading at the extreme of the period, and `volatilityLeaders` ranks by how much the price swung around its own average. */
+                mover?: "topGainersPercent" | "topDroppersPercent" | "topGainersAmount" | "topDroppersAmount" | "mostActive" | "newHighs" | "newLows" | "volatilityLeaders";
+                /** @description Window length in days, 1-30. The UI offers 1, 7 and 30. */
+                days?: number;
+                /** @description Floor on both the current and the previous price, in SEK. Both, because a percentage measured from a baseline that was never a credible price is an artefact, not a move. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
+                minPrice?: number;
+                /** @description Least recorded sales behind each window. Defaults to 2, so a day's average resting on a single auction cannot head the list. Rows predating the sale counter count as 0 and are excluded at any value above 0. */
+                minSales?: number;
+                /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
+                expansion?: string;
+                limit?: number;
+                skip?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The ranked leaderboard, with the windows it was computed over */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MarketMovers"];
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getProductPricingBatch: {
+        parameters: {
+            query: {
+                /**
+                 * @description Comma-separated product ids, max 200
+                 * @example 684aea450554072ffe597b44,684aea450554072ffe597b3c
+                 */
+                ids: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Pricing for the requested products. Ids that don't exist are silently omitted. */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["CatalogItemPricing"][];
+                        pagination?: components["schemas"]["PageMeta"];
+                    };
+                };
+            };
+            /** @description Missing, empty, malformed, or too many ids */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    searchProducts: {
+        parameters: {
+            query?: {
+                /** @description Whitespace-separated tokens, each matched against the start of a word */
+                search?: string;
+                limit?: number;
+                skip?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Products in the standard list envelope */
+            200: {
+                headers: {
+                    "Cache-Tag": components["headers"]["CacheTag"];
+                    "Cache-Control": components["headers"]["CacheControlLongTiered"];
+                    Vary: components["headers"]["Vary"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["Product"][];
+                        pagination?: components["schemas"]["PageMeta"];
+                    };
+                };
+            };
+            /** @description Invalid query parameters */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Premium subscription required */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    listProductTechnicalNames: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Every product's technicalName and updatedAt */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["CatalogSlug"][];
+                        pagination?: components["schemas"]["PageMeta"];
+                    };
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    getProduct: {
+        parameters: {
+            query?: {
+                /** @description Brand `_id` or technicalName. Disambiguates a `technicalName` two brands both use — see `GET /product`'s `brand` parameter. Not needed for an `_id` lookup, and today's catalogue has only one brand, so this has no effect until a second one exists. */
+                brand?: string;
+            };
+            header?: never;
+            path: {
+                /** @description Product _id or technicalName */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description The product */
+            200: {
+                headers: {
+                    "Cache-Control": components["headers"]["CacheControlLong"];
+                    Vary: components["headers"]["Vary"];
+                    "Cache-Tag": components["headers"]["CacheTag"];
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "684aea450554072ffe597b44",
+                     *       "kind": "sealed",
+                     *       "name": "Scarlet & Violet Booster Pack",
+                     *       "shortName": "Scarlet & Violet Booster Pack",
+                     *       "technicalName": "scarlet-violet-booster-pack",
+                     *       "brand": {
+                     *         "id": "6841cfd656b8f021ecb0483b",
+                     *         "name": "Pokémon",
+                     *         "technicalName": "pokemon",
+                     *         "createdAt": "2025-06-05T17:11:50.316Z",
+                     *         "updatedAt": "2025-06-05T17:11:50.316Z"
+                     *       },
+                     *       "manufacturer": "Pokemon",
+                     *       "modelNumber": "4954135",
+                     *       "category": {
+                     *         "id": "6841d175d5919761e8ec14ed",
+                     *         "name": "Booster Pack",
+                     *         "technicalName": "booster-pack"
+                     *       },
+                     *       "expansion": {
+                     *         "id": "684add666f3d257c659c73ad",
+                     *         "name": "Scarlet & Violet Scarlet & Violet",
+                     *         "shortName": "Scarlet & Violet",
+                     *         "technicalName": "eng-scarlet-violet-scarlet-violet",
+                     *         "language": "ENG",
+                     *         "code": "sv1",
+                     *         "cardCode": "SVI",
+                     *         "seriesName": "Scarlet & Violet",
+                     *         "releaseDate": "2023-03-31T00:00:00.000Z",
+                     *         "logoUrl": "https://ik.imagekit.io/xgtytqdnv/expansions/eng-scarlet-violet-scarlet-violet-logo.png",
+                     *         "symbolUrl": "https://ik.imagekit.io/xgtytqdnv/expansions/eng-scarlet-violet-scarlet-violet-symbol.png",
+                     *         "imageUrl": null
+                     *       },
+                     *       "language": "ENG",
+                     *       "alternativeNames": [
+                     *         {
+                     *           "name": "Scarlet & Violet Booster (6 Cards)",
+                     *           "shortName": "Scarlet & Violet Booster (6 Cards)"
+                     *         }
+                     *       ],
+                     *       "supportsMultipackPricing": true,
+                     *       "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-scarlet-violet-booster-pack.png",
+                     *       "createdAt": "2025-06-12T14:55:01.203Z",
+                     *       "updatedAt": "2026-08-12T09:00:01.623Z",
+                     *       "upc": null,
+                     *       "asin": null,
+                     *       "epid": null,
+                     *       "priceChartingId": "4954135",
+                     *       "prisjaktId": null
+                     *     }
+                     */
+                    "application/json": components["schemas"]["Product"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
     listProductShopMatches: {
         parameters: {
             query?: {
                 /** @description Keep only matches whose shop currently has stock */
                 inStock?: boolean;
+                /** @description Items per page. Not validated: a value above 100 is treated as 100, a negative one as 1, and a missing, zero or non-numeric one as 100. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
                 skip?: number;
                 cardType?: "loose" | "graded";
                 condition?: string;
@@ -6027,6 +6818,8 @@ export interface operations {
             /** @description Shop matches for the item */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -6174,225 +6967,12 @@ export interface operations {
             };
         };
     };
-    listProductTechnicalNames: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Every product's technicalName and updatedAt */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data?: components["schemas"]["CatalogSlug"][];
-                        pagination?: components["schemas"]["PageMeta"];
-                    };
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProductPricingBatch: {
-        parameters: {
-            query: {
-                /**
-                 * @description Comma-separated product ids, max 200
-                 * @example 684aea450554072ffe597b44,684aea450554072ffe597b3c
-                 */
-                ids: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Pricing for the requested products. Ids that don't exist are silently omitted. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data?: components["schemas"]["CatalogItemPricing"][];
-                        pagination?: components["schemas"]["PageMeta"];
-                    };
-                };
-            };
-            /** @description Missing, empty, malformed, or too many ids */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    searchProducts: {
-        parameters: {
-            query?: {
-                /** @description Whitespace-separated tokens, each matched against the start of a word */
-                search?: string;
-                limit?: number;
-                skip?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Products in the standard list envelope */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data?: components["schemas"]["Product"][];
-                        pagination?: components["schemas"]["PageMeta"];
-                    };
-                };
-            };
-            /** @description Invalid query parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Premium subscription required */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProductReferencePrices: {
-        parameters: {
-            query?: {
-                /** @description Rolling window ending today. Ignored when from/to are supplied. */
-                days?: number;
-                from?: string;
-                to?: string;
-                provider?: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
-            };
-            header?: never;
-            path: {
-                /** @description Product _id or technicalName */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Grouped daily reference price series for the product */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "684aea450554072ffe597b44",
-                     *         "name": "Scarlet & Violet Booster Pack"
-                     *       },
-                     *       "fromDate": "2026-05-15",
-                     *       "toDate": "2026-08-12",
-                     *       "metric": "price",
-                     *       "currencyMode": "native",
-                     *       "series": [
-                     *         {
-                     *           "source": "tradera",
-                     *           "provider": "tradera",
-                     *           "variant": null,
-                     *           "cardType": null,
-                     *           "gradingCompany": null,
-                     *           "grade": null,
-                     *           "currency": "SEK",
-                     *           "sampleSize": 1,
-                     *           "points": [
-                     *             {
-                     *               "snapshotDate": "2026-06-13T00:00:00.000Z",
-                     *               "price": 92
-                     *             },
-                     *             {
-                     *               "snapshotDate": "2026-06-14T00:00:00.000Z",
-                     *               "price": 92
-                     *             },
-                     *             {
-                     *               "snapshotDate": "2026-06-15T00:00:00.000Z",
-                     *               "price": 92
-                     *             }
-                     *           ]
-                     *         }
-                     *       ]
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemReferencePrices"];
-                };
-            };
-            /** @description Invalid query parameters */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Product not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
     listProductAuctionPrices: {
         parameters: {
             query?: {
+                /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
                 skip?: number;
             };
             header?: never;
@@ -6407,6 +6987,8 @@ export interface operations {
             /** @description List of marketplace auction prices for the product */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlShortTiered"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -6480,107 +7062,12 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Rate limit exceeded */
             429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
-    getProduct: {
-        parameters: {
-            query?: {
-                /** @description Brand `_id` or technicalName. Disambiguates a `technicalName` two brands both use — see `GET /product`'s `brand` parameter. Not needed for an `_id` lookup, and today's catalogue has only one brand, so this has no effect until a second one exists. */
-                brand?: string;
-            };
-            header?: never;
-            path: {
-                /** @description Product _id or technicalName */
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description The product */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "id": "684aea450554072ffe597b44",
-                     *       "kind": "sealed",
-                     *       "name": "Scarlet & Violet Booster Pack",
-                     *       "shortName": "Scarlet & Violet Booster Pack",
-                     *       "technicalName": "scarlet-violet-booster-pack",
-                     *       "brand": {
-                     *         "id": "6841cfd656b8f021ecb0483b",
-                     *         "name": "Pokémon",
-                     *         "technicalName": "pokemon",
-                     *         "createdAt": "2025-06-05T17:11:50.316Z",
-                     *         "updatedAt": "2025-06-05T17:11:50.316Z"
-                     *       },
-                     *       "manufacturer": "Pokemon",
-                     *       "modelNumber": "4954135",
-                     *       "category": {
-                     *         "id": "6841d175d5919761e8ec14ed",
-                     *         "name": "Booster Pack",
-                     *         "technicalName": "booster-pack"
-                     *       },
-                     *       "expansion": {
-                     *         "id": "684add666f3d257c659c73ad",
-                     *         "name": "Scarlet & Violet Scarlet & Violet",
-                     *         "shortName": "Scarlet & Violet",
-                     *         "technicalName": "eng-scarlet-violet-scarlet-violet",
-                     *         "language": "ENG",
-                     *         "code": "sv1",
-                     *         "cardCode": "SVI",
-                     *         "seriesName": "Scarlet & Violet",
-                     *         "releaseDate": "2023-03-31T00:00:00.000Z",
-                     *         "logoUrl": "https://ik.imagekit.io/xgtytqdnv/expansions/eng-scarlet-violet-scarlet-violet-logo.png",
-                     *         "symbolUrl": "https://ik.imagekit.io/xgtytqdnv/expansions/eng-scarlet-violet-scarlet-violet-symbol.png",
-                     *         "imageUrl": null
-                     *       },
-                     *       "language": "ENG",
-                     *       "alternativeNames": [
-                     *         {
-                     *           "name": "Scarlet & Violet Booster (6 Cards)",
-                     *           "shortName": "Scarlet & Violet Booster (6 Cards)"
-                     *         }
-                     *       ],
-                     *       "supportsMultipackPricing": true,
-                     *       "imageUrl": "https://ik.imagekit.io/xgtytqdnv/products/eng-scarlet-violet-booster-pack.png",
-                     *       "createdAt": "2025-06-12T14:55:01.203Z",
-                     *       "updatedAt": "2026-08-12T09:00:01.623Z",
-                     *       "upc": null,
-                     *       "asin": null,
-                     *       "epid": null,
-                     *       "priceChartingId": "4954135",
-                     *       "prisjaktId": null
-                     *     }
-                     */
-                    "application/json": components["schemas"]["Product"];
-                };
-            };
-            /** @description Product not found */
-            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6614,6 +7101,8 @@ export interface operations {
             /** @description The product's current pricing */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlShort"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -6655,6 +7144,7 @@ export interface operations {
             /** @description Live pricing for the item */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlNone"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -6677,6 +7167,15 @@ export interface operations {
             };
             /** @description Missing or invalid bearer token */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Authenticated, but the account has no active or trialing subscription (`premiumRequired`). */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6713,147 +7212,184 @@ export interface operations {
             };
         };
     };
-    listProductDailyPriceStats: {
+    getProductReferencePrices: {
         parameters: {
             query?: {
-                /** @description Start date (YYYY-MM-DD) */
-                startDate?: string;
-                /** @description End date (YYYY-MM-DD) */
-                endDate?: string;
-                /** @description Product name */
-                productName?: string;
-                /** @description Technical name */
-                technicalName?: string;
-                /** @description PriceCharting ID */
-                priceChartingId?: string;
-                /** @description Model number */
-                modelNumber?: string;
-                /** @description Category technical name */
-                category?: string;
-                /** @description Expansion technical name */
-                expansion?: string;
-                /** @description Category ID (ObjectId) */
-                categoryId?: string;
-                /** @description Expansion ID (ObjectId) */
-                expansionId?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Daily price history for sealed products, in the standard list envelope */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data?: components["schemas"]["ItemDailyStats"][];
-                        pagination?: components["schemas"]["PageMeta"];
-                    };
-                };
-            };
-            /** @description Invalid date format */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description No products found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    listProductEstimatedValues: {
-        parameters: {
-            query?: {
-                /** @description Page number for pagination */
-                page?: number;
-                /** @description Number of products per page (max 50) */
-                limit?: number;
-                /** @description Product name */
-                productName?: string;
-                /** @description Technical name */
-                technicalName?: string;
-                /** @description Category technical name */
-                category?: string;
-                /** @description Expansion technical name */
-                expansion?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Estimated values for sealed products, in the standard list envelope */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        data?: components["schemas"]["ItemEstimatedValue"][];
-                        pagination?: components["schemas"]["PageMeta"];
-                    };
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
-    listProductMarketMovers: {
-        parameters: {
-            query?: {
-                /** @description Which cut to rank. `topGainersPercent`/`topDroppersPercent` rank by relative move, `topGainersAmount`/`topDroppersAmount` by kronor, `mostActive` by number of sales, `newHighs`/`newLows` list items trading at the extreme of the period, and `volatilityLeaders` ranks by how much the price swung around its own average. */
-                mover?: "topGainersPercent" | "topDroppersPercent" | "topGainersAmount" | "topDroppersAmount" | "mostActive" | "newHighs" | "newLows" | "volatilityLeaders";
-                /** @description Window length in days, 1-30. The UI offers 1, 7 and 30. */
+                /** @description Rolling window ending today. Ignored when from/to are supplied. */
                 days?: number;
-                /** @description Floor on the current price, in SEK. Defaults to 50 because below roughly that a daily average rests on a handful of auctions and swings on its own. */
-                minPrice?: number;
-                /** @description Least recorded sales behind each window. Defaults to 2, so a day's average resting on a single auction cannot head the list. Rows predating the sale counter count as 0 and are excluded at any value above 0. */
-                minSales?: number;
-                /** @description Restrict to one or more expansions, by technicalName, comma-separated. */
-                expansion?: string;
-                limit?: number;
-                skip?: number;
+                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                from?: string;
+                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                to?: string;
+                provider?: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
             };
             header?: never;
-            path?: never;
+            path: {
+                /** @description Product _id or technicalName */
+                id: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
         responses: {
-            /** @description The ranked leaderboard, with the windows it was computed over */
+            /** @description Grouped daily reference price series for the product */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlShortTiered"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["MarketMovers"];
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "684aea450554072ffe597b44",
+                     *         "name": "Scarlet & Violet Booster Pack"
+                     *       },
+                     *       "fromDate": "2026-05-15",
+                     *       "toDate": "2026-08-12",
+                     *       "metric": "price",
+                     *       "currencyMode": "native",
+                     *       "series": [
+                     *         {
+                     *           "source": "tradera",
+                     *           "provider": "tradera",
+                     *           "variant": null,
+                     *           "cardType": null,
+                     *           "gradingCompany": null,
+                     *           "grade": null,
+                     *           "currency": "SEK",
+                     *           "sampleSize": 1,
+                     *           "points": [
+                     *             {
+                     *               "snapshotDate": "2026-06-13T00:00:00.000Z",
+                     *               "price": 92
+                     *             },
+                     *             {
+                     *               "snapshotDate": "2026-06-14T00:00:00.000Z",
+                     *               "price": 92
+                     *             },
+                     *             {
+                     *               "snapshotDate": "2026-06-15T00:00:00.000Z",
+                     *               "price": 92
+                     *             }
+                     *           ]
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemReferencePrices"];
                 };
             };
             /** @description Invalid query parameters */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Authenticated, but the account has no active or trialing subscription (`premiumRequired`). */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+        };
+    };
+    compareShopPrices: {
+        parameters: {
+            query: {
+                /** @description Product _id or technicalName */
+                productId: string;
+                /** @description Specific date to compare (defaults to latest) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                date?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Price comparison across shops. Currently empty for every product in this database — the daily-stats aggregation job (see `/shop-match-stats/daily/update*`) has not been run recently, so the `ShopProductMatchDailyStats` collection has no documents yet. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "item": {
+                     *         "id": "684aea450554072ffe597b44",
+                     *         "name": "Scarlet & Violet Booster Pack"
+                     *       },
+                     *       "items": [],
+                     *       "stats": null
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ItemPriceComparison"];
+                };
+            };
+            /** @description Missing or invalid bearer token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Valid token but no active Premium subscription */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Product not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Rate limit exceeded */
+            429: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6875,9 +7411,9 @@ export interface operations {
     getProductShopPriceHistory: {
         parameters: {
             query?: {
-                /** @description Start date (YYYY-MM-DD) */
+                /** @description Start date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 startDate?: string;
-                /** @description End date (YYYY-MM-DD) */
+                /** @description End date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 endDate?: string;
                 /** @description Filter by specific shop */
                 shop?: string;
@@ -6933,7 +7469,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Rate limit exceeded */
             429: {
@@ -6958,11 +7496,11 @@ export interface operations {
     getShopPriceHistory: {
         parameters: {
             query?: {
-                /** @description Start date (YYYY-MM-DD) */
+                /** @description Start date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 startDate?: string;
-                /** @description End date (YYYY-MM-DD) */
+                /** @description End date (YYYY-MM-DD) Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 endDate?: string;
-                /** @description Maximum products to return */
+                /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
             };
             header?: never;
@@ -7028,84 +7566,6 @@ export interface operations {
             };
         };
     };
-    compareShopPrices: {
-        parameters: {
-            query: {
-                /** @description Product _id or technicalName */
-                productId: string;
-                /** @description Specific date to compare (defaults to latest) */
-                date?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Price comparison across shops. Currently empty for every product in this database — the daily-stats aggregation job (see `/shop-match-stats/daily/update*`) has not been run recently, so the `ShopProductMatchDailyStats` collection has no documents yet. */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "item": {
-                     *         "id": "684aea450554072ffe597b44",
-                     *         "name": "Scarlet & Violet Booster Pack"
-                     *       },
-                     *       "items": [],
-                     *       "stats": null
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ItemPriceComparison"];
-                };
-            };
-            /** @description Missing or invalid bearer token */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Valid token but no active Premium subscription */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Product not found */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-            /** @description Rate limit exceeded */
-            429: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-            /** @description Server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiError"];
-                };
-            };
-        };
-    };
     listShopMatches: {
         parameters: {
             query?: {
@@ -7115,9 +7575,9 @@ export interface operations {
                 inStock?: boolean;
                 /** @description Filter by whether product is linked */
                 linked?: boolean;
-                /** @description Maximum number of results */
+                /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
-                /** @description Number of results to skip */
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
                 skip?: number;
             };
             header?: never;
@@ -7357,7 +7817,9 @@ export interface operations {
         parameters: {
             query?: {
                 inStock?: boolean;
+                /** @description Items per page. Not validated: a value above 500 is treated as 500, a negative one as 1, and a missing, zero or non-numeric one as 100. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
+                /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
                 skip?: number;
             };
             header?: never;
@@ -7529,21 +7991,36 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Premium subscription required */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description URL already exists */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -7574,19 +8051,32 @@ export interface operations {
                     "application/json": components["schemas"]["ShopUrlMutationResult"];
                 };
             };
+            /** @description Missing, invalid or expired credential. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Premium required */
             403: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description ShopUrl not found */
             404: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -7712,7 +8202,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -7771,14 +8263,18 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
             /** @description Server error */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -7794,6 +8290,8 @@ export interface operations {
             /** @description Platform counts */
             200: {
                 headers: {
+                    "Cache-Control": components["headers"]["CacheControlMedium"];
+                    Vary: components["headers"]["Vary"];
                     [name: string]: unknown;
                 };
                 content: {
@@ -7815,7 +8313,9 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
         };
     };
@@ -7858,6 +8358,17 @@ export interface operations {
             /** @description Business feature disabled */
             404: {
                 headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Over the per-account limit for this route. `Retry-After` says when to try again; see x-rate-limits. */
+            429: {
+                headers: {
+                    /** @description Seconds until the window resets, rounded up, never less than 1. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7933,6 +8444,17 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Over the per-account limit for this route. `Retry-After` says when to try again; see x-rate-limits. */
+            429: {
+                headers: {
+                    /** @description Seconds until the window resets, rounded up, never less than 1. */
+                    "Retry-After"?: number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
         };
     };
     deleteWebhook: {
@@ -7983,6 +8505,17 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
+            /** @description Over the per-account limit for this route. `Retry-After` says when to try again; see x-rate-limits. */
+            429: {
+                headers: {
+                    /** @description Seconds until the window resets, rounded up, never less than 1. */
+                    "Retry-After"?: number;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
         };
     };
     testWebhook: {
@@ -8027,6 +8560,17 @@ export interface operations {
             /** @description Webhook not found, or business feature disabled */
             404: {
                 headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Over the per-account limit for this route. `Retry-After` says when to try again; see x-rate-limits. */
+            429: {
+                headers: {
+                    /** @description Seconds until the window resets, rounded up, never less than 1. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {

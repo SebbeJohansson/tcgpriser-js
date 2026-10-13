@@ -15,7 +15,7 @@ A typed Node.js / browser client for the [tcgpriser.se](https://tcgpriser.se) AP
 - 🛠️ **Full IntelliSense** for every method and response field
 - 📦 **Zero runtime dependencies**, built on the standard `fetch` API, ships as ESM and CJS
 - ⏱️ **Timeouts and `AbortSignal`** on every call, with a sane default rather than none
-- 🔄 **Types stay in sync with the API**: `yarn generate:types` regenerates them from a live instance
+- 🔄 **Types stay in sync with the API**: `yarn generate:types` regenerates them from the released delivery contract
 
 ## Installation
 
@@ -745,7 +745,7 @@ Bundles to `dist/` as ESM, CJS and `.d.ts` with `tsup`.
 yarn generate:types
 ```
 
-Regenerates `src/generated/openapi.d.ts` from a live API instance (defaults to `http://localhost:5000`, the local dev server). Committed to the repo, not gitignored. Regenerate it, review the diff, commit it, same as `pris-tabell-ui` does for its own generated types.
+Regenerates `src/generated/openapi.d.ts` from contract 5.1.0 in the sibling `pris-tabell-contract` checkout. Pass a filesystem path or URL to use another source. This includes the contract 4.0.0 calendar-day `statDate` correction and the subsequent caching and redirect changes. Committed to the repo, not gitignored. Regenerate it, review the diff, commit it, same as `pris-tabell-ui` does for its own generated types.
 
 ### Test
 

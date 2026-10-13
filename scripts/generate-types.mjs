@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Regenerates `src/generated/openapi.d.ts` from a live API instance. Every wire type in
+ * Regenerates `src/generated/openapi.d.ts` from the released delivery contract (or an explicit URL). Every wire type in
  * `src/types/*.ts` derives from `components['schemas'][...]` in that file instead of being retyped
  * by hand. See README.md.
  *
@@ -11,21 +11,19 @@
  * Usage:
  *   yarn generate:types [specUrl]
  *
- * Defaults to the local dev server's premium spec (the broadest one; every schema the public tier
- * needs is a subset of it). Pass a URL to check against production instead:
+ * Defaults to the pinned released delivery contract in the sibling pris-tabell-contract checkout.
+ * Accepts a filesystem path, file:// URL or HTTP URL. No running API or database is needed:
+ *   yarn generate:types ../pris-tabell-contract/versions/5.1.0/delivery-openapi.json
  *   yarn generate:types https://api.tcgpriser.se/premium-openapi.json
- *
- * A `file://` URL works too, which is the offline route: `yarn dump-premium-spec <path>` in
- * pris-tabell-api writes the same document the server publishes without booting it, so the types
- * can be regenerated against an unreleased API branch with no server and no database.
  */
 import { mkdir, writeFile } from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import path from 'node:path';
 import ts from 'typescript';
 import openapiTS, { astToString } from 'openapi-typescript';
 
-const specUrl = process.argv[2] ?? 'http://localhost:5000/premium-openapi.json';
+const source = process.argv[2] ?? '../pris-tabell-contract/versions/5.1.0/delivery-openapi.json';
+const specUrl = /^[a-z]+:\/\//i.test(source) ? source : pathToFileURL(path.resolve(source)).href;
 const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'generated');
 const outFile = path.join(outDir, 'openapi.d.ts');
 
@@ -53,7 +51,7 @@ function nullToUndefined(context) {
  * the next reader. Name the dump instead of the machine it happened to sit on.
  */
 const sourceLabel = specUrl.startsWith('file://')
-  ? `${path.basename(new URL(specUrl).pathname)} (offline dump — pris-tabell-api \`yarn dump-premium-spec\`)`
+  ? path.relative(path.resolve(outDir, '../..'), fileURLToPath(specUrl))
   : specUrl;
 
 const { transformed, dispose } = ts.transform(ast, [nullToUndefined]);
@@ -63,7 +61,7 @@ dispose();
 await mkdir(outDir, { recursive: true });
 await writeFile(
   outFile,
-  `// GENERATED FILE - do not edit by hand.\n// Run \`yarn generate:types\` to regenerate from a live API instance.\n// Source: ${sourceLabel}\n\n${contents}`,
+  `// GENERATED FILE - do not edit by hand.\n// Run \`yarn generate:types\` to regenerate from the released delivery contract (or an explicit URL).\n// Source: ${sourceLabel}\n\n${contents}`,
 );
 
 console.log(`Wrote ${outFile} from ${sourceLabel}`);
