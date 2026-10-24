@@ -1,6 +1,6 @@
 // GENERATED FILE - do not edit by hand.
 // Run `yarn generate:types` to regenerate from the released delivery contract (or an explicit URL).
-// Source: ../pris-tabell-contract/versions/5.1.0/delivery-openapi.json
+// Source: ../pris-tabell-contract/versions/9.0.0/delivery-openapi.json
 
 export interface paths {
     "/bargains": {
@@ -13,6 +13,10 @@ export interface paths {
         /**
          * Latest Bargains
          * @description Returns the top 3 latest in-stock bargains (matches at least 10% below a reference price). Optionally filter by product type.
+         *
+         *     A bargain is a shop match at least 10% below its reference price, in stock, without a category mismatch, on an active shop URL and linked to an item that still exists; each (item, shop) pair contributes its newest match by `matchedAt`. `product.kind` is `card` when the item has a `cardNumber`. Ordered by discount descending, then `matchedAt` descending, then `_id` descending (until 9.0.0 ties had no defined order, and an item that no longer existed failed the response with 500).
+         *
+         *     The public list adds: at most 80% off, matched in the last 30 days, at most three rows; `hasMore` is true when three were returned. `type` is validated (until 9.0.0 any other value listed cards).
          */
         get: operations["listBargains"];
         put?: never;
@@ -34,6 +38,10 @@ export interface paths {
          * Bargain Search
          * @description Full paginated bargain search with filters for shop, reference source, discount minimum, card variant dimensions, and free-text search on product name.
          *     **Requires the `premium` level.**
+         *
+         *     A bargain is a shop match at least 10% below its reference price, in stock, without a category mismatch, on an active shop URL and linked to an item that still exists; each (item, shop) pair contributes its newest match by `matchedAt`. `product.kind` is `card` when the item has a `cardNumber`. Ordered by discount descending, then `matchedAt` descending, then `_id` descending (until 9.0.0 ties had no defined order, and an item that no longer existed failed the response with 500).
+         *
+         *     `search` is matched literally, ignoring case, anywhere in the item's name, technicalName or shortName (until 9.0.0 it was a regular expression, and an invalid one failed with 500). `shop` is the shop's technicalName (until 9.0.0 any value failed with 500). `inStock` is exactly true or false and defaults to true (until 9.0.0 `false` was read as true). Unknown parameters are ignored, as on every route (until 9.0.0 they were refused).
          */
         get: operations["searchBargains"];
         put?: never;
@@ -94,6 +102,8 @@ export interface paths {
         /**
          * Card Catalog
          * @description Content only — no pricing, no free-text search. Paginated, newest first. Use `GET /cards/search` to search by name, or `GET /cards/pricing` for prices across a batch of results.
+         *
+         *     Ordered by `createdAt` descending, then `_id` descending. The nested `expansion.brand` is the item's own brand, not looked up from the expansion; the two are the same for every item whose expansion belongs to its brand. An item with no expansion, or whose expansion document is gone, has `expansion: null`. An item whose brand document is gone fails the response with 500.
          */
         get: operations["listCards"];
         put?: never;
@@ -194,6 +204,8 @@ export interface paths {
         /**
          * Card Pricing (Batch)
          * @description Pricing for up to 200 cards at once, keyed by `id` — the batch counterpart to `GET /cards/{id}/pricing`, for a page of results (a search page, an expansion's contents) that needs pricing for many items in one request instead of one call per item.
+         *
+         *     A missing or empty `ids` is refused with 400 `validationFailed`, "Invalid query parameters", naming `ids` in the details, as every other missing required query parameter is (until 7.0.0 it had a message of its own and no details).
          */
         get: operations["getCardPricingBatch"];
         put?: never;
@@ -215,6 +227,8 @@ export interface paths {
          * Card Search
          * @description Content only — no pricing. Paginated, with `search` matching on word starts in the card name. Use `GET /cards/pricing` for prices across a batch of results.
          *     **Requires the `premium` level.**
+         *
+         *     `search` is split on whitespace; an item is listed when its name contains, for every word, that word at the start of a word, ignoring case. The words are matched literally. Results are ordered by `createdAt` descending, then `_id` descending.
          */
         get: operations["searchCards"];
         put?: never;
@@ -255,6 +269,8 @@ export interface paths {
         /**
          * Card Details
          * @description Content only — no pricing. See `GET /cards/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
+         *
+         *     The nested `expansion.brand` is the item's own brand, not looked up from the expansion; the two are the same for every item whose expansion belongs to its brand. An item with no expansion, or whose expansion document is gone, has `expansion: null`. An item whose brand document is gone fails the response with 500. A valid ObjectId matches by `_id` or technicalName; `brand` narrows a technicalName two brands share.
          */
         get: operations["getCard"];
         put?: never;
@@ -301,6 +317,8 @@ export interface paths {
         /**
          * Card Shop Matches
          * @description The latest match per shop for this card — the current shop price. History across time is the `/shop-match-stats` surface.
+         *
+         *     Rows with the same `updatedAt` are ordered by `_id`, descending (until 8.0.0 their order was undefined, so a page could repeat or skip one).
          */
         get: operations["listCardShopMatches"];
         put?: never;
@@ -385,6 +403,8 @@ export interface paths {
          * Card Reference Prices
          * @description Daily reference prices ingested from cmapi, grouped into one series per price dimension (provider, graded/non-graded, grading company + grade). Prices are in each provider's native currency — no SEK conversion is applied — so `currency` is per series.
          *     **Requires the `premium` level.**
+         *
+         *     Each series is one (source, provider, variant, cardType, gradingCompany, grade, currency) combination with a point per day, oldest first; a day with no row repeats the previous day's figure, from the series' first day through `to`. `sampleSize` is the latest row's. Series are ordered by provider, then ungraded before graded, then variant (normal, holo, reverse, then the rest), then grading company, then grade descending, then source; series equal on all of those keep the order their first row appeared in. A malformed `from` or `to` is refused as every date parameter is; any other invalid parameter with 400 "Invalid query parameters", naming every refused field (until 9.0.0 one custom message without details); and `from` later than `to` names `from`. `fromDate` and `toDate` are the range actually used.
          */
         get: operations["getCardReferencePrices"];
         put?: never;
@@ -405,6 +425,8 @@ export interface paths {
         /**
          * Expansion List
          * @description Every expansion we track, newest first. Metadata only — cards and sealed products are separate resources, see `GET /expansions/{technicalName}/cards`.
+         *
+         *     **A deleted brand fails the whole response.** Every expansion has a brand, and the mapper refuses one whose brand document no longer exists, so a single expansion pointing at a deleted brand makes this answer 500. That takes deleting a brand still in use, which nothing in the API does; it is stated so a second implementation fails the same way rather than inventing a recovery.
          */
         get: operations["listExpansions"];
         put?: never;
@@ -445,6 +467,8 @@ export interface paths {
         /**
          * Expansion Cards
          * @description Individual cards only. Sealed products (booster boxes, ETBs, tins, ...) are a separate resource — see `GET /expansions/{technicalName}/products`.
+         *
+         *     Ordered by card number, ascending: the number before a slash when `cardNumber` has one (`025/198` is 25), otherwise the first run of digits (`SV001` is 1), otherwise 0. Cards with the same number keep the order the database returned them in. Every card has a `cardNumber`; the model requires it. The nested `expansion.brand` is the item's own brand, not looked up from the expansion; the two are the same for every item whose expansion belongs to its brand. An item with no expansion, or whose expansion document is gone, has `expansion: null`. An item whose brand document is gone fails the response with 500.
          */
         get: operations["listExpansionCards"];
         put?: never;
@@ -510,6 +534,8 @@ export interface paths {
         /**
          * Expansion Products
          * @description Sealed products only. Individual cards are a separate resource — see `GET /expansions/{technicalName}/cards`.
+         *
+         *     Ordered by the number of shops carrying the product (its stored `pricingShopCount`, 0 when absent), descending. Products with the same count keep the order the database returned them in. The nested `expansion.brand` is the item's own brand, not looked up from the expansion; the two are the same for every item whose expansion belongs to its brand. An item with no expansion, or whose expansion document is gone, has `expansion: null`. An item whose brand document is gone fails the response with 500.
          */
         get: operations["listExpansionProducts"];
         put?: never;
@@ -551,6 +577,8 @@ export interface paths {
         /**
          * Expansion Release Group
          * @description The other expansions in this expansion's release group (e.g. a core set's variant drops), excluding the requested expansion itself. Empty `expansions` and null `releaseGroupName` when the expansion isn't part of a release group.
+         *
+         *     **A deleted brand fails the whole response.** Every expansion has a brand, and the mapper refuses one whose brand document no longer exists, so a single expansion pointing at a deleted brand makes this answer 500. That takes deleting a brand still in use, which nothing in the API does; it is stated so a second implementation fails the same way rather than inventing a recovery.
          */
         get: operations["getExpansionReleaseGroup"];
         put?: never;
@@ -571,6 +599,8 @@ export interface paths {
         /**
          * Pack Rate List
          * @description Returns the per-expansion pack pull-rate buckets. An expansion with no entry has no custom rates; consumers should fall back to defaults.
+         *
+         *     Rows with the same `updatedAt` are ordered by `_id`, descending (until 8.0.0 their order was undefined, so a page could repeat or skip one).
          */
         get: operations["listPackRates"];
         put?: never;
@@ -666,6 +696,12 @@ export interface paths {
          * Product Price Stats
          * @description The product's catalogue record and its computed price statistics together in one response.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     The item is a card whose `_id` or technicalName matches, else a sealed product whose `_id` or technicalName matches; a card wins when both do.
+         *
+         *     The item's nested `expansion.brand` is the item's own brand, as on the catalogue routes; an item without a live expansion has `expansion: null`.
+         *
+         *     `dailyStats` is every aggregate daily row, oldest first. `variantStats` counts the item's dimensioned rows: `variantCount` the distinct (cardType, itemCondition, gradingCompany, grade) combinations, `looseCount` and `gradedCount` the rows of each card type.
          */
         get: operations["getProductPriceStats"];
         put?: never;
@@ -687,6 +723,12 @@ export interface paths {
          * Price Stats by Variant
          * @description Price statistics split by card type, condition and grading, so a graded copy and a raw one are reported separately rather than averaged together. `days` sets the window.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     The item is looked up as a card by `_id`, then a sealed product by `_id`, then a card by technicalName, then a sealed product by technicalName; the first match wins.
+         *
+         *     The window is UTC: from midnight UTC `days` days before today through the end of today, UTC.
+         *
+         *     Loose rows are grouped by condition, graded rows by grading company and grade; rows missing those are left out. Each group's `averagePrice` is the plain mean of its rows' daily averages, summed in the order the database returns them and rounded to two places by the contract's standard rule (until 7.0.0, by `toFixed(2)`); `lastSaleDate` is its newest row's UTC date.
          */
         get: operations["getProductPriceStatsByVariant"];
         put?: never;
@@ -708,6 +750,10 @@ export interface paths {
          * Product Daily Price Stats
          * @description One aggregated price point per date for this product, over the last `days` days.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     The item is looked up as a card by `_id`, then a sealed product by `_id`, then a card by technicalName, then a sealed product by technicalName; the first match wins.
+         *
+         *     The window is UTC: from midnight UTC `days` days before today through the end of today, UTC.
          */
         get: operations["getProductDailyPriceStats"];
         put?: never;
@@ -729,6 +775,12 @@ export interface paths {
          * Daily Price Stats by Variant
          * @description One price point per date for a single variant, selected with `cardType`, `condition`, `gradingCompany` and `grade`. `days` sets the window.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     The item is looked up as a card by `_id`, then a sealed product by `_id`, then a card by technicalName, then a sealed product by technicalName; the first match wins.
+         *
+         *     The window is UTC: from midnight UTC `days` days before today through the end of today, UTC.
+         *
+         *     `condition` is required when `cardType` is `loose`, and `gradingCompany` and `grade` when it is `graded`. A missing one is refused with 400 `validationFailed`, "Invalid query parameters", naming it in the details as every other validated query does (until 7.0.0 these were custom messages without details).
          */
         get: operations["getProductDailyPriceStatsByVariant"];
         put?: never;
@@ -750,6 +802,10 @@ export interface paths {
          * Daily Price Stats (Last 30 Days)
          * @description Daily Tradera price averages for the last 30 days, one point per date. The window is fixed at 30 days — there is deliberately no query parameter for it.
          *     **Requires the `premium` level.**
+         *
+         *     The item is looked up as a card by `_id`, then a sealed product by `_id`, then a card by technicalName, then a sealed product by technicalName; the first match wins.
+         *
+         *     The window is UTC: from midnight UTC 30 days before today through the end of today, UTC.
          */
         get: operations["getProductDailyPriceStatsLast30"];
         put?: never;
@@ -793,6 +849,14 @@ export interface paths {
          * @description Combined endpoint that returns all product data in a single request for SSG optimization.
          *
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     The item is a card whose `_id` or technicalName matches, else a sealed product whose `_id` or technicalName matches; a card wins when both do.
+         *
+         *     The item's nested `expansion.brand` is the item's own brand, as on the catalogue routes; an item without a live expansion has `expansion: null`.
+         *
+         *     `stats` is as on `GET /price-stats/product/{id}`. `shopMatches` holds, for each shop, the match with the newest `matchedAt`; those are ordered by `updatedAt` descending and capped at 100, and the pagination always reports the whole list returned.
+         *
+         *     Rows with the same `updatedAt` are ordered by `_id`, descending (until 8.0.0 their order was undefined, so a page could repeat or skip one).
          */
         get: operations["getProductPriceStatsFull"];
         put?: never;
@@ -812,7 +876,9 @@ export interface paths {
         };
         /**
          * Top Products
-         * @description Returns top N products ranked by number of shop matches, used for build-time route generation
+         * @description Returns top N products ranked by number of shop matches, used for build-time route generation.
+         *
+         *     Sealed products carried by at least one shop, most shops first, ties by `_id`. `shopMatchCount` is the product's stored shop count (`pricingShopCount`) and `slug` its technicalName. Until 8.0.0 this read two fields nothing wrote, and answered an empty list.
          */
         get: operations["listTopProducts"];
         put?: never;
@@ -833,6 +899,8 @@ export interface paths {
         /**
          * Product Catalog
          * @description Content only — no pricing, no free-text search. Paginated, newest first. Use `GET /product/search` to search by name.
+         *
+         *     Ordered by `createdAt` descending, then `_id` descending. The nested `expansion.brand` is the item's own brand, not looked up from the expansion; the two are the same for every item whose expansion belongs to its brand. An item with no expansion, or whose expansion document is gone, has `expansion: null`. An item whose brand document is gone fails the response with 500.
          */
         get: operations["listProducts"];
         put?: never;
@@ -933,6 +1001,8 @@ export interface paths {
         /**
          * Product Pricing (Batch)
          * @description Pricing for up to 200 sealed products at once, keyed by `id` — the batch counterpart to `GET /product/{id}/pricing`, for a page of results (a search page, an expansion's contents) that needs pricing for many items in one request instead of one call per item.
+         *
+         *     A missing or empty `ids` is refused with 400 `validationFailed`, "Invalid query parameters", naming `ids` in the details, as every other missing required query parameter is (until 7.0.0 it had a message of its own and no details).
          */
         get: operations["getProductPricingBatch"];
         put?: never;
@@ -954,6 +1024,8 @@ export interface paths {
          * Product Search
          * @description `search` matches on word starts in the product name; multiple tokens must all match.
          *     **Requires the `premium` level.**
+         *
+         *     `search` is split on whitespace; an item is listed when its name contains, for every word, that word at the start of a word, ignoring case. The words are matched literally. Results are ordered by `createdAt` descending, then `_id` descending.
          */
         get: operations["searchProducts"];
         put?: never;
@@ -994,6 +1066,8 @@ export interface paths {
         /**
          * Product Details
          * @description Content only — no pricing. See `GET /product/{id}/pricing` for the current price snapshot, cached separately so it can stay fresh without invalidating this endpoint's long cache.
+         *
+         *     The nested `expansion.brand` is the item's own brand, not looked up from the expansion; the two are the same for every item whose expansion belongs to its brand. An item with no expansion, or whose expansion document is gone, has `expansion: null`. An item whose brand document is gone fails the response with 500. A valid ObjectId matches by `_id` or technicalName; `brand` narrows a technicalName two brands share.
          */
         get: operations["getProduct"];
         put?: never;
@@ -1014,6 +1088,8 @@ export interface paths {
         /**
          * Product Shop Matches
          * @description The latest match per shop for this product — the current shop price. History across time is the `/shop-match-stats` surface.
+         *
+         *     Rows with the same `updatedAt` are ordered by `_id`, descending (until 8.0.0 their order was undefined, so a page could repeat or skip one).
          */
         get: operations["listProductShopMatches"];
         put?: never;
@@ -1098,6 +1174,8 @@ export interface paths {
          * Product Reference Prices
          * @description Daily reference prices ingested from cmapi, grouped into one series per price dimension. Sealed products have no graded/non-graded split, so `cardType` is null on every series. Prices are in each provider's native currency — no SEK conversion is applied.
          *     **Requires the `premium` level.**
+         *
+         *     Each series is one (source, provider, variant, cardType, gradingCompany, grade, currency) combination with a point per day, oldest first; a day with no row repeats the previous day's figure, from the series' first day through `to`. `sampleSize` is the latest row's. Series are ordered by provider, then ungraded before graded, then variant (normal, holo, reverse, then the rest), then grading company, then grade descending, then source; series equal on all of those keep the order their first row appeared in. A malformed `from` or `to` is refused as every date parameter is; any other invalid parameter with 400 "Invalid query parameters", naming every refused field (until 9.0.0 one custom message without details); and `from` later than `to` names `from`. `fromDate` and `toDate` are the range actually used.
          */
         get: operations["getProductReferencePrices"];
         put?: never;
@@ -1119,6 +1197,10 @@ export interface paths {
          * Shop Price Comparison
          * @description What each shop charged for one product on a given `date`, side by side.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     The item is looked up as a card by `_id`, then a sealed product by `_id`, then a card by technicalName, then a sealed product by technicalName.
+         *
+         *     A missing `productId` is refused with 400 in the standard envelope naming it (until 9.0.0 it had a message of its own). Without `date`, each shop's newest snapshot; with it, the snapshots of that day. Rows are ordered by price, ties by shop technicalName (until 9.0.0 ties had no defined order). A shop whose document is gone is named by its id (until 9.0.0 its row had no `shop` at all). `stats` covers the in-stock rows and is null when there are none; its `averagePrice` is rounded by the contract's standard rule.
          */
         get: operations["compareShopPrices"];
         put?: never;
@@ -1140,6 +1222,12 @@ export interface paths {
          * Price History by Product
          * @description How one product's price moved at each shop over time, optionally narrowed to a date range or a single `shop`.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     The item is looked up as a card by `_id`, then a sealed product by `_id`, then a card by technicalName, then a sealed product by technicalName.
+         *
+         *     An invalid `startDate` or `endDate` is refused with 400, as on every date parameter (until 9.0.0 it was ignored and the range left open).
+         *
+         *     `shops` lists each shop in the order its first snapshot appears when the snapshots are ordered by date then shop; a shop whose document is gone is named by its id. An unknown `shop` filter lists nothing.
          */
         get: operations["getProductShopPriceHistory"];
         put?: never;
@@ -1161,6 +1249,10 @@ export interface paths {
          * Price History by Shop
          * @description How every product's price moved at one shop over time, optionally narrowed to a date range.
          *     **Requires the `premium` level.** The same credential as any signed-in request, plus an active or trialing subscription — a valid token without one is answered 403 `premiumRequired`. A `ServiceToken` from `API_AUTH_TOKENS` is accepted in place of the subscription, so our own back-end services can read this without holding a seat.
+         *
+         *     An invalid `startDate` or `endDate` is refused with 400, as on every date parameter (until 9.0.0 it was ignored and the range left open).
+         *
+         *     Items are ordered by their latest snapshot date, newest first, ties by item `_id` (until 9.0.0 ties had no defined order). Snapshots for an item no longer in the catalogue are left out. An unknown shop answers an empty list, echoing the slug as requested.
          */
         get: operations["getShopPriceHistory"];
         put?: never;
@@ -1181,6 +1273,14 @@ export interface paths {
         /**
          * Shop Match List
          * @description The latest match per shop url — the current shop price. History across time is the `/shop-match-stats` surface.
+         *
+         *     Each (url, shop) pair contributes its newest match by `updatedAt`, and only matches whose shop URL is active are listed, newest `updatedAt` first.
+         *
+         *     `item` is the matched card or sealed product (a card when it has a `cardNumber`), or null when the match is unlinked or its item is gone. `scrapedName`, `expansion` and `category` come from the match's shop URL, not from the item. Until 8.0.0 a match linked to a card always had `item: null`.
+         *
+         *     An unknown `shop` lists nothing rather than everything.
+         *
+         *     Rows with the same `updatedAt` are ordered by `_id`, descending (until 8.0.0 their order was undefined, so a page could repeat or skip one).
          */
         get: operations["listShopMatches"];
         put?: never;
@@ -1201,6 +1301,8 @@ export interface paths {
         /**
          * Shops with Match Counts
          * @description Every shop we have matches for, with a count based on the latest record per url only, so the number is current stock rather than all history.
+         *
+         *     One row per shop with active matches, counted over each URL's newest match, ordered by the shop's technicalName.
          */
         get: operations["listShopMatchShops"];
         put?: never;
@@ -1221,6 +1323,14 @@ export interface paths {
         /**
          * Shop Matches by Shop
          * @description The latest match per shop url — the current shop price. History across time is the `/shop-match-stats` surface.
+         *
+         *     Each (url, shop) pair contributes its newest match by `updatedAt`, and only matches whose shop URL is active are listed, newest `updatedAt` first.
+         *
+         *     `item` is the matched card or sealed product (a card when it has a `cardNumber`), or null when the match is unlinked or its item is gone. `scrapedName`, `expansion` and `category` come from the match's shop URL, not from the item. Until 8.0.0 a match linked to a card always had `item: null`.
+         *
+         *     An unknown shop is an empty list, with `shop` echoing the requested slug and its name null.
+         *
+         *     Rows with the same `updatedAt` are ordered by `_id`, descending (until 8.0.0 their order was undefined, so a page could repeat or skip one).
          */
         get: operations["listShopMatchesForShop"];
         put?: never;
@@ -1458,6 +1568,7 @@ export interface components {
                 imageUrl: string | undefined;
             };
             bargain: {
+                /** @description At least 10 — a smaller discount is not reported as a bargain, and the field is null instead. */
                 discountPercent: number;
                 /** @enum {string} */
                 referenceSource: "retail" | "tradera" | "cardmarket";
@@ -1914,13 +2025,15 @@ export interface components {
         ItemReferencePrices: {
             item: components["schemas"]["CatalogItemRef"];
             /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
+             * Format: date
+             * @description The first day of the range used, UTC, as YYYY-MM-DD. Declared `date-time` until 9.0.0, which no response ever matched.
+             * @example 2026-07-15
              */
             fromDate: string;
             /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
+             * Format: date
+             * @description The last day of the range used, UTC, as YYYY-MM-DD. Declared `date-time` until 9.0.0, which no response ever matched.
+             * @example 2026-07-15
              */
             toDate: string;
             /** @enum {string} */
@@ -2014,6 +2127,7 @@ export interface components {
              */
             updatedAt: string;
             bargain: {
+                /** @description At least 10 — a smaller discount is not reported as a bargain, and the field is null instead. */
                 discountPercent: number;
                 /** @enum {string} */
                 referenceSource: "retail" | "tradera" | "cardmarket";
@@ -2410,6 +2524,7 @@ export interface components {
             fullyBookedCount: number | undefined;
             /**
              * Format: date-time
+             * @description When the shop's newest active match was last updated, or null when it has none. Until 6.0.0 a shop with no matches reported its own creation time here.
              * @example 2026-07-15T12:03:29.322Z
              */
             lastMatchedAt: string | undefined;
@@ -2510,6 +2625,7 @@ export interface components {
              */
             updatedAt: string;
             bargain: {
+                /** @description At least 10 — a smaller discount is not reported as a bargain, and the field is null instead. */
                 discountPercent: number;
                 /** @enum {string} */
                 referenceSource: "retail" | "tradera" | "cardmarket";
@@ -2532,8 +2648,9 @@ export interface components {
             inStock: boolean;
             url: string;
             /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
+             * Format: date
+             * @description The calendar day, UTC, as YYYY-MM-DD. Declared `date-time` until 9.0.0, which no response ever matched.
+             * @example 2026-07-15
              */
             snapshotDate: string;
         };
@@ -2558,8 +2675,9 @@ export interface components {
         };
         ShopPricePoint: {
             /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
+             * Format: date
+             * @description The calendar day, UTC, as YYYY-MM-DD. Declared `date-time` until 9.0.0, which no response ever matched.
+             * @example 2026-07-15
              */
             snapshotDate: string;
             /** @example 149.5 */
@@ -2618,6 +2736,7 @@ export interface components {
              */
             updatedAt: string;
             bargain: {
+                /** @description At least 10 — a smaller discount is not reported as a bargain, and the field is null instead. */
                 discountPercent: number;
                 /** @enum {string} */
                 referenceSource: "retail" | "tradera" | "cardmarket";
@@ -2746,8 +2865,9 @@ export interface components {
             averagePrice: number;
             dataPointCount: number;
             /**
-             * Format: date-time
-             * @example 2026-07-15T12:03:29.322Z
+             * Format: date
+             * @description The newest row's calendar day, UTC, as YYYY-MM-DD. Declared `date-time` until 7.0.0, which no response ever matched.
+             * @example 2026-07-15
              */
             lastSaleDate: string;
         };
@@ -3081,6 +3201,15 @@ export interface operations {
                     "application/json": components["schemas"]["BargainListResponse"];
                 };
             };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Server error */
             500: {
                 headers: {
@@ -3104,17 +3233,17 @@ export interface operations {
                 referenceSource?: "retail" | "tradera" | "cardmarket";
                 /** @description Minimum discount percentage (default 10) */
                 minDiscount?: number;
-                /** @description Filter by stock status (default true) */
+                /** @description Exactly true or false; anything else is refused with 400. Defaults to true. */
                 inStock?: boolean;
                 /** @description Card variant filter */
                 cardType?: "loose" | "graded";
                 /** @description Card condition filter */
                 itemCondition?: "NM" | "LP" | "MP" | "HP" | "DMG";
                 /** @description Grading company filter */
-                gradingCompany?: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "TAG" | "GMA";
+                gradingCompany?: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA";
                 /** @description Numeric grade filter */
                 grade?: number;
-                /** @description Free-text search on product name / technicalName */
+                /** @description Words to find in the name, at most 200 characters after trimming. */
                 search?: string;
             };
             header?: never;
@@ -3468,6 +3597,24 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid query parameters, or a `brand` that names no brand (`Unknown brand`, with `{ field: brand, message: <value> }` in details). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
         };
     };
     listCardDailyPriceStats: {
@@ -3695,6 +3842,7 @@ export interface operations {
     searchCards: {
         parameters: {
             query?: {
+                /** @description Words to find in the name, at most 200 characters after trimming. */
                 search?: string;
                 limit?: number;
                 skip?: number;
@@ -3866,8 +4014,26 @@ export interface operations {
                     "application/json": components["schemas"]["Card"];
                 };
             };
+            /** @description Invalid query parameters, or a `brand` that names no brand (`Unknown brand`, with `{ field: brand, message: <value> }` in details). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Card not found */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description Server error */
+            500: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -4305,18 +4471,30 @@ export interface operations {
     getCardReferencePrices: {
         parameters: {
             query?: {
-                /** @description Rolling window ending today. Ignored when from/to are supplied. */
+                /** @description How many days back from today, today included. A whole number from 1 to 730. Ignored when from or to is given. */
                 days?: number;
-                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                /** @description First day of the range. Defaults to 29 days before to. Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 from?: string;
-                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                /** @description Last day of the range. Defaults to today (UTC). Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 to?: string;
+                /** @description Only rows from this pipeline. */
+                source?: "tcgdex" | "cmapi" | "tradera" | "pokemonpricetracker" | "scryfall";
+                /** @description Only rows for this marketplace. */
                 provider?: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
+                /** @description Only rows for this printing. */
+                variant?: "normal" | "holo" | "reverse" | "foil";
+                /** @description Only loose or only graded rows. */
                 cardType?: "loose" | "graded";
+                /** @description Which figure each point carries. Rows without it are left out. */
+                metric?: "price" | "low" | "mid" | "high" | "avg" | "avg1" | "avg7" | "avg30" | "directLow";
+                /** @description native keeps each row in its own currency; sek converts, rounding by the standard rule. */
+                currency?: "native" | "sek";
+                /** @description Price rows or supply rows. */
+                rowKind?: "price" | "supply";
             };
             header?: never;
             path: {
-                /** @description Card _id or technicalName */
+                /** @description Card `_id` or technicalName */
                 id: string;
             };
             cookie?: never;
@@ -4519,6 +4697,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description The brand named in `brand` does not exist. Details carry the value given, as `{ field: brand, message: <value> }`. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Server error */
             500: {
                 headers: {
@@ -4554,19 +4741,25 @@ export interface operations {
                     "application/json": components["schemas"]["ExpansionRef"];
                 };
             };
-            /** @description Multiple expansions found with the same name (legacy slug) - returns options to choose from */
+            /** @description Several language-prefixed expansions match the legacy slug. Error details contain options with name, language, technicalName and URL. */
             300: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
-            /** @description Redirect to the new URL format (when a unique legacy slug is found) */
+            /** @description One language-prefixed expansion matches a legacy slug. Redirect to the expansion. */
             301: {
                 headers: {
+                    Location: string;
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "text/plain": string;
+                    "text/html": string;
+                };
             };
             /** @description Expansion not found */
             404: {
@@ -4611,22 +4804,29 @@ export interface operations {
                 content: {
                     "application/json": {
                         data?: components["schemas"]["Card"][];
+                        pagination?: components["schemas"]["PageMeta"];
                     };
                 };
             };
-            /** @description Multiple expansions found with the same name (legacy slug) - returns options to choose from */
+            /** @description Several language-prefixed expansions match the legacy slug. Error details contain options with name, language, technicalName and cards URL. */
             300: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
-            /** @description Redirect to the new URL format (when a unique legacy slug is found) */
+            /** @description One language-prefixed expansion matches a legacy slug. Redirect to its cards route. */
             301: {
                 headers: {
+                    Location: string;
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "text/plain": string;
+                    "text/html": string;
+                };
             };
             /** @description Expansion not found */
             404: {
@@ -4862,22 +5062,29 @@ export interface operations {
                      */
                     "application/json": {
                         data?: components["schemas"]["Product"][];
+                        pagination?: components["schemas"]["PageMeta"];
                     };
                 };
             };
-            /** @description Multiple expansions found with the same name (legacy slug) - returns options to choose from */
+            /** @description Several language-prefixed expansions match the legacy slug. Error details contain options with name, language, technicalName and products URL. */
             300: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
             };
-            /** @description Redirect to the new URL format (when a unique legacy slug is found) */
+            /** @description One language-prefixed expansion matches a legacy slug. Redirect to its products route. */
             301: {
                 headers: {
+                    Location: string;
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "text/plain": string;
+                    "text/html": string;
+                };
             };
             /** @description Expansion not found */
             404: {
@@ -5011,6 +5218,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExpansionReleaseGroup"];
+                };
+            };
+            /** @description Several language-prefixed expansions match the legacy slug. Error details contain options with name, language, technicalName and release-group URL. */
+            300: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** @description One language-prefixed expansion matches a legacy slug. Redirect to its release-group route. */
+            301: {
+                headers: {
+                    Location: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/plain": string;
+                    "text/html": string;
                 };
             };
             /** @description Expansion not found */
@@ -5395,7 +5622,7 @@ export interface operations {
     getProductPriceStatsByVariant: {
         parameters: {
             query?: {
-                /** @description Number of days to include in average calculation */
+                /** @description Number of days to look back, a whole number of at least 1. Anything else is refused with 400. */
                 days?: number;
             };
             header?: never;
@@ -5478,7 +5705,7 @@ export interface operations {
     getProductDailyPriceStats: {
         parameters: {
             query?: {
-                /** @description Number of days to retrieve (from today backwards) */
+                /** @description Number of days to look back, a whole number of at least 1. Anything else is refused with 400. */
                 days?: number;
             };
             header?: never;
@@ -5578,10 +5805,10 @@ export interface operations {
                 /** @description Card condition (required for loose cards) */
                 condition?: "NM" | "LP" | "MP" | "HP" | "DMG";
                 /** @description Grading company (required for graded cards) */
-                gradingCompany?: "PSA" | "BGS" | "CGC" | "SGC" | "ACE";
+                gradingCompany?: "PSA" | "BGS" | "CGC" | "SGC" | "ACE" | "RAUKCARD" | "TAG" | "GMA";
                 /** @description Grade number (required for graded cards) */
                 grade?: number;
-                /** @description Number of days to retrieve */
+                /** @description Number of days to look back, a whole number of at least 1. Anything else is refused with 400. */
                 days?: number;
             };
             header?: never;
@@ -6147,6 +6374,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Server error */
             500: {
                 headers: {
@@ -6602,7 +6838,7 @@ export interface operations {
     searchProducts: {
         parameters: {
             query?: {
-                /** @description Whitespace-separated tokens, each matched against the start of a word */
+                /** @description Words to find in the name, at most 200 characters after trimming. */
                 search?: string;
                 limit?: number;
                 skip?: number;
@@ -6770,6 +7006,15 @@ export interface operations {
                      *     }
                      */
                     "application/json": components["schemas"]["Product"];
+                };
+            };
+            /** @description Invalid query parameters, or a `brand` that names no brand (`Unknown brand`, with `{ field: brand, message: <value> }` in details). */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             /** @description Product not found */
@@ -7215,17 +7460,30 @@ export interface operations {
     getProductReferencePrices: {
         parameters: {
             query?: {
-                /** @description Rolling window ending today. Ignored when from/to are supplied. */
+                /** @description How many days back from today, today included. A whole number from 1 to 730. Ignored when from or to is given. */
                 days?: number;
-                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                /** @description First day of the range. Defaults to 29 days before to. Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 from?: string;
-                /** @description Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
+                /** @description Last day of the range. Defaults to today (UTC). Must be YYYY-MM-DD and a real calendar day (UTC); anything else, unpadded or with trailing characters or a day the month lacks, is refused with 400. */
                 to?: string;
+                /** @description Only rows from this pipeline. */
+                source?: "tcgdex" | "cmapi" | "tradera" | "pokemonpricetracker" | "scryfall";
+                /** @description Only rows for this marketplace. */
                 provider?: "cardmarket" | "tcgplayer" | "ebay" | "tradera";
+                /** @description Only rows for this printing. */
+                variant?: "normal" | "holo" | "reverse" | "foil";
+                /** @description Only loose or only graded rows. */
+                cardType?: "loose" | "graded";
+                /** @description Which figure each point carries. Rows without it are left out. */
+                metric?: "price" | "low" | "mid" | "high" | "avg" | "avg1" | "avg7" | "avg30" | "directLow";
+                /** @description native keeps each row in its own currency; sek converts, rounding by the standard rule. */
+                currency?: "native" | "sek";
+                /** @description Price rows or supply rows. */
+                rowKind?: "price" | "supply";
             };
             header?: never;
             path: {
-                /** @description Product _id or technicalName */
+                /** @description Product `_id` or technicalName */
                 id: string;
             };
             cookie?: never;
@@ -7361,6 +7619,15 @@ export interface operations {
                     "application/json": components["schemas"]["ItemPriceComparison"];
                 };
             };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Missing or invalid bearer token */
             401: {
                 headers: {
@@ -7446,6 +7713,15 @@ export interface operations {
                     "application/json": components["schemas"]["ItemShopPriceHistory"];
                 };
             };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Missing or invalid bearer token */
             401: {
                 headers: {
@@ -7528,6 +7804,15 @@ export interface operations {
                     "application/json": components["schemas"]["ShopPriceHistoryList"];
                 };
             };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Missing or invalid bearer token */
             401: {
                 headers: {
@@ -7571,9 +7856,9 @@ export interface operations {
             query?: {
                 /** @description Filter by shop name */
                 shop?: string;
-                /** @description Filter by stock status */
+                /** @description Exactly true or false; anything else is refused with 400. Until 8.0.0 every value but true was read as false. */
                 inStock?: boolean;
-                /** @description Filter by whether product is linked */
+                /** @description Exactly true or false; anything else is refused with 400. Until 8.0.0 every value but true was read as false. */
                 linked?: boolean;
                 /** @description Items per page. Not validated: a value above 50 is treated as 50, a negative one as 1, and a missing, zero or non-numeric one as 20. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
@@ -7702,6 +7987,15 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
             /** @description Server error */
             500: {
                 headers: {
@@ -7811,11 +8105,21 @@ export interface operations {
                     };
                 };
             };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
+                };
+            };
         };
     };
     listShopMatchesForShop: {
         parameters: {
             query?: {
+                /** @description Exactly true or false; anything else is refused with 400. Until 8.0.0 every value but true was read as false. */
                 inStock?: boolean;
                 /** @description Items per page. Not validated: a value above 500 is treated as 500, a negative one as 1, and a missing, zero or non-numeric one as 100. A number that is not a whole number (2.5) is refused with 400. */
                 limit?: number;
@@ -7948,6 +8252,15 @@ export interface operations {
                      *     }
                      */
                     "application/json": components["schemas"]["ShopMatchesForShop"];
+                };
+            };
+            /** @description Invalid query parameters. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             /** @description Server error */
@@ -8083,7 +8396,7 @@ export interface operations {
     listShops: {
         parameters: {
             query?: {
-                /** @description Filter by active status */
+                /** @description Filter by active status. Exactly true or false; anything else (TRUE, 1, yes) is refused with 400. Until 6.0.0 every value but true filtered to inactive shops. */
                 active?: boolean;
             };
             header?: never;

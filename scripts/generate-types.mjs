@@ -13,7 +13,7 @@
  *
  * Defaults to the pinned released delivery contract in the sibling pris-tabell-contract checkout.
  * Accepts a filesystem path, file:// URL or HTTP URL. No running API or database is needed:
- *   yarn generate:types ../pris-tabell-contract/versions/5.1.0/delivery-openapi.json
+ *   yarn generate:types ../pris-tabell-contract/versions/9.0.0/delivery-openapi.json
  *   yarn generate:types https://api.tcgpriser.se/premium-openapi.json
  */
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -22,7 +22,7 @@ import path from 'node:path';
 import ts from 'typescript';
 import openapiTS, { astToString } from 'openapi-typescript';
 
-const source = process.argv[2] ?? '../pris-tabell-contract/versions/5.1.0/delivery-openapi.json';
+const source = process.argv[2] ?? '../pris-tabell-contract/versions/9.0.0/delivery-openapi.json';
 const specUrl = /^[a-z]+:\/\//i.test(source) ? source : pathToFileURL(path.resolve(source)).href;
 const outDir = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'src', 'generated');
 const outFile = path.join(outDir, 'openapi.d.ts');

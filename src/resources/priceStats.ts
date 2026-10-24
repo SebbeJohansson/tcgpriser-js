@@ -55,12 +55,12 @@ export interface TopProductsParams extends RequestOptions {
 }
 
 export interface ProductDailyStatsParams extends RequestOptions {
-  /** Number of days to retrieve, from today backwards. Default 30. */
+  /** Number of days to retrieve, from today backwards (UTC). A whole number of at least 1; default 30. */
   days?: number;
 }
 
 export interface ProductByVariantParams extends RequestOptions {
-  /** Number of days to include in the average calculation. Default 30. */
+  /** Number of days to include in the average calculation (UTC). A whole number of at least 1; default 30. */
   days?: number;
 }
 

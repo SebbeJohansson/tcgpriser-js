@@ -20,7 +20,7 @@ export interface SearchBargainsParams extends PaginationParams {
   shop?: string;
   /** Filter by which reference price source qualified the bargain. */
   referenceSource?: BargainReferenceSource;
-  /** Minimum discount percentage. Default 10. */
+  /** Minimum discount percentage. Default and lowest allowed value 10; below that is refused with 400. */
   minDiscount?: number;
   /** Default `true`. */
   inStock?: boolean;
@@ -28,7 +28,8 @@ export interface SearchBargainsParams extends PaginationParams {
   itemCondition?: ItemCondition;
   gradingCompany?: GradingCompany;
   grade?: number;
-  /** Free-text search on product name / technicalName. */
+  /** Literal text (not a pattern) matched case-insensitively in the item's name, technicalName or
+   * shortName. */
   search?: string;
 }
 
