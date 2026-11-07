@@ -1,6 +1,6 @@
 // GENERATED FILE - do not edit by hand.
 // Run `yarn generate:types` to regenerate from the released delivery contract (or an explicit URL).
-// Source: ../pris-tabell-contract/versions/9.0.0/delivery-openapi.json
+// Source: ../pris-tabell-contract/versions/10.0.0/delivery-openapi.json
 
 export interface paths {
     "/bargains": {
@@ -14,7 +14,7 @@ export interface paths {
          * Latest Bargains
          * @description Returns the top 3 latest in-stock bargains (matches at least 10% below a reference price). Optionally filter by product type.
          *
-         *     A bargain is a shop match at least 10% below its reference price, in stock, without a category mismatch, on an active shop URL and linked to an item that still exists; each (item, shop) pair contributes its newest match by `matchedAt`. `product.kind` is `card` when the item has a `cardNumber`. Ordered by discount descending, then `matchedAt` descending, then `_id` descending (until 9.0.0 ties had no defined order, and an item that no longer existed failed the response with 500).
+         *     A bargain is a shop match at least 10% below its reference price, in stock, without a category mismatch, on an active shop URL and linked to an item that still exists; each (item, shop) pair contributes its newest match by `matchedAt`, then highest `_id`. `product.kind` is `card` when the item has a `cardNumber`. Ordered by discount descending, then `matchedAt` descending, then `_id` descending (until 9.0.0 ties had no defined order, and an item that no longer existed failed the response with 500).
          *
          *     The public list adds: at most 80% off, matched in the last 30 days, at most three rows; `hasMore` is true when three were returned. `type` is validated (until 9.0.0 any other value listed cards).
          */
@@ -39,7 +39,7 @@ export interface paths {
          * @description Full paginated bargain search with filters for shop, reference source, discount minimum, card variant dimensions, and free-text search on product name.
          *     **Requires the `premium` level.**
          *
-         *     A bargain is a shop match at least 10% below its reference price, in stock, without a category mismatch, on an active shop URL and linked to an item that still exists; each (item, shop) pair contributes its newest match by `matchedAt`. `product.kind` is `card` when the item has a `cardNumber`. Ordered by discount descending, then `matchedAt` descending, then `_id` descending (until 9.0.0 ties had no defined order, and an item that no longer existed failed the response with 500).
+         *     A bargain is a shop match at least 10% below its reference price, in stock, without a category mismatch, on an active shop URL and linked to an item that still exists; each (item, shop) pair contributes its newest match by `matchedAt`, then highest `_id`. `product.kind` is `card` when the item has a `cardNumber`. Ordered by discount descending, then `matchedAt` descending, then `_id` descending (until 9.0.0 ties had no defined order, and an item that no longer existed failed the response with 500).
          *
          *     `search` is matched literally, ignoring case, anywhere in the item's name, technicalName or shortName (until 9.0.0 it was a regular expression, and an invalid one failed with 500). `shop` is the shop's technicalName (until 9.0.0 any value failed with 500). `inStock` is exactly true or false and defaults to true (until 9.0.0 `false` was read as true). Unknown parameters are ignored, as on every route (until 9.0.0 they were refused).
          */
@@ -124,6 +124,10 @@ export interface paths {
         /**
          * Card Daily Price Stats
          * @description Cards only — the sealed-product equivalent is `GET /product/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Card` collection.
+         *
+         *     **A filter that matches nothing is not ignored.** A named criterion or a `brand` that resolves to no
+         *     items answers 404. A scope with no items to narrow to — a `productLine`, an existing `brand` given
+         *     alone, or the hostname's vertical — answers an empty list with `pagination.total` 0.
          */
         get: operations["listCardDailyPriceStats"];
         put?: never;
@@ -150,10 +154,10 @@ export interface paths {
          *     expansion y — not with x only if it is in y. `brand` and `productLine` are the exception: they
          *     narrow every other criterion rather than adding to it.
          *
-         *     **A filter that matches nothing returns everything.** If a criterion is supplied and resolves to no
-         *     items — an unknown brand, a category slug that does not exist — the filter is discarded and the
-         *     response covers the whole catalogue. It does **not** return an empty list. Check `pagination.total`
-         *     before assuming a filter was applied.
+         *     **A filter that matches nothing is not ignored.** A named criterion or a `brand` that resolves to no
+         *     items — an unknown brand, a category slug that does not exist — answers 404. A scope with no items
+         *     to narrow to — a `productLine`, an existing `brand` given alone, or the hostname's vertical — answers
+         *     an empty list with `pagination.total` 0.
          *
          *     **Items with no price history are omitted from the page.** `pagination.total` counts the items the
          *     filter selected, including ones with no estimate, so a page can be shorter than its `limit` while
@@ -641,6 +645,10 @@ export interface paths {
         /**
          * Daily Price Stats
          * @description Daily Tradera price averages across products, one point per date. Cards and sealed products each have a scoped equivalent — `GET /cards/price-stats/daily` and `GET /product/price-stats/daily`.
+         *
+         *     **A filter that matches nothing is not ignored.** A named criterion or a `brand` that resolves to no
+         *     items answers 404. A scope with no items to narrow to — a `productLine`, an existing `brand` given
+         *     alone, or the hostname's vertical — answers an empty list with `pagination.total` 0.
          */
         get: operations["listDailyPriceStats"];
         put?: never;
@@ -667,10 +675,10 @@ export interface paths {
          *     expansion y — not with x only if it is in y. `brand` and `productLine` are the exception: they
          *     narrow every other criterion rather than adding to it.
          *
-         *     **A filter that matches nothing returns everything.** If a criterion is supplied and resolves to no
-         *     items — an unknown brand, a category slug that does not exist — the filter is discarded and the
-         *     response covers the whole catalogue. It does **not** return an empty list. Check `pagination.total`
-         *     before assuming a filter was applied.
+         *     **A filter that matches nothing is not ignored.** A named criterion or a `brand` that resolves to no
+         *     items — an unknown brand, a category slug that does not exist — answers 404. A scope with no items
+         *     to narrow to — a `productLine`, an existing `brand` given alone, or the hostname's vertical — answers
+         *     an empty list with `pagination.total` 0.
          *
          *     **Items with no price history are omitted from the page.** `pagination.total` counts the items the
          *     filter selected, including ones with no estimate, so a page can be shorter than its `limit` while
@@ -921,6 +929,10 @@ export interface paths {
         /**
          * Sealed Product Daily Price Stats
          * @description Sealed products only — the card equivalent is `GET /cards/price-stats/daily`. Same filters and shape as `GET /price-stats/daily`, scoped to the `Product` collection.
+         *
+         *     **A filter that matches nothing is not ignored.** A named criterion or a `brand` that resolves to no
+         *     items answers 404. A scope with no items to narrow to — a `productLine`, an existing `brand` given
+         *     alone, or the hostname's vertical — answers an empty list with `pagination.total` 0.
          */
         get: operations["listProductDailyPriceStats"];
         put?: never;
@@ -947,10 +959,10 @@ export interface paths {
          *     expansion y — not with x only if it is in y. `brand` and `productLine` are the exception: they
          *     narrow every other criterion rather than adding to it.
          *
-         *     **A filter that matches nothing returns everything.** If a criterion is supplied and resolves to no
-         *     items — an unknown brand, a category slug that does not exist — the filter is discarded and the
-         *     response covers the whole catalogue. It does **not** return an empty list. Check `pagination.total`
-         *     before assuming a filter was applied.
+         *     **A filter that matches nothing is not ignored.** A named criterion or a `brand` that resolves to no
+         *     items — an unknown brand, a category slug that does not exist — answers 404. A scope with no items
+         *     to narrow to — a `productLine`, an existing `brand` given alone, or the hostname's vertical — answers
+         *     an empty list with `pagination.total` 0.
          *
          *     **Items with no price history are omitted from the page.** `pagination.total` counts the items the
          *     filter selected, including ones with no estimate, so a page can be shorter than its `limit` while
@@ -3640,6 +3652,12 @@ export interface operations {
                 categoryId?: string;
                 /** @description Expansion ID (ObjectId) */
                 expansionId?: string;
+                /** @description Brand technicalName. A scope, not a criterion of its own — it narrows every other criterion to this brand, and alone lists the brand's items. A brand that does not exist matches nothing. */
+                brand?: string;
+                /** @description Brand `_id`, tried before `brand`. The same scope. */
+                brandId?: string;
+                /** @description The same kind of scope, by product line. Replaces the hostname's vertical rather than combining with it (see `x-verticals`). */
+                productLine?: "tcg" | "accessory" | "collectible" | "boardGame" | "videoGame" | "other";
             };
             header?: never;
             path?: never;
@@ -3705,6 +3723,12 @@ export interface operations {
                 category?: string;
                 /** @description Expansion technical name */
                 expansion?: string;
+                /** @description Brand technicalName. A scope, not a criterion of its own — it narrows every other criterion to this brand, and alone lists the brand's items. A brand that does not exist matches nothing. */
+                brand?: string;
+                /** @description Brand `_id`, tried before `brand`. The same scope. */
+                brandId?: string;
+                /** @description The same kind of scope, by product line. Replaces the hostname's vertical rather than combining with it (see `x-verticals`). */
+                productLine?: "tcg" | "accessory" | "collectible" | "boardGame" | "videoGame" | "other";
             };
             header?: never;
             path?: never;
@@ -3724,6 +3748,15 @@ export interface operations {
                         data?: components["schemas"]["ItemEstimatedValue"][];
                         pagination?: components["schemas"]["PageMeta"];
                     };
+                };
+            };
+            /** @description A named criterion or brand matched nothing */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             /** @description Server error */
@@ -5364,6 +5397,12 @@ export interface operations {
                 limit?: number;
                 /** @description Items to skip. Not validated — a negative, zero or non-numeric value is treated as 0. A number that is not a whole number (2.5) is refused with 400. */
                 skip?: number;
+                /** @description Brand technicalName. A scope, not a criterion of its own — it narrows every other criterion to this brand, and alone lists the brand's items. A brand that does not exist matches nothing. */
+                brand?: string;
+                /** @description Brand `_id`, tried before `brand`. The same scope. */
+                brandId?: string;
+                /** @description The same kind of scope, by product line. Replaces the hostname's vertical rather than combining with it (see `x-verticals`). */
+                productLine?: "tcg" | "accessory" | "collectible" | "boardGame" | "videoGame" | "other";
             };
             header?: never;
             path?: never;
@@ -5433,6 +5472,12 @@ export interface operations {
                 category?: string;
                 /** @description Expansion technical name */
                 expansion?: string;
+                /** @description Brand technicalName. A scope, not a criterion of its own — it narrows every other criterion to this brand, and alone lists the brand's items. A brand that does not exist matches nothing. */
+                brand?: string;
+                /** @description Brand `_id`, tried before `brand`. The same scope. */
+                brandId?: string;
+                /** @description The same kind of scope, by product line. Replaces the hostname's vertical rather than combining with it (see `x-verticals`). */
+                productLine?: "tcg" | "accessory" | "collectible" | "boardGame" | "videoGame" | "other";
             };
             header?: never;
             path?: never;
@@ -5452,6 +5497,15 @@ export interface operations {
                         data?: components["schemas"]["ItemEstimatedValue"][];
                         pagination?: components["schemas"]["PageMeta"];
                     };
+                };
+            };
+            /** @description A named criterion or brand matched nothing */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             /** @description Server error */
@@ -6636,6 +6690,12 @@ export interface operations {
                 categoryId?: string;
                 /** @description Expansion ID (ObjectId) */
                 expansionId?: string;
+                /** @description Brand technicalName. A scope, not a criterion of its own — it narrows every other criterion to this brand, and alone lists the brand's items. A brand that does not exist matches nothing. */
+                brand?: string;
+                /** @description Brand `_id`, tried before `brand`. The same scope. */
+                brandId?: string;
+                /** @description The same kind of scope, by product line. Replaces the hostname's vertical rather than combining with it (see `x-verticals`). */
+                productLine?: "tcg" | "accessory" | "collectible" | "boardGame" | "videoGame" | "other";
             };
             header?: never;
             path?: never;
@@ -6701,6 +6761,12 @@ export interface operations {
                 category?: string;
                 /** @description Expansion technical name */
                 expansion?: string;
+                /** @description Brand technicalName. A scope, not a criterion of its own — it narrows every other criterion to this brand, and alone lists the brand's items. A brand that does not exist matches nothing. */
+                brand?: string;
+                /** @description Brand `_id`, tried before `brand`. The same scope. */
+                brandId?: string;
+                /** @description The same kind of scope, by product line. Replaces the hostname's vertical rather than combining with it (see `x-verticals`). */
+                productLine?: "tcg" | "accessory" | "collectible" | "boardGame" | "videoGame" | "other";
             };
             header?: never;
             path?: never;
@@ -6720,6 +6786,15 @@ export interface operations {
                         data?: components["schemas"]["ItemEstimatedValue"][];
                         pagination?: components["schemas"]["PageMeta"];
                     };
+                };
+            };
+            /** @description A named criterion or brand matched nothing */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
             /** @description Server error */

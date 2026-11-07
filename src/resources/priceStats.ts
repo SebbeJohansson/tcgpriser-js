@@ -16,7 +16,10 @@ import type {
   TopItem,
 } from '../types/index.js';
 
-/** Filters shared by `daily()` and `estimatedValues()`: all narrow which product(s) the stats
+/** A named criterion or `brand` matching nothing is a 404; a `productLine`, or an existing
+ * `brand` alone, with no items is an empty list. Neither returns the whole catalogue.
+ *
+ * Filters shared by `daily()` and `estimatedValues()`: all narrow which product(s) the stats
  * cover; combine as many as you like. */
 export interface ProductFilterParams extends RequestOptions {
   productName?: string;
