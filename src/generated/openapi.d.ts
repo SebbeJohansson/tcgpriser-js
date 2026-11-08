@@ -1,6 +1,6 @@
 // GENERATED FILE - do not edit by hand.
 // Run `yarn generate:types` to regenerate from the released delivery contract (or an explicit URL).
-// Source: ../pris-tabell-contract/versions/10.1.0/delivery-openapi.json
+// Source: ../pris-tabell-contract/versions/11.0.0/delivery-openapi.json
 
 export interface paths {
     "/bargains": {

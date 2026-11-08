@@ -782,8 +782,6 @@ Not covered, deliberately:
 - **Account management** (login, subscriptions, API-token minting, referrals). These authenticate
   with the website's session JWT, which comes from an OAuth flow this client can't drive. Generate
   your API token from your account page instead.
-- **`/bulk-export`.** Feeds our own static build, answers a non-standard shape, and is not
-  documented for third parties. Page the documented endpoints instead.
 
 ## License
 
