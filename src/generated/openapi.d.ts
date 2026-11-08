@@ -1,6 +1,6 @@
 // GENERATED FILE - do not edit by hand.
 // Run `yarn generate:types` to regenerate from the released delivery contract (or an explicit URL).
-// Source: ../pris-tabell-contract/versions/10.0.0/delivery-openapi.json
+// Source: ../pris-tabell-contract/versions/10.1.0/delivery-openapi.json
 
 export interface paths {
     "/bargains": {
@@ -428,7 +428,7 @@ export interface paths {
         };
         /**
          * Expansion List
-         * @description Every expansion we track, newest first. Metadata only — cards and sealed products are separate resources, see `GET /expansions/{technicalName}/cards`.
+         * @description Every expansion we track, newest first by release date; expansions with the same date, the highest `_id` first. Metadata only — cards and sealed products are separate resources, see `GET /expansions/{technicalName}/cards`.
          *
          *     **A deleted brand fails the whole response.** Every expansion has a brand, and the mapper refuses one whose brand document no longer exists, so a single expansion pointing at a deleted brand makes this answer 500. That takes deleting a brand still in use, which nothing in the API does; it is stated so a second implementation fails the same way rather than inventing a recovery.
          */
